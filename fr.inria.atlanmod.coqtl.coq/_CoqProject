@@ -30,6 +30,8 @@ core/byrule/ByRuleSemantics.v
 core/byrule/Certification_ByRuleSemantics.v
 core/iterateTraces/IterateTracesSemantics.v
 core/iterateTraces/Certification_IterateTraces.v
+core/iterateTracesByRule/IterateTracesByRuleSemantics.v
+core/iterateTracesByRule/Certification_IterateTracesByRule.v
 
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
