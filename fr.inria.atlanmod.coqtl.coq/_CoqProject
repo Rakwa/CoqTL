@@ -24,6 +24,7 @@ core/EngineTwoPhase.v
 core/Certification.v
 core/ConcreteSyntax.v
 core/EngineProofs.v
+core/EqDec.v
 core/twophases/TwoPhaseSemantics.v
 core/twophases/Certification_TwoPhaseSemantics.v
 core/byrule/ByRuleSemantics.v
