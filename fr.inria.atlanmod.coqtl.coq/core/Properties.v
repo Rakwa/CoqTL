@@ -8,6 +8,7 @@ Require Import List.
 Require Import Expressions.
 Require Import core.utils.Utils.
 Require Import PeanoNat.
+Require Import Lia.
 
 Definition transf_incl {tc: TransformationConfiguration} (t1 t2: Transformation) := True.
 Definition sourcemodel_incl {tc: TransformationConfiguration} (t1 t2: SourceModel) := True.
@@ -51,11 +52,11 @@ Proof.
     rewrite <- IHmodelElements at 2.
     repeat rewrite flat_map_concat_map.
     f_equal.
-    Search seq.
     rewrite <- seq_shift.
     rewrite map_map.
     reflexivity.
 Qed.
+
 
 Theorem universality_links :
 forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
@@ -115,31 +116,18 @@ Proof.
     intros.
     repeat rewrite app_nil_r.
     destruct a.
-    + exfalso.
-      Search map S.
-
-  
-  induction modelLinks.
-  * 
-    Search flat_map.
-    apply in_flat_map_nil.
-    intros.
-    rewrite app_nil_r.
-    simpl.
-    destruct (nth_error modelElements a).
-    + apply in_flat_map_nil.
-      intros.
-      destruct a; reflexivity.
-    + reflexivity.
-  * simpl.
-    f_equal.
-    rewrite <- IHmodelElements at 2.
-    repeat rewrite flat_map_concat_map.
-    f_equal.
-    rewrite map_map.
-    reflexivity.
-Qed.
-
+    + exfalso. 
+      clear H H0 t modelLinks f sm m.
+      rewrite in_seq in H1.
+      lia.
+    + simpl.
+      rewrite in_seq in H1.
+      destruct H1.
+      simpl in H2.
+      apply Lt.lt_S_n in H2.
+      destruct (nth_error modelElements a); reflexivity.
+Qed. 
+      
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
   (forall (r: Rule), count_occ Rule_eqdec (Transformation_getRules t1) r = count_occ Rule_eqdec (Transformation_getRules t2) r)
