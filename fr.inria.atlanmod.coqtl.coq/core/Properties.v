@@ -18,54 +18,9 @@ Definition targetmodel_equiv {tc: TransformationConfiguration} (t1 t2: TargetMod
 Definition Rule_eqdec: forall {tc: TransformationConfiguration}  (x y:Rule), {x = y} + {x <> y}.
 Admitted.
 
-(* Compute elementAt 3 (indexedElements 1 (3::4::5::nil)). *)
-
-Theorem universality_elements :
-forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
-  exists (t: Transformation), 
-  forall (sm: SourceModel), allModelElements (execute t sm) = allModelElements (f sm).
-Proof.
-  intros.
-  pose (buildTransformation 0 
-    ((buildRule "rule"%string 
-     (fun sm sp => match sp with nil => Some true | _ => Some false end)
-      (buildOutputPatternElement "out"%string 
-      (fun sm sp => Some (length (allModelElements (f sm))))
-      (fun i sm sp => nth_error (allModelElements (f sm)) i)
-      nil 
-      :: nil))
-     ::nil)).
-  exists t.
-  intros.
-  unfold execute. 
-  unfold instantiatePattern. 
-  unfold instantiateRuleOnPattern. 
-  unfold instantiateElementsOnPattern. 
-  unfold evalElementIteratorExpr. 
-  simpl.
-  repeat rewrite app_nil_r.
-  destruct (f sm).
-  induction modelElements.
-  * reflexivity.
-  * simpl.
-    f_equal.
-    rewrite <- IHmodelElements at 2.
-    repeat rewrite flat_map_concat_map.
-    f_equal.
-    rewrite <- seq_shift.
-    rewrite map_map.
-    reflexivity.
-Qed.
-
-
-Theorem universality_links :
-forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
-  exists (t: Transformation), 
-  forall (sm: SourceModel), allModelElements (f sm) <> nil -> allModelLinks (execute t sm) = allModelLinks (f sm).
-Proof.
-  intros.
-  pose (buildTransformation 0 
-    ((buildRule "rule"%string 
+Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) := 
+  (buildTransformation 0 
+  ((buildRule "rule"%string 
      (fun sm sp => match sp with nil => Some true | _ => Some false end)
       (buildOutputPatternElement "out"%string 
       (fun sm sp => Some (length (allModelElements (f sm))))
@@ -76,7 +31,14 @@ Proof.
       )::nil) 
       :: nil))
      ::nil)).
-  exists t.
+
+Theorem universality :
+forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
+  exists (t: Transformation), 
+  forall (sm: SourceModel), allModelElements (f sm) <> nil -> execute t sm = f sm.
+Proof.
+  intros.
+  exists (toTransformation tc f).
   intros.
   unfold execute. 
   unfold applyPattern. 
@@ -88,46 +50,61 @@ Proof.
   unfold evalOutputPatternLinkExpr.
   unfold evalElementIteratorExpr.
   unfold evalLinkIteratorExpr. 
+  unfold instantiatePattern. 
+  unfold instantiateRuleOnPattern. 
+  unfold instantiateElementsOnPattern. 
+  unfold evalElementIteratorExpr. 
   unfold evalExpr.
   simpl.
   destruct (f sm). simpl.
-  destruct modelElements.
-  * simpl. contradiction.
-  * simpl. 
-    repeat rewrite app_nil_r.
-    assert (flat_map (fun n : nat => optionToList (nth_error modelLinks n))
-    (seq 0 (Datatypes.length modelLinks)) = modelLinks). {
-      clear H.
-      induction modelLinks.
-      + reflexivity.
+  f_equal.
+  - clear H.
+    induction modelElements.
+    * reflexivity.
+    * simpl.
+      f_equal.
+      rewrite <- IHmodelElements at 2.
+      repeat rewrite flat_map_concat_map.
+      f_equal.
+      rewrite <- seq_shift.
+      rewrite map_map.
+      reflexivity.
+  - destruct modelElements.
+    * simpl. contradiction.
+    * simpl. 
+      repeat rewrite app_nil_r.
+      assert (flat_map (fun n : nat => optionToList (nth_error modelLinks n))
+      (seq 0 (Datatypes.length modelLinks)) = modelLinks). {
+        clear H.
+        induction modelLinks.
+        + reflexivity.
+        + simpl.
+          f_equal.
+          rewrite <- IHmodelLinks at 2.
+          repeat rewrite flat_map_concat_map.
+          f_equal.
+          rewrite <- seq_shift.
+          rewrite map_map.
+          reflexivity.
+      }
+      rewrite <- H0 at 2.
+      rewrite app_nil_end.
+      f_equal.
+      apply in_flat_map_nil.
+      intros.
+      repeat rewrite app_nil_r.
+      destruct a.
+      + exfalso. 
+        rewrite in_seq in H1.
+        lia.
       + simpl.
-        f_equal.
-        rewrite <- IHmodelLinks at 2.
-        repeat rewrite flat_map_concat_map.
-        f_equal.
-        rewrite <- seq_shift.
-        rewrite map_map.
-        reflexivity.
-    }
-    rewrite <- H0 at 2.
-    rewrite app_nil_end.
-    f_equal.
-    apply in_flat_map_nil.
-    intros.
-    repeat rewrite app_nil_r.
-    destruct a.
-    + exfalso. 
-      clear H H0 t modelLinks f sm m.
-      rewrite in_seq in H1.
-      lia.
-    + simpl.
-      rewrite in_seq in H1.
-      destruct H1.
-      simpl in H2.
-      apply Lt.lt_S_n in H2.
-      destruct (nth_error modelElements a); reflexivity.
-Qed. 
-      
+        rewrite in_seq in H1.
+        destruct H1.
+        simpl in H2.
+        apply Lt.lt_S_n in H2.
+        destruct (nth_error modelElements a); reflexivity.
+Qed.
+  
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
   (forall (r: Rule), count_occ Rule_eqdec (Transformation_getRules t1) r = count_occ Rule_eqdec (Transformation_getRules t2) r)
