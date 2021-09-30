@@ -12,28 +12,27 @@ Require Import core.Model.
 
 (* Binary Decision Diagram (Tree) *)
 
-Inductive BDDNode := 
-  BuildBDDNode :
+Inductive BDD := 
+  | BuildBDDNode :
   (* name *) string ->
-  BDDNode.
+  BDD
+  | BuildBDDEdge :
+  (* child *) BDD ->
+  (* parent *) BDD ->
+  BDD.
 
-Inductive BDDEdge := 
-  BuildBDDEdge :
-  (* child *) BDDNode ->
-  (* parent *) BDDNode ->
-  BDDEdge.
-
-Definition BDDEq (a b : BDDNode) := 
+Fixpoint BDDEq (a b : BDD) := 
   match a, b with
   | BuildBDDNode n1, BuildBDDNode n2 => String.eqb n1 n2 
+  | BuildBDDEdge n1 n3, BuildBDDEdge n2 n4 => andb (BDDEq n1 n2) (BDDEq n3 n4)
+  | _, _ => false
   end.
 
-Instance BDDEqDec : EqDec BDDNode := {
+Instance BDDEqDec : EqDec BDD := {
     eq_b := BDDEq
 }.
 
 Instance BDDM : Metamodel :=
 {
-  ModelElement := BDDNode;
-  ModelLink := BDDEdge;
+  ModelElement := BDD;
 }.

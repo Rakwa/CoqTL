@@ -23,7 +23,7 @@ Context {tc: TransformationConfiguration}.
 Inductive OutputPatternLink : Type :=
   buildOutputPatternLink :
     (list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option nat) 
-    -> (nat -> list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
+    -> (nat -> list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelElement) 
     -> OutputPatternLink.
 
 Definition OutputPatternLink_getIteratorExpr (o: OutputPatternLink) : 
@@ -33,7 +33,7 @@ Definition OutputPatternLink_getIteratorExpr (o: OutputPatternLink) :
     end.
 
 Definition OutputPatternLink_getLinkExpr (o: OutputPatternLink) : 
-    nat -> list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
+    nat -> list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelElement :=
     match o with
       buildOutputPatternLink _ y => y
     end.

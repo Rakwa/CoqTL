@@ -318,7 +318,7 @@ Proof.
 Qed.
 
 Theorem tr_execute_in_links :
-  forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+  forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelElement),
     In tl (allModelLinks (execute tr sm)) <->
     (exists (sp : list SourceModelElement),
         In sp (allTuples tr sm) /\
@@ -347,7 +347,7 @@ Proof.
 Qed.
 
 Theorem tr_execute_in :
-  forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement) (tl : TargetModelLink),
+  forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement) (tl : TargetModelElement),
     (In te (allModelElements (execute tr sm)) <-> In te (allModelElements (Semantics.execute tr sm)))
     /\ (In tl (allModelLinks (execute tr sm)) <-> In tl (allModelLinks (Semantics.execute tr sm))).
 Proof.
@@ -370,7 +370,7 @@ Instance ByRuleEngine :
   SourceModelReference := SourceModelReference;
   TargetModelElement := TargetModelElement;
   TargetModelClass := TargetModelClass;
-  TargetModelLink := TargetModelLink;
+  TargetModelElement := TargetModelElement;
   TargetModelReference := TargetModelReference;
 
   Transformation := Transformation;

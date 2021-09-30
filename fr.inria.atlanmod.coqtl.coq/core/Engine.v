@@ -62,7 +62,7 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
 
     evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
     evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
-    evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternLink -> option TargetModelLink;
+    evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternLink -> option TargetModelElement;
     evalGuardExpr: Rule->SourceModel->list SourceModelElement->option bool;
 }.
   
@@ -85,11 +85,11 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     instantiateIterationOnPattern: Rule -> SourceModel -> list SourceModelElement -> nat -> list TargetModelElement;
     instantiateElementOnPattern: OutputPatternElement -> SourceModel -> list SourceModelElement -> nat -> option TargetModelElement;
     
-    applyPattern: Transformation -> SourceModel -> list SourceModelElement -> list TargetModelLink;
-    applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> list TargetModelLink;
-    applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
-    applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
-    applyLinkOnPattern: OutputPatternLink -> Transformation -> SourceModel -> list SourceModelElement -> nat -> TargetModelElement -> option TargetModelLink;
+    applyPattern: Transformation -> SourceModel -> list SourceModelElement -> list TargetModelElement;
+    applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> list TargetModelElement;
+    applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelElement;
+    applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelElement;
+    applyLinkOnPattern: OutputPatternLink -> Transformation -> SourceModel -> list SourceModelElement -> nat -> TargetModelElement -> option TargetModelElement;
     
     trace: Transformation -> SourceModel -> list TraceLink; 
 
@@ -117,7 +117,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
           In te (instantiatePattern tr sm sp));
 
     tr_execute_in_links :
-      forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+      forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelElement),
         In tl (allModelLinks (execute tr sm)) <->
         (exists (sp : list SourceModelElement),
             In sp (allTuples tr sm) /\
@@ -176,7 +176,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** applyPattern *)
 
     tr_applyPattern_in :
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelElement),
         In tl (applyPattern tr sm sp) <->
         (exists (r : Rule),
             In r (matchPattern tr sm sp) /\
@@ -185,7 +185,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** applyRuleOnPattern *)
 
     tr_applyRuleOnPattern_in : 
-      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelElement),
         In tl (applyRuleOnPattern r tr sm sp) <->
         (exists (i: nat),
             In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -194,7 +194,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** applyIterationOnPattern *)
 
     tr_applyIterationOnPattern_in : 
-      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat),
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelElement) (i:nat),
         In tl (applyIterationOnPattern r tr sm sp i) <->
         (exists (ope: OutputPatternElement),
             In ope (Rule_getOutputPatternElements r) /\ 
@@ -203,7 +203,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** applyElementOnPattern *)
 
     tr_applyElementOnPattern_in : 
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelElement) 
              (i:nat) (ope: OutputPatternElement),
         In tl (applyElementOnPattern ope tr sm sp i ) <->
         (exists (oper: OutputPatternLink) (te: TargetModelElement),

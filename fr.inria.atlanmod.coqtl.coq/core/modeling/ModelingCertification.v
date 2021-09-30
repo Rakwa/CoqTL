@@ -109,7 +109,7 @@ destruct (find (fun tl: TraceLink =>
   -- Admitted.
 
 Instance ModelingCoqTLEngine :
-  ModelingTransformationEngine (@CoqTLEngine SourceModelElement SourceModelLink eqdec_sme TargetModelElement TargetModelLink):=
+  ModelingTransformationEngine (@CoqTLEngine SourceModelElement SourceModelLink eqdec_sme TargetModelElement TargetModelElement):=
   {
     SourceModelClass := SourceModelClass;
     SourceModelReference := SourceModelReference;
