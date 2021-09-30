@@ -104,9 +104,9 @@ Lemma tr_instantiateIterationOnPattern_in :
 forall (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode) (i:nat),
   In te (instantiateIterationOnPattern r sm sp i)
   <->
-  (exists (ope: OutputPatternElement),
-      In ope (Rule_getOutputPatternElements r) /\ 
-      instantiateElementOnPattern ope sm sp i = Some te).
+  (exists (ope: OutputPatternNode),
+      In ope (Rule_getOutputPatternNodes r) /\ 
+      instantiateNodeOnPattern ope sm sp i = Some te).
 Proof.
   split.
   * intros.
@@ -117,7 +117,7 @@ Proof.
     destruct H.
     split. 
     - assumption.
-    - destruct (instantiateElementOnPattern x sm sp i).
+    - destruct (instantiateNodeOnPattern x sm sp i).
       ** crush.
       ** contradiction.
   * intros.
@@ -131,9 +131,9 @@ Proof.
     - crush.
 Qed.
 
-Lemma  tr_instantiateElementOnPattern_leaf:
-      forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceNode) (iter: nat),
-        instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr sm sp iter o.
+Lemma  tr_instantiateNodeOnPattern_leaf:
+      forall (o: OutputPatternNode) (sm: SourceModel) (sp: list SourceNode) (iter: nat),
+        instantiateNodeOnPattern o sm sp iter = evalOutputPatternNodeExpr sm sp iter o.
 Proof.
   crush.
 Qed.
@@ -163,21 +163,21 @@ Qed.
 Lemma tr_applyIterationOnPattern_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (i:nat),
       In tl (applyIterationOnPattern r tr sm sp i) <->
-      (exists (ope: OutputPatternElement),
-          In ope (Rule_getOutputPatternElements r) /\ 
-          In tl (applyElementOnPattern ope tr sm sp i)).
+      (exists (ope: OutputPatternNode),
+          In ope (Rule_getOutputPatternNodes r) /\ 
+          In tl (applyNodeOnPattern ope tr sm sp i)).
 Proof.
   intros.
   apply in_flat_map.
 Qed.
 
-Lemma tr_applyElementOnPattern_in : 
+Lemma tr_applyNodeOnPattern_in : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
-            (i:nat) (ope: OutputPatternElement),
-      In tl (applyElementOnPattern ope tr sm sp i ) <->
+            (i:nat) (ope: OutputPatternNode),
+      In tl (applyNodeOnPattern ope tr sm sp i ) <->
       (exists (oper: OutputPatternLink) (te: TargetNode),
-          In oper (OutputPatternElement_getOutputLinks ope) /\ 
-          (evalOutputPatternElementExpr sm sp i ope) = Some te /\
+          In oper (OutputPatternNode_getOutputLinks ope) /\ 
+          (evalOutputPatternNodeExpr sm sp i ope) = Some te /\
           applyLinkOnPattern oper tr sm sp i te = Some tl).
 Proof.
   split.
@@ -187,7 +187,7 @@ Proof.
     exists x.
     unfold optionToList in H.
     destruct H.
-    destruct (evalOutputPatternElementExpr sm sp i ope) eqn: eval_ca.
+    destruct (evalOutputPatternNodeExpr sm sp i ope) eqn: eval_ca.
     - destruct (applyLinkOnPattern x tr sm sp i t) eqn: ref_ca.
       -- eexists t.
           split; crush.
@@ -306,7 +306,7 @@ Theorem tr_resolveIter_leaf:
         Is_true (list_beq SourceNode (@elements_eqb smm) (TraceLink_getSourcePattern tl) sp) /\
         ((TraceLink_getIterator tl) = iter) /\ 
         ((TraceLink_getName tl) = name)%string /\
-        (TraceLink_getTargetElement tl) = x).
+        (TraceLink_getTargetNode tl) = x).
 Proof.
 intros.
 unfold resolveIter in H.
@@ -343,12 +343,12 @@ Instance CoqTLEngine :
     instantiatePattern := instantiatePattern;
     instantiateRuleOnPattern := instantiateRuleOnPattern;
     instantiateIterationOnPattern := instantiateIterationOnPattern;
-    instantiateElementOnPattern := instantiateElementOnPattern;
+    instantiateNodeOnPattern := instantiateNodeOnPattern;
 
     applyPattern := applyPattern;
     applyRuleOnPattern := applyRuleOnPattern;
     applyIterationOnPattern := applyIterationOnPattern;
-    applyElementOnPattern := applyElementOnPattern;
+    applyNodeOnPattern := applyNodeOnPattern;
     applyLinkOnPattern := applyLinkOnPattern;
 
     trace := trace;
@@ -367,12 +367,12 @@ Instance CoqTLEngine :
     tr_instantiatePattern_in := tr_instantiatePattern_in;
     tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
     tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
-    tr_instantiateElementOnPattern_leaf := tr_instantiateElementOnPattern_leaf;
+    tr_instantiateNodeOnPattern_leaf := tr_instantiateNodeOnPattern_leaf;
 
     tr_applyPattern_in := tr_applyPattern_in;
     tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
     tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
-    tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
+    tr_applyNodeOnPattern_in := tr_applyNodeOnPattern_in;
     tr_applyLinkOnPatternTraces_leaf := tr_applyLinkOnPattern_leaf;
 
     tr_resolveAll_in := tr_resolveAllIter_in;
@@ -390,8 +390,8 @@ Instance CoqTLEngine :
 
     tr_instantiateIterationOnPattern_non_None := tr_instantiateIterationOnPattern_non_None;
 
-    tr_instantiateElementOnPattern_None := tr_instantiateElementOnPattern_None;
-    tr_instantiateElementOnPattern_None_iterator := tr_instantiateElementOnPattern_None_iterator;
+    tr_instantiateNodeOnPattern_None := tr_instantiateNodeOnPattern_None;
+    tr_instantiateNodeOnPattern_None_iterator := tr_instantiateNodeOnPattern_None_iterator;
 
     tr_applyPattern_non_None := tr_applyPattern_non_None;
     tr_applyPattern_None := tr_applyPattern_None;
@@ -400,14 +400,14 @@ Instance CoqTLEngine :
 
     tr_applyIterationOnPattern_non_None := tr_applyIterationOnPattern_non_None;
 
-    tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
+    tr_applyNodeOnPattern_non_None := tr_applyNodeOnPattern_non_None;
 
     tr_applyLinkOnPattern_None := tr_applyLinkOnPattern_None;
     tr_applyLinkOnPattern_None_iterator := tr_applyLinkOnPattern_None_iterator;
 
     tr_maxArity_in := tr_maxArity_in;
 
-    tr_instantiateElementOnPattern_Leaf := tr_instantiateElementOnPattern_Leaf;
+    tr_instantiateNodeOnPattern_Leaf := tr_instantiateNodeOnPattern_Leaf;
     tr_applyLinkOnPattern_Leaf := tr_applyLinkOnPattern_Leaf;
     tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
 
@@ -424,7 +424,7 @@ Instance CoqTLEngine :
 Lemma tr_match_injective :
 forall (sm : SourceModel)(sp : list SourceNode)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIteratorExpr r sm sp)) /\ 
-    (exists ope, In ope (Rule_getOutputPatternElements r) /\  (evalOutputPatternElementExpr sm sp iter ope) <> None ) ->
+    (exists ope, In ope (Rule_getOutputPatternNodes r) /\  (evalOutputPatternNodeExpr sm sp iter ope) <> None ) ->
       (exists (te: TargetNode),  In te (instantiateRuleOnPattern r sm sp) ).
 Proof.
 intros.
@@ -444,7 +444,7 @@ apply in_flat_map.
 exists ope. 
 split. 
 -- exact HopeInr.
--- unfold instantiateElementOnPattern.
+-- unfold instantiateNodeOnPattern.
     rewrite Hte.
     simpl. left. reflexivity.
 Qed.
@@ -457,10 +457,10 @@ Qed.
 Theorem tr_instantiateRuleAndIterationOnPattern_in :
 forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
   In te (instantiateRuleOnPattern r sm sp) <->
-  (exists (i: nat) (ope: OutputPatternElement),
+  (exists (i: nat) (ope: OutputPatternNode),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
-      In ope (Rule_getOutputPatternElements r) /\ 
-        instantiateElementOnPattern ope sm sp i = Some te).
+      In ope (Rule_getOutputPatternNodes r) /\ 
+        instantiateNodeOnPattern ope sm sp i = Some te).
 Proof.
   intros.
   split.
@@ -491,9 +491,9 @@ forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) 
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
-      (exists (ope: OutputPatternElement),
-      In ope (Rule_getOutputPatternElements r) /\ 
-        instantiateElementOnPattern ope sm sp i = Some te)).
+      (exists (ope: OutputPatternNode),
+      In ope (Rule_getOutputPatternNodes r) /\ 
+        instantiateNodeOnPattern ope sm sp i = Some te)).
 Proof.
   intros.
   specialize (tr_instantiateRuleOnPattern_in tr r sm sp te) as inst.

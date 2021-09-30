@@ -58,7 +58,7 @@ Proof.
     + exact nil.
 Defined.
 
-Definition wrapOptionElement
+Definition wrapOptionNode
   (l : list SourceModelClass) (t : TargetModelClass)
   (imp : denoteSignature l (denoteModelClass t)) :
   (list SourceNode) -> option TargetNode.
@@ -100,12 +100,12 @@ Definition makeIterator (l : list SourceModelClass)
   IteratorFunction :=
   fun sm => wrapOption l (imp sm).
 
-Definition ElementFunction : Type :=
+Definition NodeFunction : Type :=
   nat -> SourceModel -> (list SourceNode) -> option TargetNode.
-Definition makeElement (l : list SourceModelClass) (t : TargetModelClass)
+Definition makeNode (l : list SourceModelClass) (t : TargetModelClass)
   (imp : nat -> SourceModel -> denoteSignature l (denoteModelClass t)) :
-  ElementFunction :=
-  fun it sm => wrapOptionElement l t (imp it sm).
+  NodeFunction :=
+  fun it sm => wrapOptionNode l t (imp it sm).
 
 Definition LinkFunction : Type :=
   list TraceLink

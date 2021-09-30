@@ -20,11 +20,11 @@ Definition parseOutputPatternLink (intypes: list SourceModelClass) (outtype: Tar
   buildOutputPatternLink 
     (makeLink intypes outtype (ConcreteOutputPatternLink_getRefType cr) (ConcreteOutputPatternLink_getOutputPatternLink cr)).
 
-Definition parseOutputPatternElement (intypes: list SourceModelClass) (co: ConcreteOutputPatternElement intypes) : OutputPatternElement :=
-  buildOutputPatternElement
-    (ConcreteOutputPatternElement_getName co)
-    (makeElement intypes (ConcreteOutputPatternElement_getOutType co) (ConcreteOutputPatternElement_getOutPatternElement co))
-    (map (parseOutputPatternLink intypes (ConcreteOutputPatternElement_getOutType co)) (ConcreteOutputPatternElement_getOutputLinks co)).
+Definition parseOutputPatternNode (intypes: list SourceModelClass) (co: ConcreteOutputPatternNode intypes) : OutputPatternNode :=
+  buildOutputPatternNode
+    (ConcreteOutputPatternNode_getName co)
+    (makeNode intypes (ConcreteOutputPatternNode_getOutType co) (ConcreteOutputPatternNode_getOutPatternNode co))
+    (map (parseOutputPatternLink intypes (ConcreteOutputPatternNode_getOutType co)) (ConcreteOutputPatternNode_getOutputLinks co)).
 
 Definition parseRule(cr: ConcreteRule) : Rule :=
   buildRule
@@ -37,7 +37,7 @@ Definition parseRule(cr: ConcreteRule) : Rule :=
     | Some i => (makeIterator (ConcreteRule_getInTypes cr) i)
     | None => (fun _ _ => Some 1)
     end)
-    (map (parseOutputPatternElement (ConcreteRule_getInTypes cr)) (ConcreteRule_getConcreteOutputPattern cr)).
+    (map (parseOutputPatternNode (ConcreteRule_getInTypes cr)) (ConcreteRule_getConcreteOutputPattern cr)).
 
 Definition parse(ct: ConcreteTransformation) : Transformation :=
   buildTransformation 

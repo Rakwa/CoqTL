@@ -87,7 +87,7 @@ Theorem tr_resolveIter_leaf:
         Is_true (list_beq SourceNode core.EqDec.eq_b (TraceLink_getSourcePattern tl) sp) /\
         ((TraceLink_getIterator tl) = iter) /\ 
         ((TraceLink_getName tl) = name)%string /\
-        (toModelClass type (TraceLink_getTargetElement tl) = Some x)). 
+        (toModelClass type (TraceLink_getTargetNode tl) = Some x)). 
 Proof.
 intros.
 unfold resolveIter in H.

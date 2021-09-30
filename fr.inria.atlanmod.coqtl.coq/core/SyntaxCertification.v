@@ -14,7 +14,7 @@ Instance CoqTLSyntax :
 
       Transformation := Transformation;
       Rule := Rule;
-      OutputPatternElement := OutputPatternElement;
+      OutputPatternNode := OutputPatternNode;
       OutputPatternLink := OutputPatternLink;
 
       TraceLink := TraceLink;
@@ -22,16 +22,16 @@ Instance CoqTLSyntax :
       Transformation_getArity := Transformation_getArity;
       Transformation_getRules := Transformation_getRules;
 
-      Rule_getOutputPatternElements := Rule_getOutputPatternElements;
+      Rule_getOutputPatternNodes := Rule_getOutputPatternNodes;
 
-      OutputPatternElement_getOutputLinks := OutputPatternElement_getOutputLinks;
+      OutputPatternNode_getOutputLinks := OutputPatternNode_getOutputLinks;
 
       TraceLink_getSourcePattern := TraceLink_getSourcePattern;
       TraceLink_getIterator := TraceLink_getIterator;
       TraceLink_getName := TraceLink_getName;
-      TraceLink_getTargetElement := TraceLink_getTargetElement;    
+      TraceLink_getTargetNode := TraceLink_getTargetNode;    
       
-      evalOutputPatternElementExpr := evalOutputPatternElementExpr;
+      evalOutputPatternNodeExpr := evalOutputPatternNodeExpr;
       evalIteratorExpr := evalIteratorExpr;
       evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
       evalGuardExpr := evalGuardExpr;

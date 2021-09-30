@@ -22,7 +22,7 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
   (buildTransformation 0 
   ((buildRule "rule"%string 
      (fun sm sp => match sp with nil => Some true | _ => Some false end)
-      (buildOutputPatternElement "out"%string 
+      (buildOutputPatternNode "out"%string 
       (fun sm sp => Some (length (allNodes (f sm))))
       (fun i sm sp => nth_error (allNodes (f sm)) i)
       ((buildOutputPatternLink 
@@ -43,33 +43,33 @@ Proof.
   unfold execute. 
   unfold applyPattern. 
   unfold applyRuleOnPattern. 
-  unfold applyElementsOnPattern. 
-  unfold applyElementOnPattern. 
+  unfold applyNodesOnPattern. 
+  unfold applyNodeOnPattern. 
   unfold applyLinksOnPattern.
   unfold applyLinkOnPattern.
   unfold evalOutputPatternLinkExpr.
-  unfold evalElementIteratorExpr.
+  unfold evalNodeIteratorExpr.
   unfold evalLinkIteratorExpr. 
   unfold instantiatePattern. 
   unfold instantiateRuleOnPattern. 
-  unfold instantiateElementsOnPattern. 
-  unfold evalElementIteratorExpr. 
+  unfold instantiateNodesOnPattern. 
+  unfold evalNodeIteratorExpr. 
   unfold evalExpr.
   simpl.
   destruct (f sm). simpl.
   f_equal.
   - clear H.
-    induction modelElements.
+    induction modelNodes.
     * reflexivity.
     * simpl.
       f_equal.
-      rewrite <- IHmodelElements at 2.
+      rewrite <- IHmodelNodes at 2.
       repeat rewrite flat_map_concat_map.
       f_equal.
       rewrite <- seq_shift.
       rewrite map_map.
       reflexivity.
-  - destruct modelElements.
+  - destruct modelNodes.
     * simpl. contradiction.
     * simpl. 
       repeat rewrite app_nil_r.
@@ -102,7 +102,7 @@ Proof.
         destruct H1.
         simpl in H2.
         apply Lt.lt_S_n in H2.
-        destruct (nth_error modelElements a); reflexivity.
+        destruct (nth_error modelNodes a); reflexivity.
 Qed.
   
 Theorem confluence :

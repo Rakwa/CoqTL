@@ -39,7 +39,7 @@ Definition TraceLink_getName (tl: TraceLink):=
     buildTraceLink (sp, i, n) te => n
   end.
 
-Definition TraceLink_getTargetElement (tl: TraceLink):=
+Definition TraceLink_getTargetNode (tl: TraceLink):=
   match tl with 
     buildTraceLink (sp, i, n) te => te
   end.

@@ -14,7 +14,7 @@ Section Syntax.
 
 Context {tc: TransformationConfiguration}.
 
-(** ** Syntactic Elements
+(** ** Syntactic Nodes
 
         Next, we model syntactic elements of any transformation specification that supported by the CoqTL engine. *)
 
@@ -38,35 +38,35 @@ Definition OutputPatternLink_getLinkExpr (o: OutputPatternLink) :
       buildOutputPatternLink _ y => y
     end.
 
-(** *** OutputPatternElement *)
+(** *** OutputPatternNode *)
 
-Inductive OutputPatternElement : Type :=
-  buildOutputPatternElement :
+Inductive OutputPatternNode : Type :=
+  buildOutputPatternNode :
     string 
     -> (SourceModel -> (list SourceNode) -> option nat)
     -> (nat -> SourceModel -> (list SourceNode) -> option TargetNode) 
-    -> (list OutputPatternLink) -> OutputPatternElement.
+    -> (list OutputPatternLink) -> OutputPatternNode.
 
-Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
+Definition OutputPatternNode_getName (o: OutputPatternNode) : string :=
   match o with
-    buildOutputPatternElement y _ _ _ => y
+    buildOutputPatternNode y _ _ _ => y
   end.
 
-Definition OutputPatternElement_getIteratorExpr (o: OutputPatternElement) :=
+Definition OutputPatternNode_getIteratorExpr (o: OutputPatternNode) :=
   match o with
-    buildOutputPatternElement _ y _ _ => y
+    buildOutputPatternNode _ y _ _ => y
   end.
 
 
-Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -> SourceModel -> (list SourceNode) -> option TargetNode :=
+Definition OutputPatternNode_getNodeExpr (o: OutputPatternNode) : nat -> SourceModel -> (list SourceNode) -> option TargetNode :=
   match o with
-    buildOutputPatternElement _ _ y _ => y
+    buildOutputPatternNode _ _ y _ => y
   end.
 
-Definition OutputPatternElement_getOutputLinks (o: OutputPatternElement) :
+Definition OutputPatternNode_getOutputLinks (o: OutputPatternNode) :
   list OutputPatternLink :=
   match o with
-    buildOutputPatternElement _ _ _ y => y
+    buildOutputPatternNode _ _ _ y => y
       end.
 
 (** *** Rule *)
@@ -75,7 +75,7 @@ Inductive Rule : Type :=
   buildRule :
     (* name *) string
     (* from *) -> (SourceModel -> (list SourceNode) -> option bool)
-    (* to *) -> (list OutputPatternElement)
+    (* to *) -> (list OutputPatternNode)
     -> Rule.
 
 Definition Rule_getName (x : Rule) : string :=
@@ -88,17 +88,17 @@ Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceNode) -> op
     buildRule _ y _ => y
   end.
 
-Definition Rule_getOutputPatternElements (x : Rule) :
-  list OutputPatternElement :=
+Definition Rule_getOutputPatternNodes (x : Rule) :
+  list OutputPatternNode :=
   match x with
     buildRule _ _ y => y
   end.
 
 (** find an output pattern element in a rule by the given name: *)
 
-Definition Rule_findOutputPatternElement (r: Rule) (name: string) : option OutputPatternElement :=
-  find (fun (o:OutputPatternElement) => beq_string name (OutputPatternElement_getName o))
-        (Rule_getOutputPatternElements r).
+Definition Rule_findOutputPatternNode (r: Rule) (name: string) : option OutputPatternNode :=
+  find (fun (o:OutputPatternNode) => beq_string name (OutputPatternNode_getName o))
+        (Rule_getOutputPatternNodes r).
 
 (** *** Transformation *)
 
@@ -123,6 +123,6 @@ Arguments buildTransformation {_}.
 Arguments Rule {_}.
 Arguments buildRule {_}.
 
-Arguments buildOutputPatternElement {_}.
+Arguments buildOutputPatternNode {_}.
 Arguments buildOutputPatternLink {_}.
 (* end hide *)

@@ -23,43 +23,43 @@ Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceNode)
 Definition matchPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) : list Rule :=
   filter (fun (r:Rule) => matchRuleOnPattern r sm sp) (Transformation_getRules tr).
 
-Definition instantiateElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceNode) (iter: nat)
+Definition instantiateNodeOnPattern (o: OutputPatternNode) (sm: SourceModel) (sp: list SourceNode) (iter: nat)
   : option TargetNode :=
-  evalOutputPatternElementExpr sm sp iter o.
+  evalOutputPatternNodeExpr sm sp iter o.
 
-Definition instantiateElementsOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceNode):  list TargetNode :=
-  flat_map (fun n => optionToList (instantiateElementOnPattern o sm sp n))
-    (seq 0 (evalElementIteratorExpr o sm sp)).  
+Definition instantiateNodesOnPattern (o: OutputPatternNode) (sm: SourceModel) (sp: list SourceNode):  list TargetNode :=
+  flat_map (fun n => optionToList (instantiateNodeOnPattern o sm sp n))
+    (seq 0 (evalNodeIteratorExpr o sm sp)).  
 
 Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceNode) :  list TargetNode :=
-  flat_map (fun o => instantiateElementsOnPattern o sm sp)
-  (Rule_getOutputPatternElements r).
+  flat_map (fun o => instantiateNodesOnPattern o sm sp)
+  (Rule_getOutputPatternNodes r).
 
 Definition instantiatePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) : list TargetNode :=
   flat_map (fun r => instantiateRuleOnPattern r sm sp) (matchPattern tr sm sp).
 
 Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: list SourceNode) (iter: nat) (name: string): option (TargetNode) :=
-  match (Rule_findOutputPatternElement r name) with
-  | Some o =>  instantiateElementOnPattern o sm sp iter
+  match (Rule_findOutputPatternNode r name) with
+  | Some o =>  instantiateNodeOnPattern o sm sp iter
   | None => None
   end.
 
 (** * Trace **)
 
-Definition traceElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceNode) (iter: nat)
+Definition traceNodeOnPattern (o: OutputPatternNode) (sm: SourceModel) (sp: list SourceNode) (iter: nat)
   : option TraceLink :=
-  match (instantiateElementOnPattern o sm sp iter) with
-  | Some e => Some (buildTraceLink (sp, iter, OutputPatternElement_getName o) e)
+  match (instantiateNodeOnPattern o sm sp iter) with
+  | Some e => Some (buildTraceLink (sp, iter, OutputPatternNode_getName o) e)
   | None => None
   end.
 
-Definition traceElementsOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceNode):  list TraceLink :=
-  flat_map (fun n => optionToList (traceElementOnPattern o sm sp n))
-    (seq 0 (evalElementIteratorExpr o sm sp)).  
+Definition traceNodesOnPattern (o: OutputPatternNode) (sm: SourceModel) (sp: list SourceNode):  list TraceLink :=
+  flat_map (fun n => optionToList (traceNodeOnPattern o sm sp n))
+    (seq 0 (evalNodeIteratorExpr o sm sp)).  
 
 Definition traceRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceNode) :  list TraceLink :=
-  flat_map (fun o => traceElementsOnPattern o sm sp)
-  (Rule_getOutputPatternElements r).
+  flat_map (fun o => traceNodesOnPattern o sm sp)
+  (Rule_getOutputPatternNodes r).
 
 Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) : list TraceLink :=
   flat_map (fun r => traceRuleOnPattern r sm sp) (matchPattern tr sm sp).
@@ -76,11 +76,11 @@ Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (sp: list SourceNode)
             (iter : nat) : option TargetNode :=
 let tl := find (fun tl: TraceLink => 
-  (list_beq SourceNode SourceElement_eqb (TraceLink_getSourcePattern tl) sp) &&
+  (list_beq SourceNode SourceNode_eqb (TraceLink_getSourcePattern tl) sp) &&
   ((TraceLink_getIterator tl) =? iter) &&
   ((TraceLink_getName tl) =? name)%string) tls in
 match tl with
-  | Some tl' => Some (TraceLink_getTargetElement tl')
+  | Some tl' => Some (TraceLink_getTargetNode tl')
   | None => None
 end.
 
@@ -128,24 +128,24 @@ Definition applyLinksOnPattern
   flat_map (fun n => optionToList (applyLinkOnPattern oper tr sm sp iter te n))
     (seq 0 (evalLinkIteratorExpr oper sm sp te iter (trace tr sm))).  
 
-Definition applyElementOnPattern
-            (ope: OutputPatternElement)
+Definition applyNodeOnPattern
+            (ope: OutputPatternNode)
             (tr: Transformation)
             (sm: SourceModel)
             (sp: list SourceNode) (iter: nat) : list TargetEdge :=
   flat_map (fun oper => 
-    match (evalOutputPatternElementExpr sm sp iter ope) with 
+    match (evalOutputPatternNodeExpr sm sp iter ope) with 
     | Some l => applyLinksOnPattern oper tr sm sp iter l
     | None => nil
-    end) (OutputPatternElement_getOutputLinks ope).
+    end) (OutputPatternNode_getOutputLinks ope).
 
-Definition applyElementsOnPattern (o: OutputPatternElement) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode):  list TargetEdge :=
-  flat_map (fun n => applyElementOnPattern o tr sm sp n)
-    (seq 0 (evalElementIteratorExpr o sm sp)).  
+Definition applyNodesOnPattern (o: OutputPatternNode) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode):  list TargetEdge :=
+  flat_map (fun n => applyNodeOnPattern o tr sm sp n)
+    (seq 0 (evalNodeIteratorExpr o sm sp)).  
 
 Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode) :  list TargetEdge :=
-  flat_map (fun o => applyElementsOnPattern o tr sm sp)
-  (Rule_getOutputPatternElements r).
+  flat_map (fun o => applyNodesOnPattern o tr sm sp)
+  (Rule_getOutputPatternNodes r).
 
 Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) : list TargetEdge :=
   flat_map (fun r => applyRuleOnPattern r tr sm sp) (matchPattern tr sm sp).

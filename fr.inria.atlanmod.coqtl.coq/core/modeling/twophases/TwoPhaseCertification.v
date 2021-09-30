@@ -24,14 +24,14 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetNode),
       (exists (tl : TraceLink) (sp : list SourceNode),
           In sp (allTuples tr sm) /\
           In tl (tracePattern tr sm sp) /\
-          te = TraceLink_getTargetElement tl).
+          te = TraceLink_getTargetNode tl).
 Proof.
   intros.
   split.
   + intro. 
     assert (exists (tl : TraceLink),
                 In tl (trace tr sm) /\
-                te = (TraceLink_getTargetElement tl) ).
+                te = (TraceLink_getTargetNode tl) ).
     { simpl in H.
           induction (trace tr sm).
           ++ crush.
@@ -130,35 +130,35 @@ Qed.
 Lemma tr_traceIterationOnPattern_in:
 forall (r: Rule) (sm : SourceModel) (sp : list SourceNode) (iter: nat) (tl : TraceLink),
   In tl (traceIterationOnPattern r sm sp iter) <->
-  (exists (o: OutputPatternElement),
-      In o (Rule_getOutputPatternElements r) /\
-      In tl ((fun o => optionToList (traceElementOnPattern o sm sp iter)) o)).
+  (exists (o: OutputPatternNode),
+      In o (Rule_getOutputPatternNodes r) /\
+      In tl ((fun o => optionToList (traceNodeOnPattern o sm sp iter)) o)).
 Proof.
   intros.
   apply in_flat_map.
 Qed.
 
 (* TODO works inside TwoPhaseSemantics.v *)
-Lemma tr_traceElementOnPattern_leaf:
-forall (o: OutputPatternElement) (sm : SourceModel) (sp : list SourceNode) (iter: nat) (o: OutputPatternElement) (tl : TraceLink),
-  Some tl = (traceElementOnPattern o sm sp iter) <->
+Lemma tr_traceNodeOnPattern_leaf:
+forall (o: OutputPatternNode) (sm : SourceModel) (sp : list SourceNode) (iter: nat) (o: OutputPatternNode) (tl : TraceLink),
+  Some tl = (traceNodeOnPattern o sm sp iter) <->
   (exists (e: TargetNode),
-      Some e = (instantiateElementOnPattern o sm sp iter) /\
-      tl = (buildTraceLink (sp, iter, OutputPatternElement_getName o) e)).
+      Some e = (instantiateNodeOnPattern o sm sp iter) /\
+      tl = (buildTraceLink (sp, iter, OutputPatternNode_getName o) e)).
 Proof.
   intros.
   split.
   - intros. 
-    unfold traceElementOnPattern in H.
-    destruct (instantiateElementOnPattern o0 sm sp iter) eqn: e1.
+    unfold traceNodeOnPattern in H.
+    destruct (instantiateNodeOnPattern o0 sm sp iter) eqn: e1.
     -- exists t.
       split. crush. crush.
     -- crush.
   - intros.
     destruct H.
     destruct H.
-    unfold traceElementOnPattern.
-    destruct (instantiateElementOnPattern o0 sm sp iter).
+    unfold traceNodeOnPattern.
+    destruct (instantiateNodeOnPattern o0 sm sp iter).
     -- crush.
     -- crush.
 Qed. 
@@ -203,21 +203,21 @@ Qed.
 Lemma tr_applyIterationOnPatternTraces_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (i:nat)  (tls: list TraceLink),
       In tl (applyIterationOnPatternTraces r tr sm sp i tls) <->
-      (exists (ope: OutputPatternElement),
-          In ope (Rule_getOutputPatternElements r) /\ 
-          In tl (applyElementOnPatternTraces ope tr sm sp i tls)).
+      (exists (ope: OutputPatternNode),
+          In ope (Rule_getOutputPatternNodes r) /\ 
+          In tl (applyNodeOnPatternTraces ope tr sm sp i tls)).
 Proof.
   intros.
   apply in_flat_map.
 Qed.
 
-Lemma tr_applyElementOnPatternTraces_in : 
+Lemma tr_applyNodeOnPatternTraces_in : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
-            (i:nat) (ope: OutputPatternElement)  (tls: list TraceLink),
-      In tl (applyElementOnPatternTraces ope tr sm sp i tls) <->
+            (i:nat) (ope: OutputPatternNode)  (tls: list TraceLink),
+      In tl (applyNodeOnPatternTraces ope tr sm sp i tls) <->
       (exists (oper: OutputPatternLink) (te: TargetNode),
-          In oper (OutputPatternElement_getOutputLinks ope) /\ 
-          (evalOutputPatternElementExpr sm sp i ope) = Some te /\
+          In oper (OutputPatternNode_getOutputLinks ope) /\ 
+          (evalOutputPatternNodeExpr sm sp i ope) = Some te /\
           applyLinkOnPatternTraces oper tr sm sp i te tls = Some tl).
 Proof.
   split.
@@ -227,7 +227,7 @@ Proof.
     exists x.
     unfold optionToList in H.
     destruct H.
-    destruct (evalOutputPatternElementExpr sm sp i ope) eqn: eval_ca.
+    destruct (evalOutputPatternNodeExpr sm sp i ope) eqn: eval_ca.
     - destruct (applyLinkOnPatternTraces x tr sm sp i t) eqn: ref_ca.
       -- eexists t.
           split; crush.
@@ -287,12 +287,12 @@ Proof.
   rewrite concat_map. f_equal.
   rewrite map_map. f_equal.
 
-  unfold traceElementOnPattern.
+  unfold traceNodeOnPattern.
   apply functional_extensionality. intros.
   (* TODO FACTOR OUT *)
-  assert ((Semantics.instantiateElementOnPattern x2 sm x x1) = (instantiateElementOnPattern x2 sm x x1)).
+  assert ((Semantics.instantiateNodeOnPattern x2 sm x x1) = (instantiateNodeOnPattern x2 sm x x1)).
   { crush. }
-  destruct (instantiateElementOnPattern x2 sm x x1). 
+  destruct (instantiateNodeOnPattern x2 sm x x1). 
   reflexivity. reflexivity.  
 Qed. 
 
@@ -357,7 +357,7 @@ Instance CoqTLEngine :
 
     Transformation := Transformation;
     Rule := Rule;
-    OutputPatternElement := OutputPatternElement;
+    OutputPatternNode := OutputPatternNode;
     OutputPatternLink := OutputPatternLink;
 
     TraceLink := TraceLink;
@@ -365,14 +365,14 @@ Instance CoqTLEngine :
     Transformation_getRules := Transformation_getRules;
 
     Rule_getInTypes := Rule_getInTypes;
-    Rule_getOutputPatternElements := Rule_getOutputPatternElements;
+    Rule_getOutputPatternNodes := Rule_getOutputPatternNodes;
 
-    OutputPatternElement_getOutputLinks := OutputPatternElement_getOutputLinks;
+    OutputPatternNode_getOutputLinks := OutputPatternNode_getOutputLinks;
 
     TraceLink_getSourcePattern := TraceLink_getSourcePattern;
     TraceLink_getIterator := TraceLink_getIterator;
     TraceLink_getName := TraceLink_getName;
-    TraceLink_getTargetElement := TraceLink_getTargetElement;
+    TraceLink_getTargetNode := TraceLink_getTargetNode;
 
     (* semantic functions *)
 
@@ -384,15 +384,15 @@ Instance CoqTLEngine :
     instantiatePattern := instantiatePattern;
     instantiateRuleOnPattern := instantiateRuleOnPattern;
     instantiateIterationOnPattern := instantiateIterationOnPattern;
-    instantiateElementOnPattern := instantiateElementOnPattern;
+    instantiateNodeOnPattern := instantiateNodeOnPattern;
 
     applyPattern := applyPattern;
     applyRuleOnPattern := applyRuleOnPattern;
     applyIterationOnPattern := applyIterationOnPattern;
-    applyElementOnPattern := applyElementOnPattern;
+    applyNodeOnPattern := applyNodeOnPattern;
     applyLinkOnPattern := applyLinkOnPattern;
 
-    evalOutputPatternElementExpr := evalOutputPatternElementExpr;
+    evalOutputPatternNodeExpr := evalOutputPatternNodeExpr;
     evalIteratorExpr := evalIteratorExpr;
     evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
     evalGuardExpr := evalGuardExpr;
@@ -413,12 +413,12 @@ Instance CoqTLEngine :
     tr_instantiatePattern_in := tr_instantiatePattern_in;
     tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
     tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
-    tr_instantiateElementOnPattern_leaf := tr_instantiateElementOnPattern_leaf;
+    tr_instantiateNodeOnPattern_leaf := tr_instantiateNodeOnPattern_leaf;
 
     tr_applyPattern_in := tr_applyPattern_in;
     tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
     tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
-    tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
+    tr_applyNodeOnPattern_in := tr_applyNodeOnPattern_in;
     tr_applyLinkOnPatternTraces_leaf := tr_applyLinkOnPattern_leaf;
 
     tr_resolveAll_in := tr_resolveAllIter_in;
@@ -435,8 +435,8 @@ Instance CoqTLEngine :
 
     tr_instantiateIterationOnPattern_non_None := tr_instantiateIterationOnPattern_non_None;
 
-    tr_instantiateElementOnPattern_None := tr_instantiateElementOnPattern_None;
-    tr_instantiateElementOnPattern_None_iterator := tr_instantiateElementOnPattern_None_iterator;
+    tr_instantiateNodeOnPattern_None := tr_instantiateNodeOnPattern_None;
+    tr_instantiateNodeOnPattern_None_iterator := tr_instantiateNodeOnPattern_None_iterator;
 
     tr_applyPattern_non_None := tr_applyPattern_non_None;
     tr_applyPattern_None := tr_applyPattern_None;
@@ -445,14 +445,14 @@ Instance CoqTLEngine :
 
     tr_applyIterationOnPattern_non_None := tr_applyIterationOnPattern_non_None;
 
-    tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
+    tr_applyNodeOnPattern_non_None := tr_applyNodeOnPattern_non_None;
 
     tr_applyLinkOnPattern_None := tr_applyLinkOnPattern_None;
     tr_applyLinkOnPattern_None_iterator := tr_applyLinkOnPattern_None_iterator;
 
     tr_maxArity_in := tr_maxArity_in;
 
-    tr_instantiateElementOnPattern_Leaf := tr_instantiateElementOnPattern_Leaf;
+    tr_instantiateNodeOnPattern_Leaf := tr_instantiateNodeOnPattern_Leaf;
     tr_applyLinkOnPattern_Leaf := tr_applyLinkOnPattern_Leaf;
     tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
 
@@ -471,12 +471,12 @@ Proof.
 (* tr_tracePattern_in *) exact tr_tracePattern_in.
 (* tr_traceRuleOnPattern_in *) exact tr_traceRuleOnPattern_in.
 (* tr_traceIterationOnPattern_in *) exact tr_traceIterationOnPattern_in.
-(* tr_traceElementOnPattern_leaf *) exact tr_traceElementOnPattern_leaf.
+(* tr_traceNodeOnPattern_leaf *) exact tr_traceNodeOnPattern_leaf.
 
 (* tr_applyPatternTraces_in  *) exact tr_applyPatternTraces_in.
 (* tr_applyRuleOnPattern_in *) exact tr_applyRuleOnPatternTraces_in.
 (* tr_applyIterationOnPattern_in *) exact tr_applyIterationOnPatternTraces_in.
-(* tr_applyElementOnPatternTraces_in *) exact tr_applyElementOnPatternTraces_in.
+(* tr_applyNodeOnPatternTraces_in *) exact tr_applyNodeOnPatternTraces_in.
 (* tr_applyLinkOnPatternTraces_leaf *) exact tr_applyLinkOnPatternTraces_leaf.
 
 Qed.

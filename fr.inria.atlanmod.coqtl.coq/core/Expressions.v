@@ -45,16 +45,16 @@ Definition evalLinkIteratorExpr (o : OutputPatternLink) (sm: SourceModel) (sp: l
   | _ => 0
   end.
 
-Definition evalElementIteratorExpr (o : OutputPatternElement) (sm: SourceModel) (sp: list SourceNode) :
+Definition evalNodeIteratorExpr (o : OutputPatternNode) (sm: SourceModel) (sp: list SourceNode) :
   nat :=
-  match (evalExpr (OutputPatternElement_getIteratorExpr o) sm sp) with
+  match (evalExpr (OutputPatternNode_getIteratorExpr o) sm sp) with
   | Some n => n
   | _ => 0
   end.
 
-Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceNode) (iter: nat) (o: OutputPatternElement)
+Definition evalOutputPatternNodeExpr (sm: SourceModel) (sp: list SourceNode) (iter: nat) (o: OutputPatternNode)
   : option TargetNode := 
-(evalExpr (OutputPatternElement_getElementExpr o) iter sm sp).
+(evalExpr (OutputPatternNode_getNodeExpr o) iter sm sp).
 
 Definition evalOutputPatternLinkExpr
             (iterl: nat) (sm: SourceModel) (sp: list SourceNode) (oe: TargetNode) (iter: nat) (tr: list TraceLink)

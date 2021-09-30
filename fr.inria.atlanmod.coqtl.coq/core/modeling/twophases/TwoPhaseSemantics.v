@@ -25,20 +25,20 @@ Definition applyLinkOnPatternTraces
             (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink): option TargetEdge :=
   evalOutputPatternLinkExpr sm sp te iter tls oper.
 
-Definition applyElementOnPatternTraces
-            (ope: OutputPatternElement)
+Definition applyNodeOnPatternTraces
+            (ope: OutputPatternNode)
             (tr: Transformation)
             (sm: SourceModel)
             (sp: list SourceNode) (iter: nat) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun oper => 
-    match (evalOutputPatternElementExpr sm sp iter ope) with 
+    match (evalOutputPatternNodeExpr sm sp iter ope) with 
     | Some l => optionToList (applyLinkOnPatternTraces oper tr sm sp iter l tls)
     | None => nil
-    end) (OutputPatternElement_getOutputLinks ope).
+    end) (OutputPatternNode_getOutputLinks ope).
 
 Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode) (iter: nat) (tls: list TraceLink): list TargetEdge :=
-  flat_map (fun o => applyElementOnPatternTraces o tr sm sp iter tls)
-    (Rule_getOutputPatternElements r).
+  flat_map (fun o => applyNodeOnPatternTraces o tr sm sp iter tls)
+    (Rule_getOutputPatternNodes r).
 
 Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun i => applyIterationOnPatternTraces r tr sm sp i tls)
@@ -51,7 +51,7 @@ Definition applyPatternTraces (tr: Transformation) (sm : SourceModel) (sp: list 
 
 Definition instantiateTraces (tr: Transformation) (sm : SourceModel) :=
   let tls := trace tr sm in
-    ( map (TraceLink_getTargetElement) tls, tls ).
+    ( map (TraceLink_getTargetNode) tls, tls ).
 
 Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun sp => applyPatternTraces tr sm sp tls) (allTuples tr sm).

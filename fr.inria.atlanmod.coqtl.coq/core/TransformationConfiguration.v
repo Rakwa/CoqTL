@@ -14,9 +14,9 @@ Class TransformationConfiguration := {
   SourceModel := @InstanceModel SourceMetamodel;
   TargetModel := @InstanceModel TargetMetamodel;
 
-  SourceElement_eqdec := @elements_eqdec SourceMetamodel;
-  TargetElement_eqdec := @elements_eqdec TargetMetamodel;
+  SourceNode_eqdec := @elements_eqdec SourceMetamodel;
+  TargetNode_eqdec := @elements_eqdec TargetMetamodel;
 
-  SourceElement_eqb := @elements_eqb SourceMetamodel;
-  TargetElement_eqb := @elements_eqb TargetMetamodel;
+  SourceNode_eqb := @elements_eqb SourceMetamodel;
+  TargetNode_eqb := @elements_eqb TargetMetamodel;
 }.

@@ -281,19 +281,19 @@ Proof.
        contradiction.
 Qed.
 
-Theorem tr_applyElementOnPattern_None :
+Theorem tr_applyNodeOnPattern_None :
    forall eng: TransformationEngine,
-      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat) (ope: OutputPatternNode (getInTypes r) (getIteratorType r)),
         length sp <> length (getInTypes r) ->
-        applyElementOnPattern r ope tr sm sp i = None.
+        applyNodeOnPattern r ope tr sm sp i = None.
 Proof.
   intros. apply None_is_not_non_None. intro H0.
-  assert (exists (tl: list TargetEdge), applyElementOnPattern r ope tr sm sp i = Some tl).
-  { specialize (option_res_dec (applyElementOnPattern r ope tr sm sp)). intros.
+  assert (exists (tl: list TargetEdge), applyNodeOnPattern r ope tr sm sp i = Some tl).
+  { specialize (option_res_dec (applyNodeOnPattern r ope tr sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
   assert (exists oper,  In oper (getOutputLinks  (getInTypes r) (getIteratorType r) ope) /\  applyLinkOnPattern r ope oper tr sm sp i <> None).
-  { specialize (tr_applyElementOnPattern_non_None tr r sm sp i ope). intros. crush. }
+  { specialize (tr_applyNodeOnPattern_non_None tr r sm sp i ope). intros. crush. }
   destruct H2.
   assert ( applyLinkOnPattern r ope x0 tr sm sp i = None).
   { specialize (tr_applyLinkOnPattern_None tr sm r sp i ope x0). intros. crush. }
@@ -311,13 +311,13 @@ Proof.
   { specialize (option_res_dec (applyIterationOnPattern r tr sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
-  assert (exists  ope : OutputPatternElement (getInTypes r) (getIteratorType r),
-      In ope (getOutputPattern r) /\ applyElementOnPattern r ope tr sm sp i <> None).
+  assert (exists  ope : OutputPatternNode (getInTypes r) (getIteratorType r),
+      In ope (getOutputPattern r) /\ applyNodeOnPattern r ope tr sm sp i <> None).
   { specialize (tr_applyIterationOnPattern_non_None tr r sm sp i). crush. }
   destruct H2.
   destruct H2.
-  assert ( applyElementOnPattern r x0 tr sm sp i = None).
-  { specialize (tr_applyElementOnPattern_None eng tr sm r sp i x0). intros. crush. }
+  assert ( applyNodeOnPattern r x0 tr sm sp i = None).
+  { specialize (tr_applyNodeOnPattern_None eng tr sm r sp i x0). intros. crush. }
   crush.
 Qed.
 
@@ -352,13 +352,13 @@ Proof.
   { specialize (option_res_dec (instantiateIterationOnPattern r sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
-  assert (exists  ope : OutputPatternElement (getInTypes r) (getIteratorType r),
-      In ope (getOutputPattern r) /\ instantiateElementOnPattern r ope sm sp i <> None).
+  assert (exists  ope : OutputPatternNode (getInTypes r) (getIteratorType r),
+      In ope (getOutputPattern r) /\ instantiateNodeOnPattern r ope sm sp i <> None).
   { specialize (tr_instantiateIterationOnPattern_non_None r sm sp i). crush. }
   destruct H2.
   destruct H2.
-  assert ( instantiateElementOnPattern r x0 sm sp i = None).
-  { specialize (tr_instantiateElementOnPattern_None sm r sp i x0). intros. crush. }
+  assert ( instantiateNodeOnPattern r x0 sm sp i = None).
+  { specialize (tr_instantiateNodeOnPattern_None sm r sp i x0). intros. crush. }
   crush.
 Qed.
 
@@ -394,18 +394,18 @@ Proof.
   destruct H1.
   specialize (H1 H0).
   destruct H1. destruct H1.
-  specialize (tr_instantiateElementOnPattern_None_iterator sm r sp x H).
+  specialize (tr_instantiateNodeOnPattern_None_iterator sm r sp x H).
   crush.
 Qed.
 
-Theorem tr_applyElementOnPattern_None_iterator :
+Theorem tr_applyNodeOnPattern_None_iterator :
   forall eng: TransformationEngine,
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat) (ope: OutputPatternNode (getInTypes r) (getIteratorType r)),
       i >= length (evalIterator r sm sp) ->
-      applyElementOnPattern r ope tr sm sp i = None.
+      applyNodeOnPattern r ope tr sm sp i = None.
 Proof.
   intros. apply None_is_not_non_None. intro H0.
-  specialize (tr_applyElementOnPattern_non_None tr r sm sp i ope).
+  specialize (tr_applyNodeOnPattern_non_None tr r sm sp i ope).
   intros.
   destruct H1.
   specialize (H1 H0).
@@ -428,7 +428,7 @@ Proof.
   destruct H1.
   specialize (H1 H0).
   destruct H1. destruct H1.
-  specialize (tr_applyElementOnPattern_None_iterator eng tr sm r sp i x H).
+  specialize (tr_applyNodeOnPattern_None_iterator eng tr sm r sp i x H).
   crush.
 Qed.
 *)

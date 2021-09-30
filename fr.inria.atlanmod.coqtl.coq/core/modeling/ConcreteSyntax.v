@@ -24,7 +24,7 @@ Definition outputPatternLink
 (sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
 denoteFunction (sclasses) ((denoteModelClass tclass) -> option (denoteModelReference tref)).
 
-Definition outputPatternElementTypes
+Definition outputPatternNodeTypes
 (sclasses : list SourceModelClass) (tclass: TargetModelClass) :=
   denoteFunction (sclasses) (denoteModelClass tclass).
 
@@ -41,12 +41,12 @@ Inductive ConcreteOutputPatternLink (InTypes: list SourceModelClass) (OutType:Ta
       (list TraceLink -> nat -> SourceModel -> (outputPatternLink InTypes OutType OutRef)) ->
       ConcreteOutputPatternLink InTypes OutType.
 
-Inductive ConcreteOutputPatternElement (InTypes: list SourceModelClass) : Type :=
+Inductive ConcreteOutputPatternNode (InTypes: list SourceModelClass) : Type :=
   elem :
     forall (OutType:TargetModelClass),
       string ->
-        (nat -> SourceModel -> (outputPatternElementTypes InTypes OutType)) 
-    -> (list (ConcreteOutputPatternLink InTypes OutType)) -> ConcreteOutputPatternElement InTypes.
+        (nat -> SourceModel -> (outputPatternNodeTypes InTypes OutType)) 
+    -> (list (ConcreteOutputPatternLink InTypes OutType)) -> ConcreteOutputPatternNode InTypes.
 
 Inductive ConcreteRule : Type :=
   concreteRule :
@@ -54,7 +54,7 @@ Inductive ConcreteRule : Type :=
     (* from *) -> forall (InTypes: list SourceModelClass),
       option (SourceModel -> (guardTypes InTypes))
     (* for *) -> option (SourceModel -> (iteratedListTypes InTypes))
-    (* to *) -> (list (ConcreteOutputPatternElement InTypes))
+    (* to *) -> (list (ConcreteOutputPatternNode InTypes))
     -> ConcreteRule.
 
 Inductive ConcreteTransformation : Type :=
@@ -76,24 +76,24 @@ Proof.
   exact o0.
 Defined.
 
-Definition ConcreteOutputPatternElement_getName {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternElement InElTypes) : string :=
+Definition ConcreteOutputPatternNode_getName {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternNode InElTypes) : string :=
   match o with
     elem _ _ y _ _ => y
   end.
 
-Definition ConcreteOutputPatternElement_getOutType {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternElement InElTypes) : TargetModelClass :=
+Definition ConcreteOutputPatternNode_getOutType {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternNode InElTypes) : TargetModelClass :=
   match o with
     elem _ y _ _ _ => y
   end.
 
-Definition ConcreteOutputPatternElement_getOutPatternElement {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternElement InElTypes) :
-  nat -> SourceModel -> (outputPatternElementTypes InElTypes (ConcreteOutputPatternElement_getOutType o)) :=
+Definition ConcreteOutputPatternNode_getOutPatternNode {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternNode InElTypes) :
+  nat -> SourceModel -> (outputPatternNodeTypes InElTypes (ConcreteOutputPatternNode_getOutType o)) :=
   match o with
     elem _ _ _ y _ => y
   end.
 
-Definition ConcreteOutputPatternElement_getOutputLinks {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternElement InElTypes) :
-  list (ConcreteOutputPatternLink InElTypes (ConcreteOutputPatternElement_getOutType o)) :=
+Definition ConcreteOutputPatternNode_getOutputLinks {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternNode InElTypes) :
+  list (ConcreteOutputPatternLink InElTypes (ConcreteOutputPatternNode_getOutType o)) :=
   match o with
     elem _ _ _ _ y => y
   end.
@@ -123,13 +123,13 @@ Proof.
 Defined.
 
 Definition ConcreteRule_getConcreteOutputPattern (x : ConcreteRule) :
-  list (ConcreteOutputPatternElement (ConcreteRule_getInTypes x)) :=
+  list (ConcreteOutputPatternNode (ConcreteRule_getInTypes x)) :=
   match x with
     concreteRule _ _ _ _ y => y
   end.
 
-Definition ConcreteRule_findConcreteOutputPatternElement (r: ConcreteRule) (name: string) : option (ConcreteOutputPatternElement (ConcreteRule_getInTypes r)) :=
-  find (fun(o:ConcreteOutputPatternElement (ConcreteRule_getInTypes r)) => beq_string name (ConcreteOutputPatternElement_getName o))
+Definition ConcreteRule_findConcreteOutputPatternNode (r: ConcreteRule) (name: string) : option (ConcreteOutputPatternNode (ConcreteRule_getInTypes r)) :=
+  find (fun(o:ConcreteOutputPatternNode (ConcreteRule_getInTypes r)) => beq_string name (ConcreteOutputPatternNode_getName o))
         (ConcreteRule_getConcreteOutputPattern r).
 
 Definition ConcreteTransformation_getConcreteRules (x : ConcreteTransformation) : list ConcreteRule :=

@@ -42,7 +42,7 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
     (** ** Syntax *)
     Transformation: Type;
     Rule: Type;
-    OutputPatternElement: Type;
+    OutputPatternNode: Type;
     OutputPatternLink: Type;
     TraceLink: Type;
 
@@ -51,16 +51,16 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
     Transformation_getRules: Transformation -> list Rule;
     Transformation_getArity: Transformation -> nat;
   
-    Rule_getOutputPatternElements: Rule -> list OutputPatternElement;
+    Rule_getOutputPatternNodes: Rule -> list OutputPatternNode;
 
-    OutputPatternElement_getOutputLinks: OutputPatternElement -> list OutputPatternLink;
+    OutputPatternNode_getOutputLinks: OutputPatternNode -> list OutputPatternLink;
 
     TraceLink_getSourcePattern: TraceLink -> list SourceNode;
     TraceLink_getIterator: TraceLink -> nat;
     TraceLink_getName: TraceLink -> string;
-    TraceLink_getTargetElement: TraceLink -> TargetNode;    
+    TraceLink_getTargetNode: TraceLink -> TargetNode;    
 
-    evalOutputPatternElementExpr: SourceModel -> list SourceNode -> nat -> OutputPatternElement -> option TargetNode;
+    evalOutputPatternNodeExpr: SourceModel -> list SourceNode -> nat -> OutputPatternNode -> option TargetNode;
     evalIteratorExpr: Rule -> SourceModel -> list SourceNode -> nat;
     evalOutputPatternLinkExpr: SourceModel -> list SourceNode -> TargetNode -> nat -> list TraceLink -> OutputPatternLink -> option TargetEdge;
     evalGuardExpr: Rule->SourceModel->list SourceNode->option bool;
@@ -83,12 +83,12 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     instantiatePattern: Transformation -> SourceModel -> list SourceNode -> list TargetNode;
     instantiateRuleOnPattern: Rule -> SourceModel -> list SourceNode -> list TargetNode; 
     instantiateIterationOnPattern: Rule -> SourceModel -> list SourceNode -> nat -> list TargetNode;
-    instantiateElementOnPattern: OutputPatternElement -> SourceModel -> list SourceNode -> nat -> option TargetNode;
+    instantiateNodeOnPattern: OutputPatternNode -> SourceModel -> list SourceNode -> nat -> option TargetNode;
     
     applyPattern: Transformation -> SourceModel -> list SourceNode -> list TargetEdge;
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceNode -> list TargetEdge;
     applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceNode -> nat -> list TargetEdge;
-    applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceNode -> nat -> list TargetEdge;
+    applyNodeOnPattern: OutputPatternNode -> Transformation -> SourceModel -> list SourceNode -> nat -> list TargetEdge;
     applyLinkOnPattern: OutputPatternLink -> Transformation -> SourceModel -> list SourceNode -> nat -> TargetNode -> option TargetEdge;
     
     trace: Transformation -> SourceModel -> list TraceLink; 
@@ -163,15 +163,15 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
       forall (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode) (i:nat),
         In te (instantiateIterationOnPattern r sm sp i)
         <->
-        (exists (ope: OutputPatternElement),
-            In ope (Rule_getOutputPatternElements r) /\ 
-            instantiateElementOnPattern ope sm sp i = Some te);
+        (exists (ope: OutputPatternNode),
+            In ope (Rule_getOutputPatternNodes r) /\ 
+            instantiateNodeOnPattern ope sm sp i = Some te);
 
-    (** ** instantiateElementOnPattern *)
+    (** ** instantiateNodeOnPattern *)
 
-    tr_instantiateElementOnPattern_leaf:
-        forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceNode) (iter: nat),
-          instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr sm sp iter o;
+    tr_instantiateNodeOnPattern_leaf:
+        forall (o: OutputPatternNode) (sm: SourceModel) (sp: list SourceNode) (iter: nat),
+          instantiateNodeOnPattern o sm sp iter = evalOutputPatternNodeExpr sm sp iter o;
 
     (** ** applyPattern *)
 
@@ -196,19 +196,19 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     tr_applyIterationOnPattern_in : 
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (i:nat),
         In tl (applyIterationOnPattern r tr sm sp i) <->
-        (exists (ope: OutputPatternElement),
-            In ope (Rule_getOutputPatternElements r) /\ 
-            In tl (applyElementOnPattern ope tr sm sp i));
+        (exists (ope: OutputPatternNode),
+            In ope (Rule_getOutputPatternNodes r) /\ 
+            In tl (applyNodeOnPattern ope tr sm sp i));
 
-    (** ** applyElementOnPattern *)
+    (** ** applyNodeOnPattern *)
 
-    tr_applyElementOnPattern_in : 
+    tr_applyNodeOnPattern_in : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
-             (i:nat) (ope: OutputPatternElement),
-        In tl (applyElementOnPattern ope tr sm sp i ) <->
+             (i:nat) (ope: OutputPatternNode),
+        In tl (applyNodeOnPattern ope tr sm sp i ) <->
         (exists (oper: OutputPatternLink) (te: TargetNode),
-            In oper (OutputPatternElement_getOutputLinks ope) /\ 
-            (evalOutputPatternElementExpr sm sp i ope) = Some te /\
+            In oper (OutputPatternNode_getOutputLinks ope) /\ 
+            (evalOutputPatternNodeExpr sm sp i ope) = Some te /\
             applyLinkOnPattern oper tr sm sp i te = Some tl);
 
     (** ** applyLinkOnPattern *)
@@ -238,9 +238,9 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
       resolve tls sm name sp iter = return x ->
        (exists (tl : TraceLink),
          In tl tls /\
-         Is_true (list_beq SourceNode SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
+         Is_true (list_beq SourceNode SourceNode_eqb (TraceLink_getSourcePattern tl) sp) /\
          ((TraceLink_getIterator tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
-         (TraceLink_getTargetElement tl) = x);
+         (TraceLink_getTargetNode tl) = x);
          
   }.

@@ -67,9 +67,9 @@ Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: Model
       resolve tls sm name type sp iter = return x ->
        (exists (tl : TraceLink),
          In tl tls /\
-         Is_true (list_beq SourceNode SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
+         Is_true (list_beq SourceNode SourceNode_eqb (TraceLink_getSourcePattern tl) sp) /\
          ((TraceLink_getIterator tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
-         (toModelClass type (TraceLink_getTargetElement tl) = Some x));
+         (toModelClass type (TraceLink_getTargetNode tl) = Some x));
 
   }.

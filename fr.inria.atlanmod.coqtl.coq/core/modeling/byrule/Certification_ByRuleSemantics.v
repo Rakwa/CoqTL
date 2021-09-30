@@ -375,7 +375,7 @@ Instance ByRuleEngine :
 
   Transformation := Transformation;
   Rule := Rule;
-  OutputPatternElement := OutputPatternElement;
+  OutputPatternNode := OutputPatternNode;
   OutputPatternLink := OutputPatternLink;
 
   TraceLink := TraceLink;
@@ -384,9 +384,9 @@ Instance ByRuleEngine :
 
   getInTypes := Rule_getInTypes;
   getGuardExpr := Rule_getGuardExpr;
-  getOutputPattern := Rule_getOutputPatternElements;
+  getOutputPattern := Rule_getOutputPatternNodes;
 
-  getOutputLinks := OutputPatternElement_getOutputLinks;
+  getOutputLinks := OutputPatternNode_getOutputLinks;
 
   execute := execute;
 
@@ -396,15 +396,15 @@ Instance ByRuleEngine :
   instantiatePattern := instantiatePattern;
   instantiateRuleOnPattern := instantiateRuleOnPattern;
   instantiateIterationOnPattern := instantiateIterationOnPattern;
-  instantiateElementOnPattern := instantiateElementOnPattern;
+  instantiateNodeOnPattern := instantiateNodeOnPattern;
 
   applyPattern := applyPattern;
   applyRuleOnPattern := applyRuleOnPattern;
   applyIterationOnPattern := applyIterationOnPattern;
-  applyElementOnPattern := applyElementOnPattern;
+  applyNodeOnPattern := applyNodeOnPattern;
   applyLinkOnPattern := applyLinkOnPattern;
 
-  evalOutputPatternElementExpr := evalOutputPatternElementExpr;
+  evalOutputPatternNodeExpr := evalOutputPatternNodeExpr;
   evalIteratorExpr := evalIteratorExpr;
 
   resolveAll := resolveAllIter;
@@ -421,7 +421,7 @@ Instance ByRuleEngine :
   tr_applyPattern_in := tr_applyPattern_in;
   tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
   tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
-  tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
+  tr_applyNodeOnPattern_in := tr_applyNodeOnPattern_in;
 
   (*tr_matchPattern_None := tr_matchPattern_None;
 
@@ -434,8 +434,8 @@ Instance ByRuleEngine :
 
   tr_instantiateIterationOnPattern_non_None := tr_instantiateIterationOnPattern_non_None;
 
-  tr_instantiateElementOnPattern_None := tr_instantiateElementOnPattern_None;
-  tr_instantiateElementOnPattern_None_iterator := tr_instantiateElementOnPattern_None_iterator;
+  tr_instantiateNodeOnPattern_None := tr_instantiateNodeOnPattern_None;
+  tr_instantiateNodeOnPattern_None_iterator := tr_instantiateNodeOnPattern_None_iterator;
 
   tr_applyPattern_non_None := tr_applyPattern_non_None;
   tr_applyPattern_None := tr_applyPattern_None;
@@ -444,14 +444,14 @@ Instance ByRuleEngine :
 
   tr_applyIterationOnPattern_non_None := tr_applyIterationOnPattern_non_None;
 
-  tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
+  tr_applyNodeOnPattern_non_None := tr_applyNodeOnPattern_non_None;
 
   tr_applyLinkOnPattern_None := tr_applyLinkOnPattern_None;
   tr_applyLinkOnPattern_None_iterator := tr_applyLinkOnPattern_None_iterator;
 
   tr_maxArity_in := tr_maxArity_in;
 
-  tr_instantiateElementOnPattern_Leaf := tr_instantiateElementOnPattern_Leaf;
+  tr_instantiateNodeOnPattern_Leaf := tr_instantiateNodeOnPattern_Leaf;
   tr_applyLinkOnPattern_Leaf := tr_applyLinkOnPattern_Leaf;
   tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
 
