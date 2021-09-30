@@ -20,12 +20,12 @@ Admitted.
 
 Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) := 
   (buildTransformation 0 
-  ((buildRule "rule"%string 
+    ((buildRule "rule"%string 
      (fun sm sp => match sp with nil => Some true | _ => Some false end)
       (buildOutputPatternElement "out"%string 
       (fun sm sp => Some (length (allModelElements (f sm))))
       (fun i sm sp => nth_error (allModelElements (f sm)) i)
-      ((buildOutputPatternLink 
+      ((buildOutputPatternNext 
         (fun tls i sm sp te => match i with | 0 => Some (length (allModelLinks (f sm))) | _ => None end)
         (fun il tls i sm sp te => nth_error (allModelLinks (f sm)) il)
       )::nil) 
@@ -47,7 +47,7 @@ Proof.
   unfold applyElementOnPattern. 
   unfold applyLinksOnPattern.
   unfold applyLinkOnPattern.
-  unfold evalOutputPatternLinkExpr.
+  unfold evalOutputPatternNextExpr.
   unfold evalElementIteratorExpr.
   unfold evalLinkIteratorExpr. 
   unfold instantiatePattern. 
@@ -58,7 +58,7 @@ Proof.
   simpl.
   destruct (f sm). simpl.
   f_equal.
-  - clear H.
+  - (* Elements *) clear H.
     induction modelElements.
     * reflexivity.
     * simpl.
@@ -69,7 +69,7 @@ Proof.
       rewrite <- seq_shift.
       rewrite map_map.
       reflexivity.
-  - destruct modelElements.
+  - (* Links *) destruct modelElements.
     * simpl. contradiction.
     * simpl. 
       repeat rewrite app_nil_r.

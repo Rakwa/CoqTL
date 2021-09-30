@@ -66,7 +66,7 @@ Definition upper_level (sp: list TTElem) :=
   | _ => None
   end.
 
-Definition locate (m: Model TTElem TTRef) (lv: nat) := 
+Definition locate (m: Model TTElem) (lv: nat) := 
   find (fun e => match (Column_Level e) with
           | None => false
           | Some n => Nat.eqb n lv
@@ -81,7 +81,7 @@ Definition output_name (sp: list TTElem) :=
   | _ => ""%string
   end.
 
-Definition maxLv (m: Model TTElem TTRef) := list_max (optionList2List (map Column_Level (allModelElements m))).
+Definition maxLv (m: Model TTElem) := list_max (optionList2List (map Column_Level (allModelElements m))).
 
 Fixpoint semantic (input: list nat) : nat :=
   match input with
@@ -102,13 +102,14 @@ Definition TT2BDD :=
       [buildOutputPatternElement "node"
           (fun m sp => return iter_col sp)
           (fun i m col => return BuildBDDNode (oelem_name col i))
-          [buildOutputPatternLink
+          [buildOutputPatternNext
             (fun m sp sm sp te => return 1)
             (fun il tls i m col output => 
               ulv <- (upper_level col);
               ucol <- locate m ulv;
               parent <- resolveIter tls m "node" [ucol] ((div_roundup i 2)-1);
-              return BuildBDDEdge output parent)]
+              return BuildBDDEdge output parent)
+              nil]
       ]
     ) ;
     (buildRule "Row2Output"  
@@ -116,7 +117,7 @@ Definition TT2BDD :=
       [buildOutputPatternElement "output"
           (fun m sp => return 1)
           (fun i m sp => return BuildBDDNode (output_name sp))
-          [buildOutputPatternLink
+          [buildOutputPatternNext
             (fun m sp sm sp te => return 1)
             (fun il tls i m sp output => 
               height <- Some (maxLv m);           (* get depth *)
@@ -124,7 +125,8 @@ Definition TT2BDD :=
               row <- hd_error sp;
               input <- (Row_Input row);
               parent <- resolveIter tls m "node" [col] ((div_roundup (semantic input) 2)-1);   (* attach output to the corresponding leaf node*)
-              return BuildBDDEdge output parent)]
+              return BuildBDDEdge output parent)
+              nil]
       ]
     )
   ]. 

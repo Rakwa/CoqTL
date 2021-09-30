@@ -11,7 +11,7 @@ Require Import core.Model.
 Require Import examples.TT2BDD.TT.
 Require Import examples.TT2BDD.BDD.
 
-Definition TTable_OR : Model TTElem TTRef :=
+Definition TTable_OR : Model TTElem :=
   (Build_Model
      (* elements *)
      ((BuildColumn "A" 1) :: 
@@ -20,6 +20,4 @@ Definition TTable_OR : Model TTElem TTRef :=
       (BuildRow (0::1::nil) 1) ::
       (BuildRow (1::0::nil) 1) ::
       (BuildRow (1::1::nil) 1) ::
-      nil)
-    (* links *)
-     nil).
+      nil)).

@@ -71,10 +71,7 @@ Definition Row_Output (e : TTElem) :=
     | _ => None
     end.
 
-Inductive TTRef :=
-  unit. 
-
-Definition evalTT (tt: Model TTElem TTRef) (ins: list bool) : bool := true.
+Definition evalTT (tt: Model TTElem) (ins: list bool) : bool := true.
 
 Instance TTM : Metamodel :=
-  Build_Metamodel TTElem TTRef _.
+  Build_Metamodel TTElem _.

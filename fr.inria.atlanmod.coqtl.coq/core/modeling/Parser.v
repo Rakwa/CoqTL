@@ -15,16 +15,16 @@ Section Parser.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.
 
-Definition parseOutputPatternLink (intypes: list SourceModelClass) (outtype: TargetModelClass)
-  (cr: ConcreteOutputPatternLink intypes outtype): OutputPatternLink :=
-  buildOutputPatternLink 
-    (makeLink intypes outtype (ConcreteOutputPatternLink_getRefType cr) (ConcreteOutputPatternLink_getOutputPatternLink cr)).
+Definition parseOutputPatternNext (intypes: list SourceModelClass) (outtype: TargetModelClass)
+  (cr: ConcreteOutputPatternNext intypes outtype): OutputPatternNext :=
+  buildOutputPatternNext 
+    (makeLink intypes outtype (ConcreteOutputPatternNext_getRefType cr) (ConcreteOutputPatternNext_getOutputPatternNext cr)).
 
 Definition parseOutputPatternElement (intypes: list SourceModelClass) (co: ConcreteOutputPatternElement intypes) : OutputPatternElement :=
   buildOutputPatternElement
     (ConcreteOutputPatternElement_getName co)
     (makeElement intypes (ConcreteOutputPatternElement_getOutType co) (ConcreteOutputPatternElement_getOutPatternElement co))
-    (map (parseOutputPatternLink intypes (ConcreteOutputPatternElement_getOutType co)) (ConcreteOutputPatternElement_getOutputLinks co)).
+    (map (parseOutputPatternNext intypes (ConcreteOutputPatternElement_getOutType co)) (ConcreteOutputPatternElement_getOutputLinks co)).
 
 Definition parseRule(cr: ConcreteRule) : Rule :=
   buildRule

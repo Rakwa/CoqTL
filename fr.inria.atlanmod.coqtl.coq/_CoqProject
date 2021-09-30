@@ -27,13 +27,13 @@ core/Semantics.v
 #core/EngineProofs.v
 #core/SyntaxCertification.v
 #core/Certification.v
-core/Properties.v
+#core/Properties.v
 
-core/modeling/ModelingMetamodel.v
-core/modeling/ModelingTransformationConfiguration.v
-core/modeling/ConcreteSyntax.v
+#core/modeling/ModelingMetamodel.v
+#core/modeling/ModelingTransformationConfiguration.v
+#core/modeling/ConcreteSyntax.v
 #core/modeling/Parser.v
-core/modeling/ConcreteExpressions.v
+#core/modeling/ConcreteExpressions.v
 #core/modeling/ModelingSemantics.v
 
 #core/modeling/ModelingEngine.v

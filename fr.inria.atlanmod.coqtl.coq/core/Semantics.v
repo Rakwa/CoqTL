@@ -114,17 +114,17 @@ Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
 (** * Apply **)
 
 Definition applyLinkOnPattern
-            (oper: OutputPatternLink)
+            (oper: OutputPatternNext)
             (tr: Transformation)
             (sm: SourceModel)
-            (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (iterl: nat): option TargetModelLink :=
-  evalOutputPatternLinkExpr iterl sm sp te iter (trace tr sm) oper.
+            (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (iterl: nat): option TargetModelElement :=
+  evalOutputPatternNextExpr iterl sm sp te iter (trace tr sm) oper.
 
 Definition applyLinksOnPattern
-  (oper: OutputPatternLink)
+  (oper: OutputPatternNext)
   (tr: Transformation)
   (sm: SourceModel)
-  (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement): list TargetModelLink :=
+  (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement): list TargetModelElement :=
   flat_map (fun n => optionToList (applyLinkOnPattern oper tr sm sp iter te n))
     (seq 0 (evalLinkIteratorExpr oper sm sp te iter (trace tr sm))).  
 
@@ -132,29 +132,29 @@ Definition applyElementOnPattern
             (ope: OutputPatternElement)
             (tr: Transformation)
             (sm: SourceModel)
-            (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
+            (sp: list SourceModelElement) (iter: nat) : list TargetModelElement :=
   flat_map (fun oper => 
     match (evalOutputPatternElementExpr sm sp iter ope) with 
     | Some l => applyLinksOnPattern oper tr sm sp iter l
     | None => nil
     end) (OutputPatternElement_getOutputLinks ope).
 
-Definition applyElementsOnPattern (o: OutputPatternElement) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement):  list TargetModelLink :=
+Definition applyElementsOnPattern (o: OutputPatternElement) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement):  list TargetModelElement :=
   flat_map (fun n => applyElementOnPattern o tr sm sp n)
     (seq 0 (evalElementIteratorExpr o sm sp)).  
 
-Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) :  list TargetModelLink :=
+Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) :  list TargetModelElement :=
   flat_map (fun o => applyElementsOnPattern o tr sm sp)
   (Rule_getOutputPatternElements r).
 
-Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TargetModelLink :=
+Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TargetModelElement :=
   flat_map (fun r => applyRuleOnPattern r tr sm sp) (matchPattern tr sm sp).
 
 (** * Execute **)
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
   Build_Model
-    (* elements *) (flat_map (instantiatePattern tr sm) (allTuples tr sm))
-    (* links *) (flat_map (applyPattern tr sm) (allTuples tr sm)).
+    (* elements *) ( (flat_map (instantiatePattern tr sm) (allTuples tr sm)) ++ 
+    (* links *) (flat_map (applyPattern tr sm) (allTuples tr sm)) ).
 
 End Semantics.
