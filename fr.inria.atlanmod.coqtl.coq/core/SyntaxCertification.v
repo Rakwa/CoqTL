@@ -15,7 +15,7 @@ Instance CoqTLSyntax :
       Transformation := Transformation;
       Rule := Rule;
       OutputPatternElement := OutputPatternElement;
-      OutputPatternNext := OutputPatternNext;
+      OutputPatternLink := OutputPatternLink;
 
       TraceLink := TraceLink;
 
@@ -33,7 +33,7 @@ Instance CoqTLSyntax :
       
       evalOutputPatternElementExpr := evalOutputPatternElementExpr;
       evalIteratorExpr := evalIteratorExpr;
-      evalOutputPatternNextExpr := evalOutputPatternNextExpr;
+      evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
       evalGuardExpr := evalGuardExpr;
   }.
 

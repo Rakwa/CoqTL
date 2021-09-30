@@ -229,7 +229,7 @@ Qed.
    forall eng: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel) ,
       (allModelLinks (execute tr sm)) <> nil <->
-      (exists (tl : TargetModelElement) (sp : list SourceModelElement) (tpl : list TargetModelElement),
+      (exists (tl : TargetModelLink) (sp : list SourceModelElement) (tpl : list TargetModelLink),
           incl sp (allModelElements sm) /\
           applyPattern tr sm sp = Some tpl /\
           In tl tpl).
@@ -237,7 +237,7 @@ Qed.
     intros.
     split.
     + intro.
-      assert (exists (tl: TargetModelElement), In tl (allModelLinks (execute tr sm))).
+      assert (exists (tl: TargetModelLink), In tl (allModelLinks (execute tr sm))).
       {
         destruct (allModelLinks (execute tr sm)).
         ++ crush.
@@ -288,7 +288,7 @@ Theorem tr_applyElementOnPattern_None :
         applyElementOnPattern r ope tr sm sp i = None.
 Proof.
   intros. apply None_is_not_non_None. intro H0.
-  assert (exists (tl: list TargetModelElement), applyElementOnPattern r ope tr sm sp i = Some tl).
+  assert (exists (tl: list TargetModelLink), applyElementOnPattern r ope tr sm sp i = Some tl).
   { specialize (option_res_dec (applyElementOnPattern r ope tr sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
@@ -307,7 +307,7 @@ Theorem tr_applyIterationOnPattern_None :
         applyIterationOnPattern r tr sm sp i = None.
 Proof.
   intros. apply None_is_not_non_None. intro H0.
-  assert (exists (tl: list TargetModelElement), applyIterationOnPattern r tr sm sp i = Some tl).
+  assert (exists (tl: list TargetModelLink), applyIterationOnPattern r tr sm sp i = Some tl).
   { specialize (option_res_dec (applyIterationOnPattern r tr sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
@@ -328,7 +328,7 @@ Theorem tr_applyRuleOnPattern_None :
         applyRuleOnPattern r tr sm sp = None.
 Proof.
   intros. apply None_is_not_non_None. intro H0.
-  assert (exists (tl: list TargetModelElement), applyRuleOnPattern r tr sm sp = Some tl).
+  assert (exists (tl: list TargetModelLink), applyRuleOnPattern r tr sm sp = Some tl).
   { specialize (option_res_dec (applyRuleOnPattern r tr sm)). intros.
     specialize (H1 sp H0). destruct H1. exists x. crush. }
   destruct H1.

@@ -31,7 +31,7 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (*Definition evalGuardExpr (r : ConcreteRule (smm:=smm)) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
   if (checkTypes sp (ConcreteRule_getInTypes (smm:=smm) r)) then
-    @evalGuardExpr' SourceModelElement SourceModelLink TargetModelElement TargetModelElement (parseRule r) sm sp
+    @evalGuardExpr' SourceModelElement SourceModelLink TargetModelElement TargetModelLink (parseRule r) sm sp
   else Some false. *)
 
 (* ** Resolve *)

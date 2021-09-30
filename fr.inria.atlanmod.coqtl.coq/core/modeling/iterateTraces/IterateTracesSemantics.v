@@ -20,32 +20,32 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 (** * Apply **)
 
 Definition applyLinkOnPatternTraces
-            (oper: OutputPatternNext)
+            (oper: OutputPatternLink)
             (tr: Transformation)
             (sm: SourceModel)
-            (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink): option TargetModelElement :=
-  evalOutputPatternNextExpr sm sp te iter tls oper.
+            (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink): option TargetModelLink :=
+  evalOutputPatternLinkExpr sm sp te iter tls oper.
 
 Definition applyElementOnPatternTraces
             (ope: OutputPatternElement)
             (tr: Transformation)
             (sm: SourceModel)
-            (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelElement :=
+            (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelLink :=
   flat_map (fun oper => 
     match (evalOutputPatternElementExpr sm sp iter ope) with 
     | Some l => optionToList (applyLinkOnPatternTraces oper tr sm sp iter l tls)
     | None => nil
     end) (OutputPatternElement_getOutputLinks ope).
 
-Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelElement :=
+Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelLink :=
   flat_map (fun o => applyElementOnPatternTraces o tr sm sp iter tls)
     (Rule_getOutputPatternElements r).
 
-Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelElement :=
+Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelLink :=
   flat_map (fun i => applyIterationOnPatternTraces r tr sm sp i tls)
     (seq 0 (evalIteratorExpr r sm sp)).
 
-Definition applyPatternTraces (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelElement :=
+Definition applyPatternTraces (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelLink :=
   flat_map (fun r => applyRuleOnPatternTraces r tr sm sp tls) (matchPattern tr sm sp).
 
 (** * Execute **)
@@ -124,7 +124,7 @@ Definition instantiateTraces (tr: Transformation) (sm : SourceModel) :=
   let tls := trace tr sm in
     ( map (TraceLink_getTargetElement) tls, tls ).
 
-Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list TraceLink): list TargetModelElement :=
+Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list TraceLink): list TargetModelLink :=
   flat_map (fun sp => applyPatternTraces tr sm sp tls) (noDup_sp (map (TraceLink_getSourcePattern) tls)).
 
 Definition executeTraces (tr: Transformation) (sm : SourceModel) : TargetModel :=

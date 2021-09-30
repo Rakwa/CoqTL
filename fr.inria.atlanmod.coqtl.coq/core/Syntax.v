@@ -18,30 +18,24 @@ Context {tc: TransformationConfiguration}.
 
         Next, we model syntactic elements of any transformation specification that supported by the CoqTL engine. *)
 
-(** *** OutputPatternNext *)
+(** *** OutputPatternLink *)
 
-Inductive OutputPatternNext : Type :=
-  buildOutputPatternNext :
+Inductive OutputPatternLink : Type :=
+  buildOutputPatternLink :
     (list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option nat) 
-    -> (nat -> list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelElement) 
-    -> (list OutputPatternNext)
-    -> OutputPatternNext.
+    -> (nat -> list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
+    -> OutputPatternLink.
 
-Definition OutputPatternNext_getIteratorExpr (o: OutputPatternNext) : 
+Definition OutputPatternLink_getIteratorExpr (o: OutputPatternLink) : 
     list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option nat :=
     match o with
-      buildOutputPatternNext y _ _ => y
+      buildOutputPatternLink y _ => y
     end.
 
-Definition OutputPatternNext_getLinkExpr (o: OutputPatternNext) : 
-    nat -> list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelElement :=
+Definition OutputPatternLink_getLinkExpr (o: OutputPatternLink) : 
+    nat -> list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
     match o with
-      buildOutputPatternNext _ y _ => y
-    end.
-
-Definition OutputPatternNext_getNext (o: OutputPatternNext) : list OutputPatternNext :=
-    match o with
-      buildOutputPatternNext _ _ y => y
+      buildOutputPatternLink _ y => y
     end.
 
 (** *** OutputPatternElement *)
@@ -51,7 +45,7 @@ Inductive OutputPatternElement : Type :=
     string 
     -> (SourceModel -> (list SourceModelElement) -> option nat)
     -> (nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
-    -> (list OutputPatternNext) -> OutputPatternElement.
+    -> (list OutputPatternLink) -> OutputPatternElement.
 
 Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
   match o with
@@ -70,7 +64,7 @@ Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -
   end.
 
 Definition OutputPatternElement_getOutputLinks (o: OutputPatternElement) :
-  list OutputPatternNext :=
+  list OutputPatternLink :=
   match o with
     buildOutputPatternElement _ _ _ y => y
       end.
@@ -130,5 +124,5 @@ Arguments Rule {_}.
 Arguments buildRule {_}.
 
 Arguments buildOutputPatternElement {_}.
-Arguments buildOutputPatternNext {_}.
+Arguments buildOutputPatternLink {_}.
 (* end hide *)
