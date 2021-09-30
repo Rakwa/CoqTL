@@ -1,6 +1,6 @@
 Require Import TT2BDD.TT.
 Require Import BoolEq.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import String.
 Require Import List.
 Require Import Utils.

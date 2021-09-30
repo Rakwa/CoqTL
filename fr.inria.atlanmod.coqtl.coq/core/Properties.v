@@ -1,6 +1,6 @@
 Require Import core.Semantics.
 Require Import core.Syntax.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.TransformationConfiguration.
 Require Import String.
 Require Import EqNat.
@@ -25,7 +25,7 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
       (buildOutputPatternNode "out"%string 
       (fun sm sp => Some (length (allNodes (f sm))))
       (fun i sm sp => nth_error (allNodes (f sm)) i)
-      ((buildOutputPatternLink 
+      ((buildOutputPatternEdge 
         (fun tls i sm sp te => match i with | 0 => Some (length (allEdges (f sm))) | _ => None end)
         (fun il tls i sm sp te => nth_error (allEdges (f sm)) il)
       )::nil) 
@@ -45,9 +45,9 @@ Proof.
   unfold applyRuleOnPattern. 
   unfold applyNodesOnPattern. 
   unfold applyNodeOnPattern. 
-  unfold applyLinksOnPattern.
-  unfold applyLinkOnPattern.
-  unfold evalOutputPatternLinkExpr.
+  unfold applyEdgesOnPattern.
+  unfold applyEdgeOnPattern.
+  unfold evalOutputPatternEdgeExpr.
   unfold evalNodeIteratorExpr.
   unfold evalLinkIteratorExpr. 
   unfold instantiatePattern. 
@@ -59,28 +59,28 @@ Proof.
   destruct (f sm). simpl.
   f_equal.
   - clear H.
-    induction modelNodes.
+    induction graphNodes.
     * reflexivity.
     * simpl.
       f_equal.
-      rewrite <- IHmodelNodes at 2.
+      rewrite <- IHgraphNodes at 2.
       repeat rewrite flat_map_concat_map.
       f_equal.
       rewrite <- seq_shift.
       rewrite map_map.
       reflexivity.
-  - destruct modelNodes.
+  - destruct graphNodes.
     * simpl. contradiction.
     * simpl. 
       repeat rewrite app_nil_r.
-      assert (flat_map (fun n : nat => optionToList (nth_error modelLinks n))
-      (seq 0 (Datatypes.length modelLinks)) = modelLinks). {
+      assert (flat_map (fun n : nat => optionToList (nth_error graphEdges n))
+      (seq 0 (Datatypes.length graphEdges)) = graphEdges). {
         clear H.
-        induction modelLinks.
+        induction graphEdges.
         + reflexivity.
         + simpl.
           f_equal.
-          rewrite <- IHmodelLinks at 2.
+          rewrite <- IHgraphEdges at 2.
           repeat rewrite flat_map_concat_map.
           f_equal.
           rewrite <- seq_shift.
@@ -102,7 +102,7 @@ Proof.
         destruct H1.
         simpl in H2.
         apply Lt.lt_S_n in H2.
-        destruct (nth_error modelNodes a); reflexivity.
+        destruct (nth_error graphNodes a); reflexivity.
 Qed.
   
 Theorem confluence :

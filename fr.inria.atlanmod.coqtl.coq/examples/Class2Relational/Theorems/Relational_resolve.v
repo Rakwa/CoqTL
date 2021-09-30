@@ -10,7 +10,7 @@ Require Import core.utils.Utils.
 Require Import core.Semantics.
 Require Import core.Certification.
 Require Import core.modeling.Metamodel.
-Require Import core.Model.
+Require Import core.Graph.
 
 Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.

@@ -30,9 +30,9 @@ Require Import Omega.
 Require Import Bool.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.ModelingMetamodel.
+Require Import core.modeling.ModelingSchema.
 Require Import core.Engine.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 

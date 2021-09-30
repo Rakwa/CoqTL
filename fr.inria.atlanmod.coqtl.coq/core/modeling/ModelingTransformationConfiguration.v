@@ -1,10 +1,10 @@
 Require Import core.TransformationConfiguration.
-Require Import core.modeling.ModelingMetamodel.
+Require Import core.modeling.ModelingSchema.
 
 Class ModelingTransformationConfiguration `(tc: TransformationConfiguration):= {
 
-  smm: ModelingMetamodel SourceMetamodel;
-  tmm: ModelingMetamodel TargetMetamodel;
+  smm: ModelingSchema SourceSchema;
+  tmm: ModelingSchema TargetSchema;
 
   SourceModelClass:= @ModelClass _ smm;
   SourceModelReference:= @ModelReference _ smm;

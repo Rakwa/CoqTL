@@ -1,7 +1,7 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.TransformationConfiguration.
 
 (** * Syntax

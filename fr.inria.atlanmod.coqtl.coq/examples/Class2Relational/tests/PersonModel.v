@@ -1,7 +1,7 @@
 Require Import List.
 Require Import String.
 
-Require Import core.Model.
+Require Import core.Graph.
 
 Require Import examples.Class2Relational.ClassMetamodel.
 

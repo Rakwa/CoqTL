@@ -10,7 +10,7 @@ Require Import core.EqDec.
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.utils.CpdtTactics.
 (* Base types *)
 

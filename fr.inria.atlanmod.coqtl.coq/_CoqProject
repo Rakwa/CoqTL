@@ -15,9 +15,9 @@ core/utils/TupleUtils.v
 core/utils/Utils.v
 
 core/Expressions.v
-core/Model.v
+core/Graph.v
 core/EqDec.v
-core/Metamodel.v
+core/Schema.v
 core/TransformationConfiguration.v
 core/TraceLink.v
 core/Syntax.v
@@ -29,7 +29,7 @@ core/Semantics.v
 #core/Certification.v
 core/Properties.v
 
-core/modeling/ModelingMetamodel.v
+core/modeling/ModelingSchema.v
 core/modeling/ModelingTransformationConfiguration.v
 core/modeling/ConcreteSyntax.v
 #core/modeling/Parser.v
@@ -49,8 +49,8 @@ core/modeling/ConcreteExpressions.v
 #core/modeling/byrule/ByRuleSemantics.v
 #core/modeling/byrule/Certification_ByRuleSemantics.v
 
-#examples/Class2Relational/ClassMetamodel.v
-#examples/Class2Relational/RelationalMetamodel.v
+#examples/Class2Relational/ClassSchema.v
+#examples/Class2Relational/RelationalSchema.v
 #examples/Class2Relational/Class2RelationalAbstract.v
 #examples/Class2Relational/Class2Relational.v
 #examples/Class2Relational/tests/PersonModel.v

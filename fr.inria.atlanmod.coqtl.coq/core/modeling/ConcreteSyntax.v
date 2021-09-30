@@ -1,8 +1,8 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
+Require Import core.modeling.ModelingSchema.
+Require Import core.Graph.
 Require Import core.Syntax.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.TransformationConfiguration.
@@ -20,7 +20,7 @@ Fixpoint denoteFunction (sclasses : list SourceModelClass) (otype: Type) :=
   | cons class classes' => (denoteModelClass class) -> denoteFunction classes' otype
   end.
 
-Definition outputPatternLink
+Definition outputPatternEdge
 (sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
 denoteFunction (sclasses) ((denoteModelClass tclass) -> option (denoteModelReference tref)).
 
@@ -35,18 +35,18 @@ Definition iteratedListTypes
 Definition guardTypes (sclasses : list SourceModelClass) :=
   denoteFunction (sclasses) bool.
 
-Inductive ConcreteOutputPatternLink (InTypes: list SourceModelClass) (OutType:TargetModelClass) : Type :=
+Inductive ConcreteOutputPatternEdge (InTypes: list SourceModelClass) (OutType:TargetModelClass) : Type :=
   link :
   forall (OutRef: TargetModelReference),
-      (list TraceLink -> nat -> SourceModel -> (outputPatternLink InTypes OutType OutRef)) ->
-      ConcreteOutputPatternLink InTypes OutType.
+      (list TraceLink -> nat -> SourceModel -> (outputPatternEdge InTypes OutType OutRef)) ->
+      ConcreteOutputPatternEdge InTypes OutType.
 
 Inductive ConcreteOutputPatternNode (InTypes: list SourceModelClass) : Type :=
   elem :
     forall (OutType:TargetModelClass),
       string ->
         (nat -> SourceModel -> (outputPatternNodeTypes InTypes OutType)) 
-    -> (list (ConcreteOutputPatternLink InTypes OutType)) -> ConcreteOutputPatternNode InTypes.
+    -> (list (ConcreteOutputPatternEdge InTypes OutType)) -> ConcreteOutputPatternNode InTypes.
 
 Inductive ConcreteRule : Type :=
   concreteRule :
@@ -64,13 +64,13 @@ Inductive ConcreteTransformation : Type :=
 
 (** ** Accessors **)
 
-Definition ConcreteOutputPatternLink_getRefType {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternLink InElTypes OutType) : TargetModelReference :=
+Definition ConcreteOutputPatternEdge_getRefType {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternEdge InElTypes OutType) : TargetModelReference :=
   match o with
     link _ _ y _ => y
   end.
 
-Definition ConcreteOutputPatternLink_getOutputPatternLink {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternLink InElTypes OutType) :
-  list TraceLink -> nat -> SourceModel -> (outputPatternLink InElTypes OutType (ConcreteOutputPatternLink_getRefType o)).
+Definition ConcreteOutputPatternEdge_getOutputPatternEdge {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternEdge InElTypes OutType) :
+  list TraceLink -> nat -> SourceModel -> (outputPatternEdge InElTypes OutType (ConcreteOutputPatternEdge_getRefType o)).
 Proof.
   destruct o eqn:ho.
   exact o0.
@@ -92,8 +92,8 @@ Definition ConcreteOutputPatternNode_getOutPatternNode {InElTypes: list SourceMo
     elem _ _ _ y _ => y
   end.
 
-Definition ConcreteOutputPatternNode_getOutputLinks {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternNode InElTypes) :
-  list (ConcreteOutputPatternLink InElTypes (ConcreteOutputPatternNode_getOutType o)) :=
+Definition ConcreteOutputPatternNode_getOutputEdges {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternNode InElTypes) :
+  list (ConcreteOutputPatternEdge InElTypes (ConcreteOutputPatternNode_getOutType o)) :=
   match o with
     elem _ _ _ _ y => y
   end.

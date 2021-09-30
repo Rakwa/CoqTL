@@ -1,8 +1,8 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
+Require Import core.modeling.ModelingSchema.
+Require Import core.Graph.
 Require Import core.Syntax.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.ConcreteSyntax.
@@ -15,16 +15,16 @@ Section Parser.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.
 
-Definition parseOutputPatternLink (intypes: list SourceModelClass) (outtype: TargetModelClass)
-  (cr: ConcreteOutputPatternLink intypes outtype): OutputPatternLink :=
-  buildOutputPatternLink 
-    (makeLink intypes outtype (ConcreteOutputPatternLink_getRefType cr) (ConcreteOutputPatternLink_getOutputPatternLink cr)).
+Definition parseOutputPatternEdge (intypes: list SourceModelClass) (outtype: TargetModelClass)
+  (cr: ConcreteOutputPatternEdge intypes outtype): OutputPatternEdge :=
+  buildOutputPatternEdge 
+    (makeLink intypes outtype (ConcreteOutputPatternEdge_getRefType cr) (ConcreteOutputPatternEdge_getOutputPatternEdge cr)).
 
 Definition parseOutputPatternNode (intypes: list SourceModelClass) (co: ConcreteOutputPatternNode intypes) : OutputPatternNode :=
   buildOutputPatternNode
     (ConcreteOutputPatternNode_getName co)
     (makeNode intypes (ConcreteOutputPatternNode_getOutType co) (ConcreteOutputPatternNode_getOutPatternNode co))
-    (map (parseOutputPatternLink intypes (ConcreteOutputPatternNode_getOutType co)) (ConcreteOutputPatternNode_getOutputLinks co)).
+    (map (parseOutputPatternEdge intypes (ConcreteOutputPatternNode_getOutType co)) (ConcreteOutputPatternNode_getOutputEdges co)).
 
 Definition parseRule(cr: ConcreteRule) : Rule :=
   buildRule

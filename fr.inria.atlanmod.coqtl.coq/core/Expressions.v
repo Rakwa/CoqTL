@@ -1,7 +1,7 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.Syntax.
 Require Import core.EqDec. 
 Require Import Bool.
@@ -38,9 +38,9 @@ Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a.
 Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceNode) : option bool :=
 evalExpr (Rule_getGuardExpr r) sm sp.
 
-Definition evalLinkIteratorExpr (o : OutputPatternLink) (sm: SourceModel) (sp: list SourceNode) (oe: TargetNode) (iter: nat) (tls: list TraceLink) :
+Definition evalLinkIteratorExpr (o : OutputPatternEdge) (sm: SourceModel) (sp: list SourceNode) (oe: TargetNode) (iter: nat) (tls: list TraceLink) :
   nat :=
-  match (evalExpr (OutputPatternLink_getIteratorExpr o) tls iter sm sp oe) with
+  match (evalExpr (OutputPatternEdge_getIteratorExpr o) tls iter sm sp oe) with
   | Some n => n
   | _ => 0
   end.
@@ -56,10 +56,10 @@ Definition evalOutputPatternNodeExpr (sm: SourceModel) (sp: list SourceNode) (it
   : option TargetNode := 
 (evalExpr (OutputPatternNode_getNodeExpr o) iter sm sp).
 
-Definition evalOutputPatternLinkExpr
+Definition evalOutputPatternEdgeExpr
             (iterl: nat) (sm: SourceModel) (sp: list SourceNode) (oe: TargetNode) (iter: nat) (tr: list TraceLink)
-            (o: OutputPatternLink)
+            (o: OutputPatternEdge)
   : option TargetEdge :=
-(evalExpr (OutputPatternLink_getLinkExpr o) iterl tr iter sm sp oe).
+(evalExpr (OutputPatternEdge_getLinkExpr o) iterl tr iter sm sp oe).
 
 End Expressions.

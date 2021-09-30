@@ -6,13 +6,13 @@ Require Import Omega.
 Require Import Bool.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 
 Require Import examples.TT2BDD.TT.
 Require Import examples.TT2BDD.BDD.
 
-Definition TTable_OR : Model TTElem TTRef :=
-  (Build_Model
+Definition TTable_OR : Graph TTElem TTRef :=
+  (Build_Graph
      (* elements *)
      ((BuildColumn "A" 1) :: 
       (BuildColumn "B" 2) :: 

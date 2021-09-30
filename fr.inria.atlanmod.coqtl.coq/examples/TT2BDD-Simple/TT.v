@@ -89,7 +89,7 @@ Definition t: Table:=
     ((("a", false)::("b", false)::("c", true )::nil)::
      (("a", false)::("b", true )::("c", false)::nil)::nil).
 
-Require Import core.Model.
+Require Import core.Graph.
 
 Definition tmodel: Model (list (prod string bool)) unit:=
   Build_Model 

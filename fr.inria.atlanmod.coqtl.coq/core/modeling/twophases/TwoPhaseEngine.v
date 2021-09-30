@@ -29,7 +29,7 @@ Require Import ListSet.
 Require Import Omega.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.Engine.
 Require Import core.TransformationConfiguration.
 
@@ -59,7 +59,7 @@ Class TransformationEngineTrace (tc: TransformationConfiguration) (ts: Transform
     applyRuleOnPatternTraces: Rule -> Transformation -> SourceModel -> list SourceNode -> list TraceLink -> list TargetEdge;
     applyIterationOnPatternTraces: Rule -> Transformation -> SourceModel -> list SourceNode -> nat -> list TraceLink -> list TargetEdge;
     applyNodeOnPatternTraces: OutputPatternNode -> Transformation -> SourceModel -> list SourceNode -> nat -> list TraceLink -> list TargetEdge;
-    applyLinkOnPatternTraces: OutputPatternLink -> Transformation -> SourceModel -> list SourceNode -> nat -> TargetNode -> list TraceLink -> option TargetEdge;
+    applyEdgeOnPatternTraces: OutputPatternEdge -> Transformation -> SourceModel -> list SourceNode -> nat -> TargetNode -> list TraceLink -> option TargetEdge;
 
     (** ** Theorems *)
 
@@ -138,16 +138,16 @@ Class TransformationEngineTrace (tc: TransformationConfiguration) (ts: Transform
           forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
                  (i:nat) (ope: OutputPatternNode)  (tls: list TraceLink),
             In tl (applyNodeOnPatternTraces ope tr sm sp i tls) <->
-            (exists (oper: OutputPatternLink) (te: TargetNode),
-                In oper (OutputPatternNode_getOutputLinks ope) /\ 
+            (exists (oper: OutputPatternEdge) (te: TargetNode),
+                In oper (OutputPatternNode_getOutputEdges ope) /\ 
                 (evalOutputPatternNodeExpr sm sp i ope) = Some te /\
-                applyLinkOnPatternTraces oper tr sm sp i te tls = Some tl);
+                applyEdgeOnPatternTraces oper tr sm sp i te tls = Some tl);
 
-    tr_applyLinkOnPatternTraces_leaf : 
-          forall (oper: OutputPatternLink)
+    tr_applyEdgeOnPatternTraces_leaf : 
+          forall (oper: OutputPatternEdge)
                  (tr: Transformation)
                  (sm: SourceModel)
                  (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink),
-            applyLinkOnPatternTraces oper tr sm sp iter te tls  = evalOutputPatternLinkExpr sm sp te iter tls oper;
+            applyEdgeOnPatternTraces oper tr sm sp iter te tls  = evalOutputPatternEdgeExpr sm sp te iter tls oper;
 
   }.

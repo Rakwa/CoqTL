@@ -6,9 +6,9 @@ Require Import Omega.
 Require Import Bool.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.EqDec.
-Require Import core.Metamodel.
+Require Import core.Schema.
 
 Scheme Equality for list.
 
@@ -77,7 +77,7 @@ Inductive TTRef :=
 Definition source (t: TTRef) : TTElem := BuildRow nil 0.
 Definition target (t: TTRef) : list TTElem := nil.
 
-Definition evalTT (tt: Model TTElem TTRef) (ins: list bool) : bool := true.
+Definition evalTT (tt: Graph TTElem TTRef) (ins: list bool) : bool := true.
 
-Instance TTM : Metamodel :=
-  Build_Metamodel TTElem _ TTRef source target.
+Instance TTM : Schema :=
+  Build_Schema TTElem _ TTRef source target.

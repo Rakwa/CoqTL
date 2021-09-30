@@ -1,8 +1,8 @@
-(** * Metamodel **)
-Require Import core.Model.
+(** * Schema **)
+Require Import core.Graph.
 Require Import core.EqDec.
 
-Class Metamodel :=
+Class Schema :=
 {
     Node: Type;
     elements_eqdec: EqDec Node;
@@ -12,5 +12,5 @@ Class Metamodel :=
     source: Edge -> Node;
     target: Edge -> list Node;
 
-    InstanceModel := Model Node Edge;
+    InstanceModel := Graph Node Edge;
 }.

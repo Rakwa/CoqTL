@@ -1,8 +1,8 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.ModelingMetamodel.
-Require Import core.Model.
+Require Import core.modeling.ModelingSchema.
+Require Import core.Graph.
 Require Import core.modeling.ConcreteSyntax.
 Require Import core.Syntax.
 Require Import core.Semantics.

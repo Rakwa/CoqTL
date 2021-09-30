@@ -3,8 +3,8 @@ Require Import Omega.
 Require Import Bool.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
-Require Import core.modeling.Metamodel.
+Require Import core.Graph.
+Require Import core.modeling.Schema.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.Engine.
 Require Import core.modeling.ModelingEngine.

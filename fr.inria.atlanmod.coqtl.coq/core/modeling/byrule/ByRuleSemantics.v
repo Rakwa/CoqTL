@@ -1,8 +1,8 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
-Require Import core.Model.
+Require Import core.modeling.Schema.
+Require Import core.Graph.
 Require Import Bool.
 Require Import core.Syntax.
 Require Import Arith.

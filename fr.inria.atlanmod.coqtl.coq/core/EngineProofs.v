@@ -22,7 +22,7 @@
  Require Import ListSet.
  Require Import Omega.
 
- Require Import core.Model.
+ Require Import core.Graph.
  Require Import core.utils.Utils.
  Require Import core.Engine.
 
@@ -292,11 +292,11 @@ Proof.
   { specialize (option_res_dec (applyNodeOnPattern r ope tr sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
-  assert (exists oper,  In oper (getOutputLinks  (getInTypes r) (getIteratorType r) ope) /\  applyLinkOnPattern r ope oper tr sm sp i <> None).
+  assert (exists oper,  In oper (getOutputEdges  (getInTypes r) (getIteratorType r) ope) /\  applyEdgeOnPattern r ope oper tr sm sp i <> None).
   { specialize (tr_applyNodeOnPattern_non_None tr r sm sp i ope). intros. crush. }
   destruct H2.
-  assert ( applyLinkOnPattern r ope x0 tr sm sp i = None).
-  { specialize (tr_applyLinkOnPattern_None tr sm r sp i ope x0). intros. crush. }
+  assert ( applyEdgeOnPattern r ope x0 tr sm sp i = None).
+  { specialize (tr_applyEdgeOnPattern_None tr sm r sp i ope x0). intros. crush. }
   crush.
 Qed.
 
@@ -410,7 +410,7 @@ Proof.
   destruct H1.
   specialize (H1 H0).
   destruct H1. destruct H1.
-  specialize (tr_applyLinkOnPattern_None_iterator tr sm r sp).
+  specialize (tr_applyEdgeOnPattern_None_iterator tr sm r sp).
   intros.
   specialize (H4 i ope x H).
   crush.

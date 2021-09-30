@@ -1,7 +1,7 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.Syntax.
 Require Import core.EqDec. 
 Require Import Bool.
@@ -113,19 +113,19 @@ Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
 
 (** * Apply **)
 
-Definition applyLinkOnPattern
-            (oper: OutputPatternLink)
+Definition applyEdgeOnPattern
+            (oper: OutputPatternEdge)
             (tr: Transformation)
             (sm: SourceModel)
             (sp: list SourceNode) (iter: nat) (te: TargetNode) (iterl: nat): option TargetEdge :=
-  evalOutputPatternLinkExpr iterl sm sp te iter (trace tr sm) oper.
+  evalOutputPatternEdgeExpr iterl sm sp te iter (trace tr sm) oper.
 
-Definition applyLinksOnPattern
-  (oper: OutputPatternLink)
+Definition applyEdgesOnPattern
+  (oper: OutputPatternEdge)
   (tr: Transformation)
   (sm: SourceModel)
   (sp: list SourceNode) (iter: nat) (te: TargetNode): list TargetEdge :=
-  flat_map (fun n => optionToList (applyLinkOnPattern oper tr sm sp iter te n))
+  flat_map (fun n => optionToList (applyEdgeOnPattern oper tr sm sp iter te n))
     (seq 0 (evalLinkIteratorExpr oper sm sp te iter (trace tr sm))).  
 
 Definition applyNodeOnPattern
@@ -135,9 +135,9 @@ Definition applyNodeOnPattern
             (sp: list SourceNode) (iter: nat) : list TargetEdge :=
   flat_map (fun oper => 
     match (evalOutputPatternNodeExpr sm sp iter ope) with 
-    | Some l => applyLinksOnPattern oper tr sm sp iter l
+    | Some l => applyEdgesOnPattern oper tr sm sp iter l
     | None => nil
-    end) (OutputPatternNode_getOutputLinks ope).
+    end) (OutputPatternNode_getOutputEdges ope).
 
 Definition applyNodesOnPattern (o: OutputPatternNode) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode):  list TargetEdge :=
   flat_map (fun n => applyNodeOnPattern o tr sm sp n)
@@ -153,7 +153,7 @@ Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list Source
 (** * Execute **)
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
-  Build_Model
+  Build_Graph
     (* elements *) (flat_map (instantiatePattern tr sm) (allTuples tr sm))
     (* links *) (flat_map (applyPattern tr sm) (allTuples tr sm)).
 

@@ -10,7 +10,7 @@ Require Import core.utils.Utils.
 
 Require Import core.Syntax.
 Require Import core.Semantics.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.EqDec.
 Require Import core.TransformationConfiguration.
 
@@ -66,7 +66,7 @@ Definition upper_level (sp: list TTElem) :=
   | _ => None
   end.
 
-Definition locate (m: Model TTElem TTRef) (lv: nat) := 
+Definition locate (m: Graph TTElem TTRef) (lv: nat) := 
   find (fun e => match (Column_Level e) with
           | None => false
           | Some n => Nat.eqb n lv
@@ -81,7 +81,7 @@ Definition output_name (sp: list TTElem) :=
   | _ => ""%string
   end.
 
-Definition maxLv (m: Model TTElem TTRef) := list_max (optionList2List (map Column_Level (allNodes m))).
+Definition maxLv (m: Graph TTElem TTRef) := list_max (optionList2List (map Column_Level (allNodes m))).
 
 Fixpoint semantic (input: list nat) : nat :=
   match input with
@@ -102,7 +102,7 @@ Definition TT2BDD :=
       [buildOutputPatternNode "node"
           (fun m sp => return iter_col sp)
           (fun i m col => return BuildBDDNode (oelem_name col i))
-          [buildOutputPatternLink
+          [buildOutputPatternEdge
             (fun m sp sm sp te => return 1)
             (fun il tls i m col output => 
               ulv <- (upper_level col);
@@ -116,7 +116,7 @@ Definition TT2BDD :=
       [buildOutputPatternNode "output"
           (fun m sp => return 1)
           (fun i m sp => return BuildBDDNode (output_name sp))
-          [buildOutputPatternLink
+          [buildOutputPatternEdge
             (fun m sp sm sp te => return 1)
             (fun il tls i m sp output => 
               height <- Some (maxLv m);           (* get depth *)

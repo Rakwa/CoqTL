@@ -1,22 +1,22 @@
-Require Import core.Model.
-Require Import core.Metamodel.
+Require Import core.Graph.
+Require Import core.Schema.
 
 Class TransformationConfiguration := {
-  SourceMetamodel: Metamodel;
-  TargetMetamodel: Metamodel;
+  SourceSchema: Schema;
+  TargetSchema: Schema;
 
-  SourceNode:= @Node SourceMetamodel;
-  SourceEdge:= @Edge SourceMetamodel;
+  SourceNode:= @Node SourceSchema;
+  SourceEdge:= @Edge SourceSchema;
 
-  TargetNode:= @Node TargetMetamodel;
-  TargetEdge:= @Edge TargetMetamodel;
+  TargetNode:= @Node TargetSchema;
+  TargetEdge:= @Edge TargetSchema;
 
-  SourceModel := @InstanceModel SourceMetamodel;
-  TargetModel := @InstanceModel TargetMetamodel;
+  SourceModel := @InstanceModel SourceSchema;
+  TargetModel := @InstanceModel TargetSchema;
 
-  SourceNode_eqdec := @elements_eqdec SourceMetamodel;
-  TargetNode_eqdec := @elements_eqdec TargetMetamodel;
+  SourceNode_eqdec := @elements_eqdec SourceSchema;
+  TargetNode_eqdec := @elements_eqdec TargetSchema;
 
-  SourceNode_eqb := @elements_eqb SourceMetamodel;
-  TargetNode_eqb := @elements_eqb TargetMetamodel;
+  SourceNode_eqb := @elements_eqb SourceSchema;
+  TargetNode_eqb := @elements_eqb TargetSchema;
 }.

@@ -1,6 +1,6 @@
-(** * Metamodel **)
-Require Import core.Model.
-Require Import core.Metamodel.
+(** * Schema **)
+Require Import core.Graph.
+Require Import core.Schema.
 Require Import core.EqDec.
 
 Class Sum (SumType: Type) (SubTypeName: Type):=
@@ -11,7 +11,7 @@ Class Sum (SumType: Type) (SubTypeName: Type):=
 
   }.
 
-Class ModelingMetamodel `(mm : Metamodel) :=
+Class ModelingSchema `(mm : Schema) :=
 {
     ModelClass: Type;
     ModelReference: Type;
@@ -32,7 +32,7 @@ Class ModelingMetamodel `(mm : Metamodel) :=
 
 }.
 
-Definition hasType {mm: Metamodel} {mmm: ModelingMetamodel mm} (t: ModelClass) (e: Node) : bool :=
+Definition hasType {mm: Schema} {mmm: ModelingSchema mm} (t: ModelClass) (e: Node) : bool :=
   match (toModelClass t e) with
   | Some e' => true
   | _ => false

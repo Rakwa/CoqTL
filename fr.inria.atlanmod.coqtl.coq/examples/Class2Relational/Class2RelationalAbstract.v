@@ -56,7 +56,7 @@ Definition Class2Relational :=
         [buildOutputPatternNode "tab"
           (makeNode [ClassClass] TableClass
             (fun i m c => BuildTable (getClassId c) (getClassName c)))
-          [buildOutputPatternLink
+          [buildOutputPatternEdge
             (makeLink [ClassClass] TableClass TableColumnsReference
             (fun tls i m c t =>
               attrs <- getClassAttributes c m;
@@ -71,7 +71,7 @@ Definition Class2Relational :=
         [buildOutputPatternNode "col"
           (makeNode [AttributeClass] ColumnClass
             (fun i m a => BuildColumn (getAttributeId a) (getAttributeName a)))
-          [buildOutputPatternLink
+          [buildOutputPatternEdge
             (makeLink [AttributeClass] ColumnClass ColumnReferenceReference
               (fun tls i m a c =>
                 cl <- getAttributeType a m;

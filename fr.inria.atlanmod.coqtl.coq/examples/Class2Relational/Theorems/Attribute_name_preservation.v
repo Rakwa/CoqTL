@@ -7,7 +7,7 @@ Def: all non-derived attributes in the source model will create
 Require Import String.
 Require Import Lia.
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.Semantics.
 Require Import core.Certification.
 

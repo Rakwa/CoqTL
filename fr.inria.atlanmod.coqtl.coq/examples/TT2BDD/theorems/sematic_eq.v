@@ -6,7 +6,7 @@ Require Import Omega.
 Require Import Bool.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.Semantics.
 
 Require Import examples.TT2BDD.TT.

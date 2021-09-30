@@ -1,8 +1,8 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
-Require Import core.Model.
+Require Import core.modeling.Schema.
+Require Import core.Graph.
 Require Import core.Syntax.
 Require Import Bool.
 Require Import Arith.
@@ -19,12 +19,12 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (** * Apply **)
 
-Definition applyLinkOnPatternTraces
-            (oper: OutputPatternLink)
+Definition applyEdgeOnPatternTraces
+            (oper: OutputPatternEdge)
             (tr: Transformation)
             (sm: SourceModel)
             (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink): option TargetEdge :=
-  evalOutputPatternLinkExpr sm sp te iter tls oper.
+  evalOutputPatternEdgeExpr sm sp te iter tls oper.
 
 Definition applyNodeOnPatternTraces
             (ope: OutputPatternNode)
@@ -33,9 +33,9 @@ Definition applyNodeOnPatternTraces
             (sp: list SourceNode) (iter: nat) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun oper => 
     match (evalOutputPatternNodeExpr sm sp iter ope) with 
-    | Some l => optionToList (applyLinkOnPatternTraces oper tr sm sp iter l tls)
+    | Some l => optionToList (applyEdgeOnPatternTraces oper tr sm sp iter l tls)
     | None => nil
-    end) (OutputPatternNode_getOutputLinks ope).
+    end) (OutputPatternNode_getOutputEdges ope).
 
 Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode) (iter: nat) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun o => applyNodeOnPatternTraces o tr sm sp iter tls)

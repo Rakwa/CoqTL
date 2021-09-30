@@ -1,8 +1,8 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.Metamodel.
-Require Import core.Model.
+Require Import core.Schema.
+Require Import core.Graph.
 Require Import Engine.
 
 Require Import Bool.
@@ -376,7 +376,7 @@ Instance ByRuleEngine :
   Transformation := Transformation;
   Rule := Rule;
   OutputPatternNode := OutputPatternNode;
-  OutputPatternLink := OutputPatternLink;
+  OutputPatternEdge := OutputPatternEdge;
 
   TraceLink := TraceLink;
 
@@ -386,7 +386,7 @@ Instance ByRuleEngine :
   getGuardExpr := Rule_getGuardExpr;
   getOutputPattern := Rule_getOutputPatternNodes;
 
-  getOutputLinks := OutputPatternNode_getOutputLinks;
+  getOutputEdges := OutputPatternNode_getOutputEdges;
 
   execute := execute;
 
@@ -402,7 +402,7 @@ Instance ByRuleEngine :
   applyRuleOnPattern := applyRuleOnPattern;
   applyIterationOnPattern := applyIterationOnPattern;
   applyNodeOnPattern := applyNodeOnPattern;
-  applyLinkOnPattern := applyLinkOnPattern;
+  applyEdgeOnPattern := applyEdgeOnPattern;
 
   evalOutputPatternNodeExpr := evalOutputPatternNodeExpr;
   evalIteratorExpr := evalIteratorExpr;
@@ -446,13 +446,13 @@ Instance ByRuleEngine :
 
   tr_applyNodeOnPattern_non_None := tr_applyNodeOnPattern_non_None;
 
-  tr_applyLinkOnPattern_None := tr_applyLinkOnPattern_None;
-  tr_applyLinkOnPattern_None_iterator := tr_applyLinkOnPattern_None_iterator;
+  tr_applyEdgeOnPattern_None := tr_applyEdgeOnPattern_None;
+  tr_applyEdgeOnPattern_None_iterator := tr_applyEdgeOnPattern_None_iterator;
 
   tr_maxArity_in := tr_maxArity_in;
 
   tr_instantiateNodeOnPattern_Leaf := tr_instantiateNodeOnPattern_Leaf;
-  tr_applyLinkOnPattern_Leaf := tr_applyLinkOnPattern_Leaf;
+  tr_applyEdgeOnPattern_Leaf := tr_applyEdgeOnPattern_Leaf;
   tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
 
   tr_resolveAll_in := tr_resolveAllIter_in;

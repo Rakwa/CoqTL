@@ -2,8 +2,8 @@ Require Import String.
 Require Import Omega.
 Require Import Bool.
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
-Require Import core.Model.
+Require Import core.modeling.Schema.
+Require Import core.Graph.
 Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.Semantics.
@@ -185,10 +185,10 @@ Lemma tr_applyNodeOnPatternTraces_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
             (i:nat) (ope: OutputPatternNode)  (tls: list TraceLink),
       In tl (applyNodeOnPatternTraces ope tr sm sp i tls) <->
-      (exists (oper: OutputPatternLink) (te: TargetNode),
-          In oper (OutputPatternNode_getOutputLinks ope) /\ 
+      (exists (oper: OutputPatternEdge) (te: TargetNode),
+          In oper (OutputPatternNode_getOutputEdges ope) /\ 
           (evalOutputPatternNodeExpr sm sp i ope) = Some te /\
-          applyLinkOnPatternTraces oper tr sm sp i te tls = Some tl).
+          applyEdgeOnPatternTraces oper tr sm sp i te tls = Some tl).
 Proof.
   split.
   * intros.
@@ -198,7 +198,7 @@ Proof.
     unfold optionToList in H.
     destruct H.
     destruct (evalOutputPatternNodeExpr sm sp i ope) eqn: eval_ca.
-    - destruct (applyLinkOnPatternTraces x tr sm sp i t) eqn: ref_ca.
+    - destruct (applyEdgeOnPatternTraces x tr sm sp i t) eqn: ref_ca.
       -- eexists t.
           split; crush.
       -- contradiction.
@@ -216,12 +216,12 @@ Proof.
     - crush.
 Qed.
 
-Lemma tr_applyLinkOnPatternTraces_leaf : 
-    forall (oper: OutputPatternLink)
+Lemma tr_applyEdgeOnPatternTraces_leaf : 
+    forall (oper: OutputPatternEdge)
             (tr: Transformation)
             (sm: SourceModel)
             (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink),
-      applyLinkOnPatternTraces oper tr sm sp iter te tls  = evalOutputPatternLinkExpr sm sp te iter tls oper.
+      applyEdgeOnPatternTraces oper tr sm sp iter te tls  = evalOutputPatternEdgeExpr sm sp te iter tls oper.
 Proof.
   crush.
 Qed.
@@ -385,7 +385,7 @@ Instance CoqTLEngine :
     Transformation := Transformation;
     Rule := Rule;
     OutputPatternNode := OutputPatternNode;
-    OutputPatternLink := OutputPatternLink;
+    OutputPatternEdge := OutputPatternEdge;
 
     TraceLink := TraceLink;
 
@@ -394,7 +394,7 @@ Instance CoqTLEngine :
     Rule_getInTypes := Rule_getInTypes;
     Rule_getOutputPatternNodes := Rule_getOutputPatternNodes;
 
-    OutputPatternNode_getOutputLinks := OutputPatternNode_getOutputLinks;
+    OutputPatternNode_getOutputEdges := OutputPatternNode_getOutputEdges;
 
     TraceLink_getSourcePattern := TraceLink_getSourcePattern;
     TraceLink_getIterator := TraceLink_getIterator;
@@ -417,11 +417,11 @@ Instance CoqTLEngine :
     applyRuleOnPattern := applyRuleOnPattern;
     applyIterationOnPattern := applyIterationOnPattern;
     applyNodeOnPattern := applyNodeOnPattern;
-    applyLinkOnPattern := applyLinkOnPattern;
+    applyEdgeOnPattern := applyEdgeOnPattern;
 
     evalOutputPatternNodeExpr := evalOutputPatternNodeExpr;
     evalIteratorExpr := evalIteratorExpr;
-    evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
+    evalOutputPatternEdgeExpr := evalOutputPatternEdgeExpr;
     evalGuardExpr := evalGuardExpr;
 
     trace := trace;
@@ -446,7 +446,7 @@ Instance CoqTLEngine :
     tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
     tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
     tr_applyNodeOnPattern_in := tr_applyNodeOnPattern_in;
-    tr_applyLinkOnPatternTraces_leaf := tr_applyLinkOnPattern_leaf;
+    tr_applyEdgeOnPatternTraces_leaf := tr_applyEdgeOnPattern_leaf;
 
     tr_resolveAll_in := tr_resolveAllIter_in;
     tr_resolve_Leaf := tr_resolveIter_leaf;
@@ -474,13 +474,13 @@ Instance CoqTLEngine :
 
     tr_applyNodeOnPattern_non_None := tr_applyNodeOnPattern_non_None;
 
-    tr_applyLinkOnPattern_None := tr_applyLinkOnPattern_None;
-    tr_applyLinkOnPattern_None_iterator := tr_applyLinkOnPattern_None_iterator;
+    tr_applyEdgeOnPattern_None := tr_applyEdgeOnPattern_None;
+    tr_applyEdgeOnPattern_None_iterator := tr_applyEdgeOnPattern_None_iterator;
 
     tr_maxArity_in := tr_maxArity_in;
 
     tr_instantiateNodeOnPattern_Leaf := tr_instantiateNodeOnPattern_Leaf;
-    tr_applyLinkOnPattern_Leaf := tr_applyLinkOnPattern_Leaf;
+    tr_applyEdgeOnPattern_Leaf := tr_applyEdgeOnPattern_Leaf;
     tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
 
     tr_resolveAll_in := tr_resolveAllIter_in;
@@ -504,7 +504,7 @@ Proof.
 (* tr_applyRuleOnPattern_in *) exact tr_applyRuleOnPatternTraces_in.
 (* tr_applyIterationOnPattern_in *) exact tr_applyIterationOnPatternTraces_in.
 (* tr_applyNodeOnPatternTraces_in *) exact tr_applyNodeOnPatternTraces_in.
-(* tr_applyLinkOnPatternTraces_leaf *) exact tr_applyLinkOnPatternTraces_leaf.
+(* tr_applyEdgeOnPatternTraces_leaf *) exact tr_applyEdgeOnPatternTraces_leaf.
 
 Qed.
 *)

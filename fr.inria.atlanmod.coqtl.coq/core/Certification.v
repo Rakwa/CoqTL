@@ -3,12 +3,12 @@ Require Import Omega.
 Require Import Bool.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.EqDec.
-Require Import core.Metamodel.
+Require Import core.Schema.
 Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
 Require Import core.Expressions.
@@ -20,21 +20,21 @@ Context {eqdec_sme: EqDec SourceNode}. (* need decidable equality on source mode
 Context {TargetNode TargetEdge: Type}.
 Context {eqdec_tme: EqDec TargetNode}. (* need decidable equality on source model elements *)
 
-Instance smm : Metamodel := {
+Instance smm : Schema := {
   Node := SourceNode;
   Edge := SourceEdge;
   elements_eqdec := eqdec_sme;
 }.
 
-Instance tmm : Metamodel := {
+Instance tmm : Schema := {
   Node := TargetNode;
   Edge := TargetEdge;
   elements_eqdec := eqdec_tme;
 }.
 
 Instance tc : TransformationConfiguration := {
-  SourceMetamodel := smm;
-  TargetMetamodel := tmm;
+  SourceSchema := smm;
+  TargetSchema := tmm;
 }.
 
 Lemma tr_execute_in_elements :
@@ -175,10 +175,10 @@ Lemma tr_applyNodeOnPattern_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
             (i:nat) (ope: OutputPatternNode),
       In tl (applyNodeOnPattern ope tr sm sp i ) <->
-      (exists (oper: OutputPatternLink) (te: TargetNode),
-          In oper (OutputPatternNode_getOutputLinks ope) /\ 
+      (exists (oper: OutputPatternEdge) (te: TargetNode),
+          In oper (OutputPatternNode_getOutputEdges ope) /\ 
           (evalOutputPatternNodeExpr sm sp i ope) = Some te /\
-          applyLinkOnPattern oper tr sm sp i te = Some tl).
+          applyEdgeOnPattern oper tr sm sp i te = Some tl).
 Proof.
   split.
   * intros.
@@ -188,7 +188,7 @@ Proof.
     unfold optionToList in H.
     destruct H.
     destruct (evalOutputPatternNodeExpr sm sp i ope) eqn: eval_ca.
-    - destruct (applyLinkOnPattern x tr sm sp i t) eqn: ref_ca.
+    - destruct (applyEdgeOnPattern x tr sm sp i t) eqn: ref_ca.
       -- eexists t.
           split; crush.
       -- contradiction.
@@ -206,12 +206,12 @@ Proof.
     - crush.
 Qed.
 
-Lemma tr_applyLinkOnPattern_leaf : 
-        forall (oper: OutputPatternLink)
+Lemma tr_applyEdgeOnPattern_leaf : 
+        forall (oper: OutputPatternEdge)
                 (tr: Transformation)
                 (sm: SourceModel)
                 (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink),
-          applyLinkOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper.
+          applyEdgeOnPattern oper tr sm sp iter te  = evalOutputPatternEdgeExpr sm sp te iter (trace tr sm) oper.
 Proof.
   crush.
 Qed.
@@ -349,7 +349,7 @@ Instance CoqTLEngine :
     applyRuleOnPattern := applyRuleOnPattern;
     applyIterationOnPattern := applyIterationOnPattern;
     applyNodeOnPattern := applyNodeOnPattern;
-    applyLinkOnPattern := applyLinkOnPattern;
+    applyEdgeOnPattern := applyEdgeOnPattern;
 
     trace := trace;
 
@@ -373,7 +373,7 @@ Instance CoqTLEngine :
     tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
     tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
     tr_applyNodeOnPattern_in := tr_applyNodeOnPattern_in;
-    tr_applyLinkOnPatternTraces_leaf := tr_applyLinkOnPattern_leaf;
+    tr_applyEdgeOnPatternTraces_leaf := tr_applyEdgeOnPattern_leaf;
 
     tr_resolveAll_in := tr_resolveAllIter_in;
     tr_resolve_leaf := tr_resolveIter_leaf;
@@ -402,13 +402,13 @@ Instance CoqTLEngine :
 
     tr_applyNodeOnPattern_non_None := tr_applyNodeOnPattern_non_None;
 
-    tr_applyLinkOnPattern_None := tr_applyLinkOnPattern_None;
-    tr_applyLinkOnPattern_None_iterator := tr_applyLinkOnPattern_None_iterator;
+    tr_applyEdgeOnPattern_None := tr_applyEdgeOnPattern_None;
+    tr_applyEdgeOnPattern_None_iterator := tr_applyEdgeOnPattern_None_iterator;
 
     tr_maxArity_in := tr_maxArity_in;
 
     tr_instantiateNodeOnPattern_Leaf := tr_instantiateNodeOnPattern_Leaf;
-    tr_applyLinkOnPattern_Leaf := tr_applyLinkOnPattern_Leaf;
+    tr_applyEdgeOnPattern_Leaf := tr_applyEdgeOnPattern_Leaf;
     tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
 
     tr_resolveAll_in := tr_resolveAllIter_in;

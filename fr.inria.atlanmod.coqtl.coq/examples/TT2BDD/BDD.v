@@ -4,11 +4,11 @@ Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
 Require Import Omega.
 Require Import Bool.
-Require Import core.Metamodel.
+Require Import core.Schema.
 Require Import core.EqDec.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 
 (* Binary Decision Diagram (Tree) *)
 
@@ -42,5 +42,5 @@ Definition target (e: BDDEdge):=
   | BuildBDDEdge s t => t::nil
   end.
 
-Instance BDDM : Metamodel :=
-  Build_Metamodel BDDNode _ BDDEdge source target.
+Instance BDDM : Schema :=
+  Build_Schema BDDNode _ BDDEdge source target.

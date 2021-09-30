@@ -5,7 +5,7 @@
  ********************************************************************)
 		 
 Require Import List.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import String.
 Require Import examples.TT2BDD.TT.
 

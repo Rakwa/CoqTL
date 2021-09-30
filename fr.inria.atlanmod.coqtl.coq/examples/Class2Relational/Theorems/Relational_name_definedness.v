@@ -16,7 +16,7 @@ Require Import Omega.
 Require Import core.utils.Utils.
 Require Import core.SyntaxCertification.
 Require Import core.Metamodel.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.Syntax.
 Require Import core.Engine.
 
@@ -29,7 +29,7 @@ Require Import examples.Class2Relational.RelationalMetamodel.
   unfold ConcreteSyntax.parse in Ht; 
   unfold ConcreteSyntax.parseRule in Ht;
   unfold ConcreteSyntax.parseOutputPatternElement in Ht;
-  unfold ConcreteSyntax.parseOutputPatternLink in Ht;
+  unfold ConcreteSyntax.parseOutputPatternEdge in Ht;
   unfold Expressions.makeGuard in Ht;
   unfold Expressions.makeElement in Ht;
   unfold Expressions.makeIterator in Ht;
@@ -44,7 +44,7 @@ Ltac unfoldTransformation Tr :=
   unfold ConcreteSyntax.parse; 
   unfold ConcreteSyntax.parseRule;
   unfold ConcreteSyntax.parseOutputPatternElement;
-  unfold ConcreteSyntax.parseOutputPatternLink;
+  unfold ConcreteSyntax.parseOutputPatternEdge;
   unfold Expressions.makeGuard;
   unfold Expressions.makeElement;
   unfold Expressions.makeIterator;

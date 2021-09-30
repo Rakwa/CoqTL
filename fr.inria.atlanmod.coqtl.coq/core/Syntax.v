@@ -1,7 +1,7 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.TransformationConfiguration.
 Require Export core.TraceLink.
 
@@ -18,24 +18,24 @@ Context {tc: TransformationConfiguration}.
 
         Next, we model syntactic elements of any transformation specification that supported by the CoqTL engine. *)
 
-(** *** OutputPatternLink *)
+(** *** OutputPatternEdge *)
 
-Inductive OutputPatternLink : Type :=
-  buildOutputPatternLink :
+Inductive OutputPatternEdge : Type :=
+  buildOutputPatternEdge :
     (list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option nat) 
     -> (nat -> list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option TargetEdge) 
-    -> OutputPatternLink.
+    -> OutputPatternEdge.
 
-Definition OutputPatternLink_getIteratorExpr (o: OutputPatternLink) : 
+Definition OutputPatternEdge_getIteratorExpr (o: OutputPatternEdge) : 
     list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option nat :=
     match o with
-      buildOutputPatternLink y _ => y
+      buildOutputPatternEdge y _ => y
     end.
 
-Definition OutputPatternLink_getLinkExpr (o: OutputPatternLink) : 
+Definition OutputPatternEdge_getLinkExpr (o: OutputPatternEdge) : 
     nat -> list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option TargetEdge :=
     match o with
-      buildOutputPatternLink _ y => y
+      buildOutputPatternEdge _ y => y
     end.
 
 (** *** OutputPatternNode *)
@@ -45,7 +45,7 @@ Inductive OutputPatternNode : Type :=
     string 
     -> (SourceModel -> (list SourceNode) -> option nat)
     -> (nat -> SourceModel -> (list SourceNode) -> option TargetNode) 
-    -> (list OutputPatternLink) -> OutputPatternNode.
+    -> (list OutputPatternEdge) -> OutputPatternNode.
 
 Definition OutputPatternNode_getName (o: OutputPatternNode) : string :=
   match o with
@@ -63,8 +63,8 @@ Definition OutputPatternNode_getNodeExpr (o: OutputPatternNode) : nat -> SourceM
     buildOutputPatternNode _ _ y _ => y
   end.
 
-Definition OutputPatternNode_getOutputLinks (o: OutputPatternNode) :
-  list OutputPatternLink :=
+Definition OutputPatternNode_getOutputEdges (o: OutputPatternNode) :
+  list OutputPatternEdge :=
   match o with
     buildOutputPatternNode _ _ _ y => y
       end.
@@ -124,5 +124,5 @@ Arguments Rule {_}.
 Arguments buildRule {_}.
 
 Arguments buildOutputPatternNode {_}.
-Arguments buildOutputPatternLink {_}.
+Arguments buildOutputPatternEdge {_}.
 (* end hide *)

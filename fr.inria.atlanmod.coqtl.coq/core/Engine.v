@@ -30,7 +30,7 @@ Require Import Omega.
 Require Import Bool.
 
 Require Import core.utils.Utils.
-Require Import core.Model.
+Require Import core.Graph.
 Require Import core.EqDec.
 Require Import core.TransformationConfiguration.
 
@@ -43,7 +43,7 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
     Transformation: Type;
     Rule: Type;
     OutputPatternNode: Type;
-    OutputPatternLink: Type;
+    OutputPatternEdge: Type;
     TraceLink: Type;
 
     (** ** Accessors *)
@@ -53,7 +53,7 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
   
     Rule_getOutputPatternNodes: Rule -> list OutputPatternNode;
 
-    OutputPatternNode_getOutputLinks: OutputPatternNode -> list OutputPatternLink;
+    OutputPatternNode_getOutputEdges: OutputPatternNode -> list OutputPatternEdge;
 
     TraceLink_getSourcePattern: TraceLink -> list SourceNode;
     TraceLink_getIterator: TraceLink -> nat;
@@ -62,7 +62,7 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
 
     evalOutputPatternNodeExpr: SourceModel -> list SourceNode -> nat -> OutputPatternNode -> option TargetNode;
     evalIteratorExpr: Rule -> SourceModel -> list SourceNode -> nat;
-    evalOutputPatternLinkExpr: SourceModel -> list SourceNode -> TargetNode -> nat -> list TraceLink -> OutputPatternLink -> option TargetEdge;
+    evalOutputPatternEdgeExpr: SourceModel -> list SourceNode -> TargetNode -> nat -> list TraceLink -> OutputPatternEdge -> option TargetEdge;
     evalGuardExpr: Rule->SourceModel->list SourceNode->option bool;
 }.
   
@@ -89,7 +89,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceNode -> list TargetEdge;
     applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceNode -> nat -> list TargetEdge;
     applyNodeOnPattern: OutputPatternNode -> Transformation -> SourceModel -> list SourceNode -> nat -> list TargetEdge;
-    applyLinkOnPattern: OutputPatternLink -> Transformation -> SourceModel -> list SourceNode -> nat -> TargetNode -> option TargetEdge;
+    applyEdgeOnPattern: OutputPatternEdge -> Transformation -> SourceModel -> list SourceNode -> nat -> TargetNode -> option TargetEdge;
     
     trace: Transformation -> SourceModel -> list TraceLink; 
 
@@ -206,19 +206,19 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
              (i:nat) (ope: OutputPatternNode),
         In tl (applyNodeOnPattern ope tr sm sp i ) <->
-        (exists (oper: OutputPatternLink) (te: TargetNode),
-            In oper (OutputPatternNode_getOutputLinks ope) /\ 
+        (exists (oper: OutputPatternEdge) (te: TargetNode),
+            In oper (OutputPatternNode_getOutputEdges ope) /\ 
             (evalOutputPatternNodeExpr sm sp i ope) = Some te /\
-            applyLinkOnPattern oper tr sm sp i te = Some tl);
+            applyEdgeOnPattern oper tr sm sp i te = Some tl);
 
-    (** ** applyLinkOnPattern *)
+    (** ** applyEdgeOnPattern *)
 
-    tr_applyLinkOnPatternTraces_leaf : 
-          forall (oper: OutputPatternLink)
+    tr_applyEdgeOnPatternTraces_leaf : 
+          forall (oper: OutputPatternEdge)
                  (tr: Transformation)
                  (sm: SourceModel)
                  (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink),
-            applyLinkOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper;
+            applyEdgeOnPattern oper tr sm sp iter te  = evalOutputPatternEdgeExpr sm sp te iter (trace tr sm) oper;
 
     (** ** resolve *)
 
