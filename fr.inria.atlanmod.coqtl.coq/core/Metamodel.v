@@ -5,12 +5,12 @@ Require Import core.EqDec.
 Class Metamodel :=
 {
     ModelElement: Type;
-    ModelLink: Type;
-    
     elements_eqdec: EqDec ModelElement;
-
-    (* Decidable Equality*)
     elements_eqb := eq_b;
+
+    ModelLink: Type;
+    source: ModelLink -> ModelElement;
+    target: ModelLink -> list ModelElement;
 
     InstanceModel := Model ModelElement ModelLink;
 }.

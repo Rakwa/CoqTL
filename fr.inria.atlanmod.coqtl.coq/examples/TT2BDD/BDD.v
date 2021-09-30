@@ -32,8 +32,15 @@ Instance BDDEqDec : EqDec BDDNode := {
     eq_b := BDDEq
 }.
 
+Definition source (e: BDDEdge):=
+  match e with
+  | BuildBDDEdge s t => s
+  end.
+
+Definition target (e: BDDEdge):=
+  match e with
+  | BuildBDDEdge s t => t::nil
+  end.
+
 Instance BDDM : Metamodel :=
-{
-  ModelElement := BDDNode;
-  ModelLink := BDDEdge;
-}.
+  Build_Metamodel BDDNode _ BDDEdge source target.
