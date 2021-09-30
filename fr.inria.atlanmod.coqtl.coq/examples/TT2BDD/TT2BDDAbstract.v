@@ -99,11 +99,12 @@ Definition TT2BDD :=
   [ (* rules *)
     (buildRule "Columns2Tree"  
       (fun m sp => option_map isColumn (hd_error sp))
-      (fun m sp => return iter_col sp)
       [buildOutputPatternElement "node"
+          (fun m sp => return iter_col sp)
           (fun i m col => return BuildBDDNode (oelem_name col i))
           [buildOutputPatternLink
-            (fun tls i m col output => 
+            (fun m sp sm sp te => return 1)
+            (fun il tls i m col output => 
               ulv <- (upper_level col);
               ucol <- locate m ulv;
               parent <- resolveIter tls m "node" [ucol] ((div_roundup i 2)-1);
@@ -112,11 +113,12 @@ Definition TT2BDD :=
     ) ;
     (buildRule "Row2Output"  
       (fun m sp => option_map isRow (hd_error sp))  
-      (fun m sp => return 1)
       [buildOutputPatternElement "output"
+          (fun m sp => return 1)
           (fun i m sp => return BuildBDDNode (output_name sp))
           [buildOutputPatternLink
-            (fun tls i m sp output => 
+            (fun m sp sm sp te => return 1)
+            (fun il tls i m sp output => 
               height <- Some (maxLv m);           (* get depth *)
               col <- locate m height;             (* get node of depth *)
               row <- hd_error sp;
