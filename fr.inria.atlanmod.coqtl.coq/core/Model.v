@@ -3,24 +3,24 @@ Scheme Equality for list.
 
 
 (** * Model
-  Each model is constructed by a list of {@code ModelElement} and {@ModelLink}. **)
+  Each model is constructed by a list of {@code Node} and {@Edge}. **)
 
-Class Model (ModelElement: Type) (ModelLink: Type) :=
+Class Model (Node: Type) (Edge: Type) :=
   {
-    modelElements : list ModelElement;
-    modelLinks : list ModelLink;
+    modelElements : list Node;
+    modelLinks : list Edge;
   }.
 
-Definition allModelElements {ModelElement: Type} {ModelLink: Type} (m: Model ModelElement ModelLink) : list ModelElement :=
+Definition allNodes {Node: Type} {Edge: Type} (m: Model Node Edge) : list Node :=
   (@modelElements _ _ m).
 
-Definition allModelLinks {ModelElement: Type} {ModelLink: Type} (m: Model ModelElement ModelLink) : list ModelLink :=
+Definition allEdges {Node: Type} {Edge: Type} (m: Model Node Edge) : list Edge :=
   (@modelLinks _ _ m).
 
 (*
- allModelElements and allModelLinks are fields of record Model.
+ allNodes and allEdges are fields of record Model.
  To use them on a Model m:
- @allModelElements _ _ a.
+ @allNodes _ _ a.
  *)
 
 Definition Model_beq {ME ML: Type} (ME_beq: ME -> ME -> bool) (ML_beq: ML -> ML -> bool) (m1 m2: Model ME ML) :=

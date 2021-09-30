@@ -21,10 +21,10 @@ Theorem Relational_Column_Reference_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)  (forall (att : Attribute),
-    In (ClassMetamodel_toObject AttributeClass att) (allModelElements cm) ->
+    In (ClassMetamodel_toObject AttributeClass att) (allNodes cm) ->
         getAttributeType att cm <> None) ->
   (* postcondition *)  (forall (col: Column),
-    In (RelationalMetamodel_toObject ColumnClass col) (allModelElements rm) ->
+    In (RelationalMetamodel_toObject ColumnClass col) (allNodes rm) ->
       getColumnReference col rm <> None). 
 Proof.
 intros cm rm tr pre.
@@ -36,7 +36,7 @@ assert
   In (RelationalMetamodel_BuildLink 
         ColumnReferenceReference 
         (BuildColumnReference col t))
-     (allModelLinks rm)) as HcolInrml.
+     (allEdges rm)) as HcolInrml.
 {  
 eexists.
 rewrite tr.
@@ -104,10 +104,10 @@ destruct ( toModelClass AttributeClass
              ***** simpl. left. 
                    simpl in HcolInInst.
                    destruct HcolInInst eqn: Hinst_ca.
-                   ****** unfold toModelElement  in e.
+                   ****** unfold toNode  in e.
                           unfold toSumType   in e.
                           simpl in e.
-                          unfold toModelLink.
+                          unfold toEdge.
                           unfold toSumType.
                           simpl.
                           clear Hinst_ca.
@@ -143,7 +143,7 @@ destruct ( toModelClass AttributeClass
 rewrite <- tr.
 unfold getColumnReference.
 
-induction (allModelLinks rm) as [nil | hd tl].
+induction (allEdges rm) as [nil | hd tl].
 - simpl in HcolInrml.
   destruct HcolInrml.
   contradiction.

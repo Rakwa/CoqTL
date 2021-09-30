@@ -15,20 +15,20 @@ Require Import core.Expressions.
 
 Section Certification.
 
-Context {SourceModelElement SourceModelLink: Type}.
-Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on source model elements *)
-Context {TargetModelElement TargetModelLink: Type}.
-Context {eqdec_tme: EqDec TargetModelElement}. (* need decidable equality on source model elements *)
+Context {SourceNode SourceEdge: Type}.
+Context {eqdec_sme: EqDec SourceNode}. (* need decidable equality on source model elements *)
+Context {TargetNode TargetEdge: Type}.
+Context {eqdec_tme: EqDec TargetNode}. (* need decidable equality on source model elements *)
 
 Instance smm : Metamodel := {
-  ModelElement := SourceModelElement;
-  ModelLink := SourceModelLink;
+  Node := SourceNode;
+  Edge := SourceEdge;
   elements_eqdec := eqdec_sme;
 }.
 
 Instance tmm : Metamodel := {
-  ModelElement := TargetModelElement;
-  ModelLink := TargetModelLink;
+  Node := TargetNode;
+  Edge := TargetEdge;
   elements_eqdec := eqdec_tme;
 }.
 
@@ -38,9 +38,9 @@ Instance tc : TransformationConfiguration := {
 }.
 
 Lemma tr_execute_in_elements :
-forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-  In te (allModelElements (execute tr sm)) <->
-  (exists (sp : list SourceModelElement),
+forall (tr: Transformation) (sm : SourceModel) (te : TargetNode),
+  In te (allNodes (execute tr sm)) <->
+  (exists (sp : list SourceNode),
       In sp (allTuples tr sm) /\
       In te (instantiatePattern tr sm sp)).
 Proof.
@@ -49,9 +49,9 @@ Proof.
 Qed.
 
 Lemma tr_execute_in_links :
-forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-  In tl (allModelLinks (execute tr sm)) <->
-  (exists (sp : list SourceModelElement),
+forall (tr: Transformation) (sm : SourceModel) (tl : TargetEdge),
+  In tl (allEdges (execute tr sm)) <->
+  (exists (sp : list SourceNode),
       In sp (allTuples tr sm) /\
       In tl (applyPattern tr sm sp)).
 Proof.
@@ -61,7 +61,7 @@ Qed.
 
 Lemma tr_matchPattern_in :
 forall (tr: Transformation) (sm : SourceModel),
-  forall (sp : list SourceModelElement)(r : Rule),
+  forall (sp : list SourceNode)(r : Rule),
     In r (matchPattern tr sm sp) <->
       In r (Transformation_getRules tr) /\
       matchRuleOnPattern r sm sp = true.
@@ -71,7 +71,7 @@ Proof.
 Qed.
 
 Lemma tr_matchRuleOnPattern_leaf : 
-forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode),
     matchRuleOnPattern r sm sp =
       match evalGuardExpr r sm sp with Some true => true | _ => false end.
 Proof.
@@ -79,7 +79,7 @@ Proof.
 Qed.
 
 Lemma tr_instantiatePattern_in :
-forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
   In te (instantiatePattern tr sm sp) <->
   (exists (r : Rule),
       In r (matchPattern tr sm sp) /\
@@ -90,7 +90,7 @@ Proof.
 Qed.
 
 Lemma tr_instantiateRuleOnPattern_in :
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -101,7 +101,7 @@ Proof.
 Qed.
 
 Lemma tr_instantiateIterationOnPattern_in : 
-forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement) (i:nat),
+forall (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode) (i:nat),
   In te (instantiateIterationOnPattern r sm sp i)
   <->
   (exists (ope: OutputPatternElement),
@@ -132,14 +132,14 @@ Proof.
 Qed.
 
 Lemma  tr_instantiateElementOnPattern_leaf:
-      forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat),
+      forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceNode) (iter: nat),
         instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr sm sp iter o.
 Proof.
   crush.
 Qed.
 
 Lemma tr_applyPattern_in :
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge),
       In tl (applyPattern tr sm sp) <->
       (exists (r : Rule),
           In r (matchPattern tr sm sp) /\
@@ -150,7 +150,7 @@ Proof.
 Qed.
 
 Lemma tr_applyRuleOnPattern_in : 
-    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
+    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge),
       In tl (applyRuleOnPattern r tr sm sp) <->
       (exists (i: nat),
           In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -161,7 +161,7 @@ Proof.
 Qed.
 
 Lemma tr_applyIterationOnPattern_in : 
-    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat),
+    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (i:nat),
       In tl (applyIterationOnPattern r tr sm sp i) <->
       (exists (ope: OutputPatternElement),
           In ope (Rule_getOutputPatternElements r) /\ 
@@ -172,10 +172,10 @@ Proof.
 Qed.
 
 Lemma tr_applyElementOnPattern_in : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
             (i:nat) (ope: OutputPatternElement),
       In tl (applyElementOnPattern ope tr sm sp i ) <->
-      (exists (oper: OutputPatternLink) (te: TargetModelElement),
+      (exists (oper: OutputPatternLink) (te: TargetNode),
           In oper (OutputPatternElement_getOutputLinks ope) /\ 
           (evalOutputPatternElementExpr sm sp i ope) = Some te /\
           applyLinkOnPattern oper tr sm sp i te = Some tl).
@@ -210,7 +210,7 @@ Lemma tr_applyLinkOnPattern_leaf :
         forall (oper: OutputPatternLink)
                 (tr: Transformation)
                 (sm: SourceModel)
-                (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink),
+                (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink),
           applyLinkOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper.
 Proof.
   crush.
@@ -219,14 +219,14 @@ Qed.
 
 (*TODO
 Lemma maxArity_length:
-  forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
+  forall (sp : list SourceNode) (tr: Transformation) (sm: SourceModel), 
   gt (length sp) (maxArity tr) -> In sp (allTuples tr sm) -> False.
 *)
 
 
 Lemma allTuples_incl:
-  forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
-  In sp (allTuples tr sm) -> incl sp (allModelElements sm).
+  forall (sp : list SourceNode) (tr: Transformation) (sm: SourceModel), 
+  In sp (allTuples tr sm) -> incl sp (allNodes sm).
 Proof.
   intros.
   unfold allTuples in H. simpl in H. 
@@ -235,8 +235,8 @@ Proof.
 Qed.
 
 Lemma allTuples_incl_length:
-  forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
-  incl sp (allModelElements sm) -> length sp <= maxArity tr -> In sp (allTuples tr sm).
+  forall (sp : list SourceNode) (tr: Transformation) (sm: SourceModel), 
+  incl sp (allNodes sm) -> length sp <= maxArity tr -> In sp (allTuples tr sm).
 Proof.
   intros.
   unfold allTuples.
@@ -249,7 +249,7 @@ Qed.
 
 Theorem tr_resolveAll_in:
   forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-    (sps: list(list SourceModelElement)),
+    (sps: list(list SourceNode)),
     resolveAll tls sm name sps = resolveAllIter tls sm name sps 0.
 Proof.
   crush.
@@ -257,11 +257,11 @@ Qed.
 
 Theorem tr_resolveAllIter_in:
   forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-          (sps: list(list SourceModelElement)) (iter: nat)
-    (te: TargetModelElement),
-    (exists tes: list TargetModelElement,
+          (sps: list(list SourceNode)) (iter: nat)
+    (te: TargetNode),
+    (exists tes: list TargetNode,
         resolveAllIter tls sm name sps iter = Some tes /\ In te tes) <->
-    (exists (sp: list SourceModelElement),
+    (exists (sp: list SourceNode),
         In sp sps /\
         resolveIter tls sm name sp iter = Some te).
 Proof.
@@ -299,11 +299,11 @@ Qed.
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
 Theorem tr_resolveIter_leaf: 
   forall (tls:list TraceLink) (sm : SourceModel) (name: string)
-    (sp: list SourceModelElement) (iter: nat) (x: TargetModelElement),
+    (sp: list SourceNode) (iter: nat) (x: TargetNode),
     resolveIter tls sm name sp iter = return x ->
       (exists (tl : TraceLink),
         In tl tls /\
-        Is_true (list_beq SourceModelElement (@elements_eqb smm) (TraceLink_getSourcePattern tl) sp) /\
+        Is_true (list_beq SourceNode (@elements_eqb smm) (TraceLink_getSourcePattern tl) sp) /\
         ((TraceLink_getIterator tl) = iter) /\ 
         ((TraceLink_getName tl) = name)%string /\
         (TraceLink_getTargetElement tl) = x).
@@ -311,7 +311,7 @@ Proof.
 intros.
 unfold resolveIter in H.
 destruct (find (fun tl: TraceLink => 
-(list_beq SourceModelElement (@elements_eqb smm) (@TraceLink_getSourcePattern tc tl) sp) &&
+(list_beq SourceNode (@elements_eqb smm) (@TraceLink_getSourcePattern tc tl) sp) &&
 ((TraceLink_getIterator tl) =? iter) &&
 ((TraceLink_getName tl) =? name)%string) tls) eqn: find.
 - exists t.
@@ -422,10 +422,10 @@ Instance CoqTLEngine :
 *)
 
 Lemma tr_match_injective :
-forall (sm : SourceModel)(sp : list SourceModelElement)(r : Rule)(iter: nat),
+forall (sm : SourceModel)(sp : list SourceNode)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIteratorExpr r sm sp)) /\ 
     (exists ope, In ope (Rule_getOutputPatternElements r) /\  (evalOutputPatternElementExpr sm sp iter ope) <> None ) ->
-      (exists (te: TargetModelElement),  In te (instantiateRuleOnPattern r sm sp) ).
+      (exists (te: TargetNode),  In te (instantiateRuleOnPattern r sm sp) ).
 Proof.
 intros.
 destruct H as [Hiter Hope].
@@ -451,11 +451,11 @@ Qed.
 
 (* if In te (instantiateRuleOnPattern r sm sp) => tr_instantiatePattern_in
     In te (instantiatePattern tr sm sp) => by tr_execute_in_elements
-    In te (allModelElements (execute tr sm)) 
+    In te (allNodes (execute tr sm)) 
     *)
 
 Theorem tr_instantiateRuleAndIterationOnPattern_in :
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat) (ope: OutputPatternElement),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -487,7 +487,7 @@ Proof.
 Qed.
 
 Theorem tr_instantiateRuleAndIterationOnPattern_in' :
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\

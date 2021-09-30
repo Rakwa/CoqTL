@@ -55,71 +55,71 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
 
     OutputPatternElement_getOutputLinks: OutputPatternElement -> list OutputPatternLink;
 
-    TraceLink_getSourcePattern: TraceLink -> list SourceModelElement;
+    TraceLink_getSourcePattern: TraceLink -> list SourceNode;
     TraceLink_getIterator: TraceLink -> nat;
     TraceLink_getName: TraceLink -> string;
-    TraceLink_getTargetElement: TraceLink -> TargetModelElement;    
+    TraceLink_getTargetElement: TraceLink -> TargetNode;    
 
-    evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
-    evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
-    evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternLink -> option TargetModelLink;
-    evalGuardExpr: Rule->SourceModel->list SourceModelElement->option bool;
+    evalOutputPatternElementExpr: SourceModel -> list SourceNode -> nat -> OutputPatternElement -> option TargetNode;
+    evalIteratorExpr: Rule -> SourceModel -> list SourceNode -> nat;
+    evalOutputPatternLinkExpr: SourceModel -> list SourceNode -> TargetNode -> nat -> list TraceLink -> OutputPatternLink -> option TargetEdge;
+    evalGuardExpr: Rule->SourceModel->list SourceNode->option bool;
 }.
   
 Class TransformationEngine (tc: TransformationConfiguration) (ts: TransformationSyntax tc) :=
   {
     (** ** allTuples *)
 
-    allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
-      tuples_up_to_n (allModelElements sm) (Transformation_getArity tr);
+    allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceNode) :=
+      tuples_up_to_n (allNodes sm) (Transformation_getArity tr);
 
     (** ** Functions *)
     
     execute: Transformation -> SourceModel -> TargetModel;
     
-    matchPattern: Transformation -> SourceModel -> list SourceModelElement -> list Rule;
-    matchRuleOnPattern: Rule -> SourceModel -> list SourceModelElement -> bool;
+    matchPattern: Transformation -> SourceModel -> list SourceNode -> list Rule;
+    matchRuleOnPattern: Rule -> SourceModel -> list SourceNode -> bool;
 
-    instantiatePattern: Transformation -> SourceModel -> list SourceModelElement -> list TargetModelElement;
-    instantiateRuleOnPattern: Rule -> SourceModel -> list SourceModelElement -> list TargetModelElement; 
-    instantiateIterationOnPattern: Rule -> SourceModel -> list SourceModelElement -> nat -> list TargetModelElement;
-    instantiateElementOnPattern: OutputPatternElement -> SourceModel -> list SourceModelElement -> nat -> option TargetModelElement;
+    instantiatePattern: Transformation -> SourceModel -> list SourceNode -> list TargetNode;
+    instantiateRuleOnPattern: Rule -> SourceModel -> list SourceNode -> list TargetNode; 
+    instantiateIterationOnPattern: Rule -> SourceModel -> list SourceNode -> nat -> list TargetNode;
+    instantiateElementOnPattern: OutputPatternElement -> SourceModel -> list SourceNode -> nat -> option TargetNode;
     
-    applyPattern: Transformation -> SourceModel -> list SourceModelElement -> list TargetModelLink;
-    applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> list TargetModelLink;
-    applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
-    applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
-    applyLinkOnPattern: OutputPatternLink -> Transformation -> SourceModel -> list SourceModelElement -> nat -> TargetModelElement -> option TargetModelLink;
+    applyPattern: Transformation -> SourceModel -> list SourceNode -> list TargetEdge;
+    applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceNode -> list TargetEdge;
+    applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceNode -> nat -> list TargetEdge;
+    applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceNode -> nat -> list TargetEdge;
+    applyLinkOnPattern: OutputPatternLink -> Transformation -> SourceModel -> list SourceNode -> nat -> TargetNode -> option TargetEdge;
     
     trace: Transformation -> SourceModel -> list TraceLink; 
 
     resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (sps: list(list SourceModelElement)) (iter: nat),
-        option (list TargetModelElement);
+             (sps: list(list SourceNode)) (iter: nat),
+        option (list TargetNode);
     resolve: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (sp: list SourceModelElement) (iter : nat), option TargetModelElement;
+             (sp: list SourceNode) (iter : nat), option TargetNode;
 
     (** ** Theorems *)
 
     (** ** allTuples *)
 
     allTuples_incl:
-      forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
-        In sp (allTuples tr sm) -> incl sp (allModelElements sm);
+      forall (sp : list SourceNode) (tr: Transformation) (sm: SourceModel), 
+        In sp (allTuples tr sm) -> incl sp (allNodes sm);
 
     (** ** execute *)
 
     tr_execute_in_elements :
-      forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      In te (allModelElements (execute tr sm)) <->
-      (exists (sp : list SourceModelElement),
+      forall (tr: Transformation) (sm : SourceModel) (te : TargetNode),
+      In te (allNodes (execute tr sm)) <->
+      (exists (sp : list SourceNode),
           In sp (allTuples tr sm) /\
           In te (instantiatePattern tr sm sp));
 
     tr_execute_in_links :
-      forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-        In tl (allModelLinks (execute tr sm)) <->
-        (exists (sp : list SourceModelElement),
+      forall (tr: Transformation) (sm : SourceModel) (tl : TargetEdge),
+        In tl (allEdges (execute tr sm)) <->
+        (exists (sp : list SourceNode),
             In sp (allTuples tr sm) /\
             In tl (applyPattern tr sm sp));
 
@@ -127,7 +127,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
 
     tr_matchPattern_in :
        forall (tr: Transformation) (sm : SourceModel),
-         forall (sp : list SourceModelElement)(r : Rule),
+         forall (sp : list SourceNode)(r : Rule),
            In r (matchPattern tr sm sp) <->
              In r (Transformation_getRules tr) /\
              matchRuleOnPattern r sm sp = true;
@@ -135,14 +135,14 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** matchRuleOnPattern *)
 
     tr_matchRuleOnPattern_leaf :
-    forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+    forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode),
       matchRuleOnPattern r sm sp =
        match evalGuardExpr r sm sp with Some true => true | _ => false end;
 
     (** ** instantiatePattern *)
 
     tr_instantiatePattern_in :
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
         In te (instantiatePattern tr sm sp) <->
         (exists (r : Rule),
             In r (matchPattern tr sm sp) /\
@@ -151,7 +151,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** instantiateRuleOnPattern *)
 
     tr_instantiateRuleOnPattern_in :
-    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
       In te (instantiateRuleOnPattern r sm sp) <->
       (exists (i: nat),
           In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -160,7 +160,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
    (** ** instantiateIterationOnPattern *)
 
     tr_instantiateIterationOnPattern_in : 
-      forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement) (i:nat),
+      forall (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode) (i:nat),
         In te (instantiateIterationOnPattern r sm sp i)
         <->
         (exists (ope: OutputPatternElement),
@@ -170,13 +170,13 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** instantiateElementOnPattern *)
 
     tr_instantiateElementOnPattern_leaf:
-        forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat),
+        forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceNode) (iter: nat),
           instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr sm sp iter o;
 
     (** ** applyPattern *)
 
     tr_applyPattern_in :
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge),
         In tl (applyPattern tr sm sp) <->
         (exists (r : Rule),
             In r (matchPattern tr sm sp) /\
@@ -185,7 +185,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** applyRuleOnPattern *)
 
     tr_applyRuleOnPattern_in : 
-      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge),
         In tl (applyRuleOnPattern r tr sm sp) <->
         (exists (i: nat),
             In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -194,7 +194,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** applyIterationOnPattern *)
 
     tr_applyIterationOnPattern_in : 
-      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat),
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (i:nat),
         In tl (applyIterationOnPattern r tr sm sp i) <->
         (exists (ope: OutputPatternElement),
             In ope (Rule_getOutputPatternElements r) /\ 
@@ -203,10 +203,10 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** applyElementOnPattern *)
 
     tr_applyElementOnPattern_in : 
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
              (i:nat) (ope: OutputPatternElement),
         In tl (applyElementOnPattern ope tr sm sp i ) <->
-        (exists (oper: OutputPatternLink) (te: TargetModelElement),
+        (exists (oper: OutputPatternLink) (te: TargetNode),
             In oper (OutputPatternElement_getOutputLinks ope) /\ 
             (evalOutputPatternElementExpr sm sp i ope) = Some te /\
             applyLinkOnPattern oper tr sm sp i te = Some tl);
@@ -217,28 +217,28 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
           forall (oper: OutputPatternLink)
                  (tr: Transformation)
                  (sm: SourceModel)
-                 (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink),
+                 (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink),
             applyLinkOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper;
 
     (** ** resolve *)
 
     tr_resolveAll_in:
     forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-           (sps: list(list SourceModelElement)) (iter: nat)
-      (te: TargetModelElement),
-      (exists tes: list TargetModelElement,
+           (sps: list(list SourceNode)) (iter: nat)
+      (te: TargetNode),
+      (exists tes: list TargetNode,
           resolveAll tls sm name sps iter = Some tes /\ In te tes) <->
-      (exists (sp: list SourceModelElement),
+      (exists (sp: list SourceNode),
           In sp sps /\
           resolve tls sm name sp iter = Some te);
 
     tr_resolve_leaf:
     forall (tls:list TraceLink) (sm : SourceModel) (name: string)
-      (sp: list SourceModelElement) (iter: nat) (x: TargetModelElement),
+      (sp: list SourceNode) (iter: nat) (x: TargetNode),
       resolve tls sm name sp iter = return x ->
        (exists (tl : TraceLink),
          In tl tls /\
-         Is_true (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
+         Is_true (list_beq SourceNode SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
          ((TraceLink_getIterator tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
          (TraceLink_getTargetElement tl) = x);

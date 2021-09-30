@@ -19,30 +19,30 @@ Section ByRuleSemanticsCertification.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}. 
 
-Lemma allModelElementsOfTypeInModel :
+Lemma allNodesOfTypeInModel :
   forall (c: SourceModelClass) (sm : SourceModel),
-  incl (allModelElementsOfType c sm) (allModelElements sm).
+  incl (allNodesOfType c sm) (allNodes sm).
 Proof.
-  unfold allModelElementsOfType, incl.
+  unfold allNodesOfType, incl.
   intros.
   apply filter_In in H.
   destruct H.
   assumption.
 Qed.
 
-Lemma allModelElementsOfTypesInModel :
-  forall (sp : list SourceModelElement) (l: list SourceModelClass) (sm : SourceModel),
-  In sp (allModelElementsOfTypes l sm) -> incl sp (allModelElements sm).
+Lemma allNodesOfTypesInModel :
+  forall (sp : list SourceNode) (l: list SourceModelClass) (sm : SourceModel),
+  In sp (allNodesOfTypes l sm) -> incl sp (allNodes sm).
 Proof.
   intros.
-  unfold allModelElementsOfTypes in H.
+  unfold allNodesOfTypes in H.
   apply in_map_iff in H. destruct H. destruct H.
   rewrite <- H.
-  apply allModelElementsOfTypeInModel.
+  apply allNodesOfTypeInModel.
 Qed.
 
 Lemma InAllTuplesOfTypes : 
-  forall (a : SourceModelElement) (sp: list SourceModelElement) (s: SourceModelClass) (l : list SourceModelClass) (sm: SourceModel),
+  forall (a : SourceNode) (sp: list SourceNode) (s: SourceModelClass) (l : list SourceModelClass) (sm: SourceModel),
   In (a :: sp) (allTuplesOfTypes (s :: l) sm)
   -> In (sp) (allTuplesOfTypes l sm).
 Proof.
@@ -55,8 +55,8 @@ Proof.
 Qed.
 
 Lemma allTuplesOfTypesInModel :
-  forall (sp : list SourceModelElement) (l: list SourceModelClass) (sm : SourceModel),
-  In sp (allTuplesOfTypes l sm) -> incl sp (allModelElements sm).
+  forall (sp : list SourceNode) (l: list SourceModelClass) (sm : SourceModel),
+  In sp (allTuplesOfTypes l sm) -> incl sp (allNodes sm).
 Proof.
   intros.
   unfold allTuplesOfTypes in H.
@@ -75,7 +75,7 @@ Proof.
       intros.
       simpl in H0.
       destruct H0.
-      * pose allModelElementsOfTypeInModel.
+      * pose allNodesOfTypeInModel.
         unfold incl in i.
         apply i with (c:=a).
         rewrite <- H0.
@@ -88,8 +88,8 @@ Proof.
 Qed.
 
 Lemma allTuplesByRuleInModel :
-  forall (sp : list SourceModelElement) (tr: Transformation) (sm : SourceModel),
-  In sp (allTuplesByRule tr sm) -> incl sp (allModelElements sm).
+  forall (sp : list SourceNode) (tr: Transformation) (sm : SourceModel),
+  In sp (allTuplesByRule tr sm) -> incl sp (allNodes sm).
 Proof.
   intros.
   unfold allTuplesByRule in H.
@@ -99,7 +99,7 @@ Proof.
 Qed.
 
 Lemma allTuplesOfTypesLength :
-  forall (sp: list SourceModelElement) (l : list SourceModelClass) (sm : SourceModel),
+  forall (sp: list SourceNode) (l : list SourceModelClass) (sm : SourceModel),
   In sp (allTuplesOfTypes l sm) -> Datatypes.length sp = Datatypes.length l.
 Proof.
   intros.
@@ -138,7 +138,7 @@ Proof.
 Qed.
 
 Lemma In_by_rule : 
-  forall (sp: list SourceModelElement) (tr: Transformation) (sm: SourceModel),
+  forall (sp: list SourceNode) (tr: Transformation) (sm: SourceModel),
   In sp (allTuplesByRule tr sm) -> In sp (allTuples tr sm).
 Proof.
   intros.
@@ -154,12 +154,12 @@ Proof.
 Qed.
 
 Lemma In_allTuplesOfTypes_inv :
-  forall (a: SourceModelElement) (sp: list SourceModelElement) 
+  forall (a: SourceNode) (sp: list SourceNode) 
   (s: SourceModelClass) (l: list SourceModelClass)
   (sm: SourceModel),
   hasType s a = true
   -> In sp (allTuplesOfTypes l sm) 
-  -> In a (allModelElements sm)
+  -> In a (allNodes sm)
   -> In (a :: sp) (allTuplesOfTypes (s :: l) sm).
 Proof.
   intros.
@@ -167,7 +167,7 @@ Proof.
   simpl.
   unfold allTuplesOfTypes in H0.
   apply prod_cons_in_inv with (se:=a) (ss:=sp).
-  - unfold allModelElementsOfType, hasType.
+  - unfold allNodesOfType, hasType.
     apply filter_In.
     split.
     + assumption.
@@ -176,7 +176,7 @@ Proof.
 Qed.
 
 Lemma In_by_rule_match :
-  forall (sp: list SourceModelElement) (tr: Transformation) (sm: SourceModel) (r: Rule),
+  forall (sp: list SourceNode) (tr: Transformation) (sm: SourceModel) (r: Rule),
   In sp (allTuples tr sm) /\ hd_error (matchPattern tr sm sp) = return r    
   -> In sp (allTuplesOfTypes (Rule_getInTypes r) sm).
 Proof.
@@ -224,7 +224,7 @@ Proof.
 Qed.
 
 Lemma In_by_rule_instantiate : 
-  forall (sp: list SourceModelElement) (tr: Transformation) (sm: SourceModel),
+  forall (sp: list SourceNode) (tr: Transformation) (sm: SourceModel),
   In sp (allTuples tr sm) /\ instantiatePattern tr sm sp <> nil -> In sp (allTuplesByRule tr sm).
 Proof.
   intros.
@@ -257,7 +257,7 @@ Proof.
 Qed.
 
 Lemma In_by_rule_apply : 
-forall (sp: list SourceModelElement) (tr: Transformation) (sm: SourceModel),
+forall (sp: list SourceNode) (tr: Transformation) (sm: SourceModel),
 In sp (allTuples tr sm) /\ applyPattern tr sm sp <> nil -> In sp (allTuplesByRule tr sm).
 Proof.
   intros.
@@ -290,9 +290,9 @@ Proof.
 Qed.
 
 Theorem tr_execute_in_elements :
-  forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-  In te (allModelElements (execute tr sm)) <->
-  (exists (sp : list SourceModelElement),
+  forall (tr: Transformation) (sm : SourceModel) (te : TargetNode),
+  In te (allNodes (execute tr sm)) <->
+  (exists (sp : list SourceNode),
       In sp (allTuples tr sm) /\
       In te (instantiatePattern tr sm sp)).
 Proof.
@@ -318,9 +318,9 @@ Proof.
 Qed.
 
 Theorem tr_execute_in_links :
-  forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-    In tl (allModelLinks (execute tr sm)) <->
-    (exists (sp : list SourceModelElement),
+  forall (tr: Transformation) (sm : SourceModel) (tl : TargetEdge),
+    In tl (allEdges (execute tr sm)) <->
+    (exists (sp : list SourceNode),
         In sp (allTuples tr sm) /\
         In tl (applyPattern tr sm sp)).
 Proof.
@@ -347,9 +347,9 @@ Proof.
 Qed.
 
 Theorem tr_execute_in :
-  forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement) (tl : TargetModelLink),
-    (In te (allModelElements (execute tr sm)) <-> In te (allModelElements (Semantics.execute tr sm)))
-    /\ (In tl (allModelLinks (execute tr sm)) <-> In tl (allModelLinks (Semantics.execute tr sm))).
+  forall (tr: Transformation) (sm : SourceModel) (te : TargetNode) (tl : TargetEdge),
+    (In te (allNodes (execute tr sm)) <-> In te (allNodes (Semantics.execute tr sm)))
+    /\ (In tl (allEdges (execute tr sm)) <-> In tl (allEdges (Semantics.execute tr sm))).
 Proof.
   intros.
   split.
@@ -364,13 +364,13 @@ Qed.
 Instance ByRuleEngine :
   TransformationEngine :=
 {
-  SourceModelElement := SourceModelElement;
+  SourceNode := SourceNode;
   SourceModelClass := SourceModelClass;
-  SourceModelLink := SourceModelLink;
+  SourceEdge := SourceEdge;
   SourceModelReference := SourceModelReference;
-  TargetModelElement := TargetModelElement;
+  TargetNode := TargetNode;
   TargetModelClass := TargetModelClass;
-  TargetModelLink := TargetModelLink;
+  TargetEdge := TargetEdge;
   TargetModelReference := TargetModelReference;
 
   Transformation := Transformation;

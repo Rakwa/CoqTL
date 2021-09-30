@@ -23,51 +23,51 @@ Definition applyLinkOnPatternTraces
             (oper: OutputPatternLink)
             (tr: Transformation)
             (sm: SourceModel)
-            (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink): option TargetModelLink :=
+            (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink): option TargetEdge :=
   evalOutputPatternLinkExpr sm sp te iter tls oper.
 
 Definition applyElementOnPatternTraces
             (ope: OutputPatternElement)
             (tr: Transformation)
             (sm: SourceModel)
-            (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelLink :=
+            (sp: list SourceNode) (iter: nat) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun oper => 
     match (evalOutputPatternElementExpr sm sp iter ope) with 
     | Some l => optionToList (applyLinkOnPatternTraces oper tr sm sp iter l tls)
     | None => nil
     end) (OutputPatternElement_getOutputLinks ope).
 
-Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelLink :=
+Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode) (iter: nat) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun o => applyElementOnPatternTraces o tr sm sp iter tls)
     (Rule_getOutputPatternElements r).
 
-Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelLink :=
+Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun i => applyIterationOnPatternTraces r tr sm sp i tls)
     (seq 0 (evalIteratorExpr r sm sp)).
 
-Definition applyPatternTraces (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelLink :=
+Definition applyPatternTraces (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun r => applyRuleOnPatternTraces r tr sm sp tls) (matchPattern tr sm sp).
 
 (** * Execute **)
 
-Fixpoint noDup_sp (l : list (list SourceModelElement)) : list (list SourceModelElement) :=
+Fixpoint noDup_sp (l : list (list SourceNode)) : list (list SourceNode) :=
   match l with
     | x::xs => 
       match xs with
-        | x2::x2s => if (list_beq SourceModelElement core.EqDec.eq_b x x2) then noDup_sp xs else x::(noDup_sp xs)
+        | x2::x2s => if (list_beq SourceNode core.EqDec.eq_b x x2) then noDup_sp xs else x::(noDup_sp xs)
         | nil => x::nil
       end
     | nil => nil
   end.
 
-Lemma In_noDup_sp_cons: forall (l: list (list SourceModelElement)) (sp x: list SourceModelElement),
+Lemma In_noDup_sp_cons: forall (l: list (list SourceNode)) (sp x: list SourceNode),
   In sp (noDup_sp l) -> In sp (noDup_sp (x::l)).
 Proof.
   intros.
   simpl.  
   destruct l eqn:dstl.
   - contradiction.
-  - destruct (list_beq SourceModelElement eq_b x l0) eqn:dsteq.
+  - destruct (list_beq SourceNode eq_b x l0) eqn:dsteq.
     + assumption.
     + simpl.
       simpl in H.
@@ -75,14 +75,14 @@ Proof.
       assumption.
 Qed.
 
-Lemma In_noDup_sp_cons': forall (l: list (list SourceModelElement)) (sp x: list SourceModelElement),
+Lemma In_noDup_sp_cons': forall (l: list (list SourceNode)) (sp x: list SourceNode),
   In sp (noDup_sp (x::l)) -> sp = x \/ In sp (noDup_sp l).
 Proof.
   intros.
   simpl in H.
   destruct l eqn:dstl.
   - simpl in H. crush.
-  - destruct (list_beq SourceModelElement eq_b x l0) eqn:dsteq.
+  - destruct (list_beq SourceNode eq_b x l0) eqn:dsteq.
     + right. assumption.
     + simpl in H.
       destruct H.
@@ -90,7 +90,7 @@ Proof.
       * right. auto.
 Qed.
 
-Lemma In_noDup_sp: forall (l: list (list SourceModelElement)) (sp: list SourceModelElement),
+Lemma In_noDup_sp: forall (l: list (list SourceNode)) (sp: list SourceNode),
   In sp (noDup_sp l) <-> In sp l.
 Proof.
   split.
@@ -100,7 +100,7 @@ Proof.
       - simpl. simpl in H.
         destruct l eqn:dstl.
         + simpl in H. auto.
-        + destruct (list_beq SourceModelElement core.EqDec.eq_b a l0) eqn:dsteq.
+        + destruct (list_beq SourceNode core.EqDec.eq_b a l0) eqn:dsteq.
           * right. apply IHl. assumption.
           * simpl in H.
             destruct H.
@@ -113,7 +113,7 @@ Proof.
         destruct l eqn:dstl.
         * auto.
         * simpl.
-          destruct (list_beq SourceModelElement core.EqDec.eq_b a l0) eqn:dsteq.
+          destruct (list_beq SourceNode core.EqDec.eq_b a l0) eqn:dsteq.
           + destruct l1 eqn:dstl1.
             ++ destruct H.
               ** rewrite <- H. unfold In. left. 
@@ -124,7 +124,7 @@ Definition instantiateTraces (tr: Transformation) (sm : SourceModel) :=
   let tls := trace tr sm in
     ( map (TraceLink_getTargetElement) tls, tls ).
 
-Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list TraceLink): list TargetModelLink :=
+Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun sp => applyPatternTraces tr sm sp tls) (noDup_sp (map (TraceLink_getSourcePattern) tls)).
 
 Definition executeTraces (tr: Transformation) (sm : SourceModel) : TargetModel :=

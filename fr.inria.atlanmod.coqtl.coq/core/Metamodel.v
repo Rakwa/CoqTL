@@ -4,13 +4,13 @@ Require Import core.EqDec.
 
 Class Metamodel :=
 {
-    ModelElement: Type;
-    elements_eqdec: EqDec ModelElement;
+    Node: Type;
+    elements_eqdec: EqDec Node;
     elements_eqb := eq_b;
 
-    ModelLink: Type;
-    source: ModelLink -> ModelElement;
-    target: ModelLink -> list ModelElement;
+    Edge: Type;
+    source: Edge -> Node;
+    target: Edge -> list Node;
 
-    InstanceModel := Model ModelElement ModelLink;
+    InstanceModel := Model Node Edge;
 }.

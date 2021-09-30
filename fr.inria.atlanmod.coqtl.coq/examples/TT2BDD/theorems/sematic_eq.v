@@ -39,7 +39,7 @@ Fixpoint BDDNode_parent (n: BDDNode) (tl: list BDDEdge) : option BDDNode :=
 Fixpoint well_defined (e: BDDNode) (tm: Model BDDNode BDDEdge) (leaf: bool):=
     match leaf with
     | true => 
-        match (BDDNode_parent e (allModelLinks tm)) with
+        match (BDDNode_parent e (allEdges tm)) with
             | None => false
             | Some p => well_defined p tm false (* p is at the right pos, and p's parent is well defined *)
         end
@@ -48,7 +48,7 @@ Fixpoint well_defined (e: BDDNode) (tm: Model BDDNode BDDEdge) (leaf: bool):=
 
 Theorem semantic_eq:
   forall (sm: Model TTElem TTRef) (se: TTElem), 
-    (In se (allModelElements sm)) -> 
+    (In se (allNodes sm)) -> 
       (isRow se) = true ->
         (exists (te:BDDNode),
           (BDDNode_name te) = output_name [se] /\ well_defined te (execute TT2BDD sm) true = true

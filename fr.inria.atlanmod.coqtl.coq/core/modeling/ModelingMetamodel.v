@@ -15,24 +15,24 @@ Class ModelingMetamodel `(mm : Metamodel) :=
 {
     ModelClass: Type;
     ModelReference: Type;
-    elements: Sum ModelElement ModelClass;
-    links: Sum ModelLink ModelReference;
+    elements: Sum Node ModelClass;
+    links: Sum Edge ModelReference;
     
     (* Denotation *)
     denoteModelClass: ModelClass -> Set := denoteSubType;
     denoteModelReference: ModelReference -> Set := denoteSubType;
   
     (* Downcasting *)
-    toModelClass: forall (t:ModelClass), ModelElement -> option (denoteModelClass t) := toSubType;
-    toModelReference: forall (t:ModelReference), ModelLink -> option (denoteModelReference t) := toSubType;
+    toModelClass: forall (t:ModelClass), Node -> option (denoteModelClass t) := toSubType;
+    toModelReference: forall (t:ModelReference), Edge -> option (denoteModelReference t) := toSubType;
   
     (* Upcasting *)
-    toModelElement: forall (t: ModelClass), (denoteModelClass t) -> ModelElement := toSumType;
-    toModelLink: forall (t: ModelReference), (denoteModelReference t) -> ModelLink := toSumType;
+    toNode: forall (t: ModelClass), (denoteModelClass t) -> Node := toSumType;
+    toEdge: forall (t: ModelReference), (denoteModelReference t) -> Edge := toSumType;
 
 }.
 
-Definition hasType {mm: Metamodel} {mmm: ModelingMetamodel mm} (t: ModelClass) (e: ModelElement) : bool :=
+Definition hasType {mm: Metamodel} {mmm: ModelingMetamodel mm} (t: ModelClass) (e: Node) : bool :=
   match (toModelClass t e) with
   | Some e' => true
   | _ => false

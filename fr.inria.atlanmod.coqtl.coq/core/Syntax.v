@@ -22,18 +22,18 @@ Context {tc: TransformationConfiguration}.
 
 Inductive OutputPatternLink : Type :=
   buildOutputPatternLink :
-    (list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option nat) 
-    -> (nat -> list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
+    (list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option nat) 
+    -> (nat -> list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option TargetEdge) 
     -> OutputPatternLink.
 
 Definition OutputPatternLink_getIteratorExpr (o: OutputPatternLink) : 
-    list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option nat :=
+    list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option nat :=
     match o with
       buildOutputPatternLink y _ => y
     end.
 
 Definition OutputPatternLink_getLinkExpr (o: OutputPatternLink) : 
-    nat -> list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
+    nat -> list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option TargetEdge :=
     match o with
       buildOutputPatternLink _ y => y
     end.
@@ -43,8 +43,8 @@ Definition OutputPatternLink_getLinkExpr (o: OutputPatternLink) :
 Inductive OutputPatternElement : Type :=
   buildOutputPatternElement :
     string 
-    -> (SourceModel -> (list SourceModelElement) -> option nat)
-    -> (nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
+    -> (SourceModel -> (list SourceNode) -> option nat)
+    -> (nat -> SourceModel -> (list SourceNode) -> option TargetNode) 
     -> (list OutputPatternLink) -> OutputPatternElement.
 
 Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
@@ -58,7 +58,7 @@ Definition OutputPatternElement_getIteratorExpr (o: OutputPatternElement) :=
   end.
 
 
-Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement :=
+Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -> SourceModel -> (list SourceNode) -> option TargetNode :=
   match o with
     buildOutputPatternElement _ _ y _ => y
   end.
@@ -74,7 +74,7 @@ Definition OutputPatternElement_getOutputLinks (o: OutputPatternElement) :
 Inductive Rule : Type :=
   buildRule :
     (* name *) string
-    (* from *) -> (SourceModel -> (list SourceModelElement) -> option bool)
+    (* from *) -> (SourceModel -> (list SourceNode) -> option bool)
     (* to *) -> (list OutputPatternElement)
     -> Rule.
 
@@ -83,7 +83,7 @@ Definition Rule_getName (x : Rule) : string :=
     buildRule y _ _ => y
   end.
   
-Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> option bool :=
+Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceNode) -> option bool :=
   match x with
     buildRule _ y _ => y
   end.

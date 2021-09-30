@@ -28,14 +28,14 @@ forall (cm : ClassModel) (rm : RelationalModel),
     rm = execute Class2Relational cm ->
 (* precondition *)   
 (forall (c1: Class) (c2: Class), 
-    In (ClassMetamodel_toObject ClassClass c1) (allModelElements cm) -> 
-    In (ClassMetamodel_toObject ClassClass c2) (allModelElements cm) -> 
+    In (ClassMetamodel_toObject ClassClass c1) (allNodes cm) -> 
+    In (ClassMetamodel_toObject ClassClass c2) (allNodes cm) -> 
     c1 <> c2 -> 
     getClassName c1 <> getClassName c2) ->
 (* postcondition *)  
 (forall (t1: Table) (t2: Table), 
-    In (RelationalMetamodel_toObject TableClass t1) (allModelElements rm) -> 
-    In (RelationalMetamodel_toObject TableClass t2) (allModelElements rm) -> 
+    In (RelationalMetamodel_toObject TableClass t1) (allNodes rm) -> 
+    In (RelationalMetamodel_toObject TableClass t2) (allNodes rm) -> 
     t1 <> t2 -> 
     getTableName t1 <> getTableName t2).
 Proof.

@@ -444,7 +444,7 @@ match l with
 end.
 
 Definition BDD_getPorts (bd_arg : BDD) (m : bddModel) : option (list Port) :=
-  BDD_getPortsOnLinks bd_arg (@allModelLinks _ _ m).
+  BDD_getPortsOnLinks bd_arg (@allEdges _ _ m).
 Fixpoint BDD_getTreeOnLinks (bd_arg : BDD) (l : list bddMetamodel_ELink) : option (Tree) :=
 match l with
 | (Build_bddMetamodel_ELink BDDTreeEReference (BuildBDDTree BDD_ctr tree_ctr)) :: l' => 
@@ -454,7 +454,7 @@ match l with
 end.
 
 Definition BDD_getTree (bd_arg : BDD) (m : bddModel) : option (Tree) :=
-  BDD_getTreeOnLinks bd_arg (@allModelLinks _ _ m).
+  BDD_getTreeOnLinks bd_arg (@allEdges _ _ m).
 Fixpoint BDD_getTreesOnLinks (bd_arg : BDD) (l : list bddMetamodel_ELink) : option (list Tree) :=
 match l with
 | (Build_bddMetamodel_ELink BDDTreesEReference (BuildBDDTrees BDD_ctr trees_ctr)) :: l' => 
@@ -464,7 +464,7 @@ match l with
 end.
 
 Definition BDD_getTrees (bd_arg : BDD) (m : bddModel) : option (list Tree) :=
-  BDD_getTreesOnLinks bd_arg (@allModelLinks _ _ m).
+  BDD_getTreesOnLinks bd_arg (@allEdges _ _ m).
 
 Fixpoint Port_getOwnerOnLinks (po_arg : Port) (l : list bddMetamodel_ELink) : option (BDD) :=
 match l with
@@ -475,7 +475,7 @@ match l with
 end.
 
 Definition Port_getOwner (po_arg : Port) (m : bddModel) : option (BDD) :=
-  Port_getOwnerOnLinks po_arg (@allModelLinks _ _ m).
+  Port_getOwnerOnLinks po_arg (@allEdges _ _ m).
 
 Fixpoint InputPort_getSubtreesOnLinks (in_arg : InputPort) (l : list bddMetamodel_ELink) : option (list Subtree) :=
 match l with
@@ -486,7 +486,7 @@ match l with
 end.
 
 Definition InputPort_getSubtrees (in_arg : InputPort) (m : bddModel) : option (list Subtree) :=
-  InputPort_getSubtreesOnLinks in_arg (@allModelLinks _ _ m).
+  InputPort_getSubtreesOnLinks in_arg (@allEdges _ _ m).
 
 Fixpoint OutputPort_getAssignmentsOnLinks (ou_arg : OutputPort) (l : list bddMetamodel_ELink) : option (list Assignment) :=
 match l with
@@ -497,7 +497,7 @@ match l with
 end.
 
 Definition OutputPort_getAssignments (ou_arg : OutputPort) (m : bddModel) : option (list Assignment) :=
-  OutputPort_getAssignmentsOnLinks ou_arg (@allModelLinks _ _ m).
+  OutputPort_getAssignmentsOnLinks ou_arg (@allEdges _ _ m).
 
 Fixpoint Tree_getOwnerBDDOnLinks (tr_arg : Tree) (l : list bddMetamodel_ELink) : option (BDD) :=
 match l with
@@ -508,7 +508,7 @@ match l with
 end.
 
 Definition Tree_getOwnerBDD (tr_arg : Tree) (m : bddModel) : option (BDD) :=
-  Tree_getOwnerBDDOnLinks tr_arg (@allModelLinks _ _ m).
+  Tree_getOwnerBDDOnLinks tr_arg (@allEdges _ _ m).
 Fixpoint Tree_getOwnerSubtreeForZeroOnLinks (tr_arg : Tree) (l : list bddMetamodel_ELink) : option (list Subtree) :=
 match l with
 | (Build_bddMetamodel_ELink TreeOwnerSubtreeForZeroEReference (BuildTreeOwnerSubtreeForZero Tree_ctr ownerSubtreeForZero_ctr)) :: l' => 
@@ -518,7 +518,7 @@ match l with
 end.
 
 Definition Tree_getOwnerSubtreeForZero (tr_arg : Tree) (m : bddModel) : option (list Subtree) :=
-  Tree_getOwnerSubtreeForZeroOnLinks tr_arg (@allModelLinks _ _ m).
+  Tree_getOwnerSubtreeForZeroOnLinks tr_arg (@allEdges _ _ m).
 Fixpoint Tree_getOwnerSubtreeForOneOnLinks (tr_arg : Tree) (l : list bddMetamodel_ELink) : option (list Subtree) :=
 match l with
 | (Build_bddMetamodel_ELink TreeOwnerSubtreeForOneEReference (BuildTreeOwnerSubtreeForOne Tree_ctr ownerSubtreeForOne_ctr)) :: l' => 
@@ -528,7 +528,7 @@ match l with
 end.
 
 Definition Tree_getOwnerSubtreeForOne (tr_arg : Tree) (m : bddModel) : option (list Subtree) :=
-  Tree_getOwnerSubtreeForOneOnLinks tr_arg (@allModelLinks _ _ m).
+  Tree_getOwnerSubtreeForOneOnLinks tr_arg (@allEdges _ _ m).
 
 Fixpoint Leaf_getAssignmentsOnLinks (le_arg : Leaf) (l : list bddMetamodel_ELink) : option (list Assignment) :=
 match l with
@@ -539,7 +539,7 @@ match l with
 end.
 
 Definition Leaf_getAssignments (le_arg : Leaf) (m : bddModel) : option (list Assignment) :=
-  Leaf_getAssignmentsOnLinks le_arg (@allModelLinks _ _ m).
+  Leaf_getAssignmentsOnLinks le_arg (@allEdges _ _ m).
 
 Fixpoint Assignment_getPortOnLinks (as_arg : Assignment) (l : list bddMetamodel_ELink) : option (OutputPort) :=
 match l with
@@ -550,7 +550,7 @@ match l with
 end.
 
 Definition Assignment_getPort (as_arg : Assignment) (m : bddModel) : option (OutputPort) :=
-  Assignment_getPortOnLinks as_arg (@allModelLinks _ _ m).
+  Assignment_getPortOnLinks as_arg (@allEdges _ _ m).
 Fixpoint Assignment_getOwnerOnLinks (as_arg : Assignment) (l : list bddMetamodel_ELink) : option (Leaf) :=
 match l with
 | (Build_bddMetamodel_ELink AssignmentOwnerEReference (BuildAssignmentOwner Assignment_ctr owner_ctr)) :: l' => 
@@ -560,7 +560,7 @@ match l with
 end.
 
 Definition Assignment_getOwner (as_arg : Assignment) (m : bddModel) : option (Leaf) :=
-  Assignment_getOwnerOnLinks as_arg (@allModelLinks _ _ m).
+  Assignment_getOwnerOnLinks as_arg (@allEdges _ _ m).
 
 Fixpoint Subtree_getPortOnLinks (su_arg : Subtree) (l : list bddMetamodel_ELink) : option (InputPort) :=
 match l with
@@ -571,7 +571,7 @@ match l with
 end.
 
 Definition Subtree_getPort (su_arg : Subtree) (m : bddModel) : option (InputPort) :=
-  Subtree_getPortOnLinks su_arg (@allModelLinks _ _ m).
+  Subtree_getPortOnLinks su_arg (@allEdges _ _ m).
 Fixpoint Subtree_getTreeForZeroOnLinks (su_arg : Subtree) (l : list bddMetamodel_ELink) : option (Tree) :=
 match l with
 | (Build_bddMetamodel_ELink SubtreeTreeForZeroEReference (BuildSubtreeTreeForZero Subtree_ctr treeForZero_ctr)) :: l' => 
@@ -581,7 +581,7 @@ match l with
 end.
 
 Definition Subtree_getTreeForZero (su_arg : Subtree) (m : bddModel) : option (Tree) :=
-  Subtree_getTreeForZeroOnLinks su_arg (@allModelLinks _ _ m).
+  Subtree_getTreeForZeroOnLinks su_arg (@allEdges _ _ m).
 Fixpoint Subtree_getTreeForOneOnLinks (su_arg : Subtree) (l : list bddMetamodel_ELink) : option (Tree) :=
 match l with
 | (Build_bddMetamodel_ELink SubtreeTreeForOneEReference (BuildSubtreeTreeForOne Subtree_ctr treeForOne_ctr)) :: l' => 
@@ -591,7 +591,7 @@ match l with
 end.
 
 Definition Subtree_getTreeForOne (su_arg : Subtree) (m : bddModel) : option (Tree) :=
-  Subtree_getTreeForOneOnLinks su_arg (@allModelLinks _ _ m).
+  Subtree_getTreeForOneOnLinks su_arg (@allEdges _ _ m).
 
 Definition beq_bddMetamodel_Object (c1 : bddMetamodel_EObject) (c2 : bddMetamodel_EObject) : bool :=
   match c1, c2 with
@@ -610,9 +610,9 @@ Instance bddMetamodel : Metamodel bddMetamodel_EObject bddMetamodel_ELink bddMet
     denoteModelReference := bddMetamodel_getTypeByEReference;
     toModelClass := bddMetamodel_toEClass;
     toModelReference := bddMetamodel_toEReference;
-    toModelElement := bddMetamodel_toEObjectOfEClass;
-    toModelLink := bddMetamodel_toELinkOfEReference;
-    beq_ModelElement := beq_bddMetamodel_Object;
+    toNode := bddMetamodel_toEObjectOfEClass;
+    toEdge := bddMetamodel_toELinkOfEReference;
+    beq_Node := beq_bddMetamodel_Object;
 
     (* Theorems *)
     eqModelClass_dec := bddMetamodel_eqEClass_dec;

@@ -14,16 +14,16 @@ Section ByRuleSemantics.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}. 
 
-Definition allModelElementsOfType (t: SourceModelClass) (sm: SourceModel) : list SourceModelElement :=
-  filter (hasType t) (allModelElements sm).
+Definition allNodesOfType (t: SourceModelClass) (sm: SourceModel) : list SourceNode :=
+  filter (hasType t) (allNodes sm).
 
-Definition allModelElementsOfTypes (l: list SourceModelClass) (sm: SourceModel): list (list SourceModelElement) :=
-  map (fun t:SourceModelClass => allModelElementsOfType t sm) l.
+Definition allNodesOfTypes (l: list SourceModelClass) (sm: SourceModel): list (list SourceNode) :=
+  map (fun t:SourceModelClass => allNodesOfType t sm) l.
 
-Definition allTuplesOfTypes (l: list SourceModelClass) (sm: SourceModel): list (list SourceModelElement) := 
-  fold_right prod_cons [nil] (allModelElementsOfTypes l sm).
+Definition allTuplesOfTypes (l: list SourceModelClass) (sm: SourceModel): list (list SourceNode) := 
+  fold_right prod_cons [nil] (allNodesOfTypes l sm).
 
-Definition allTuplesByRule (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
+Definition allTuplesByRule (tr: Transformation) (sm : SourceModel) :list (list SourceNode) :=
   (flat_map (fun (r:Rule) => allTuplesOfTypes (Rule_getInTypes r) sm) (Transformation_getRules tr)).
 
 Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=

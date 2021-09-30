@@ -21,7 +21,7 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 Theorem tr_resolveAll_in:
   forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sps: list(list SourceModelElement)),
+    (type: TargetModelClass) (sps: list(list SourceNode)),
     resolveAll tls sm name type sps = resolveAllIter tls sm name type sps 0.
 Proof.
   crush.
@@ -29,11 +29,11 @@ Qed.
 
 Theorem tr_resolveAllIter_in:
   forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
+    (type: TargetModelClass) (sps: list(list SourceNode)) (iter: nat)
     (te: denoteModelClass type),
     (exists tes: list (denoteModelClass type),
         resolveAllIter tls sm name type sps iter = Some tes /\ In te tes) <->
-    (exists (sp: list SourceModelElement),
+    (exists (sp: list SourceNode),
         In sp sps /\
         resolveIter tls sm name type sp iter = Some te).
 Proof.
@@ -71,7 +71,7 @@ Qed.*)
 
 Theorem tr_resolve_in:
   forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sp: list SourceModelElement),
+    (type: TargetModelClass) (sp: list SourceNode),
     resolve tls sm name type sp = resolveIter tls sm name type sp 0.
 Proof.
   crush.
@@ -80,11 +80,11 @@ Qed.
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
 Theorem tr_resolveIter_leaf:
   forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
-    (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
+    (sp: list SourceNode) (iter: nat) (x: denoteModelClass type),
     resolveIter tls sm name type sp iter = return x ->
       (exists (tl : TraceLink),
         In tl tls /\
-        Is_true (list_beq SourceModelElement core.EqDec.eq_b (TraceLink_getSourcePattern tl) sp) /\
+        Is_true (list_beq SourceNode core.EqDec.eq_b (TraceLink_getSourcePattern tl) sp) /\
         ((TraceLink_getIterator tl) = iter) /\ 
         ((TraceLink_getName tl) = name)%string /\
         (toModelClass type (TraceLink_getTargetElement tl) = Some x)). 
@@ -92,7 +92,7 @@ Proof.
 intros.
 unfold resolveIter in H.
 destruct (find (fun tl: TraceLink => 
-(Semantics.list_beq SourceModelElement core.EqDec.eq_b (TraceLink_getSourcePattern tl) sp) &&
+(Semantics.list_beq SourceNode core.EqDec.eq_b (TraceLink_getSourcePattern tl) sp) &&
 ((TraceLink_getIterator tl) =? iter) &&
 ((TraceLink_getName tl) =? name)%string) tls) eqn: find.
 - exists t.
@@ -109,7 +109,7 @@ destruct (find (fun tl: TraceLink =>
   -- Admitted.
 
 Instance ModelingCoqTLEngine :
-  ModelingTransformationEngine (@CoqTLEngine SourceModelElement SourceModelLink eqdec_sme TargetModelElement TargetModelLink):=
+  ModelingTransformationEngine (@CoqTLEngine SourceNode SourceEdge eqdec_sme TargetNode TargetEdge):=
   {
     SourceModelClass := SourceModelClass;
     SourceModelReference := SourceModelReference;

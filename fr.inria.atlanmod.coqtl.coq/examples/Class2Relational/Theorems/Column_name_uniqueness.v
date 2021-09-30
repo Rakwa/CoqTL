@@ -29,9 +29,9 @@ forall (cm : ClassModel) (rm : RelationalModel),
     rm = execute Class2Relational cm ->
     (* precondition *)
     (forall (at1: Attribute) (at2: Attribute) (cl: Class) (ats: list Attribute),
-        In (ClassMetamodel_toObject AttributeClass at1) (allModelElements cm) ->
-        In (ClassMetamodel_toObject AttributeClass at2) (allModelElements cm) ->
-        In (ClassMetamodel_toObject ClassClass cl) (allModelElements cm) ->
+        In (ClassMetamodel_toObject AttributeClass at1) (allNodes cm) ->
+        In (ClassMetamodel_toObject AttributeClass at2) (allNodes cm) ->
+        In (ClassMetamodel_toObject ClassClass cl) (allNodes cm) ->
         getClassAttributes cl cm = Some ats ->
         In at1 ats ->
         In at2 ats ->
@@ -39,9 +39,9 @@ forall (cm : ClassModel) (rm : RelationalModel),
         getAttributeName at1 <> getAttributeName at2) ->
     (* postcondition *)
     (forall (co1: Column) (co2: Column) (ta: Table) (cos: list Column),
-        In (RelationalMetamodel_toObject ColumnClass co1) (allModelElements rm) ->
-        In (RelationalMetamodel_toObject ColumnClass co2) (allModelElements rm) ->
-        In (RelationalMetamodel_toObject TableClass ta) (allModelElements rm) ->
+        In (RelationalMetamodel_toObject ColumnClass co1) (allNodes rm) ->
+        In (RelationalMetamodel_toObject ColumnClass co2) (allNodes rm) ->
+        In (RelationalMetamodel_toObject TableClass ta) (allNodes rm) ->
         getTableColumns ta rm = Some cos ->
         In co1 cos ->
         In co2 cos ->

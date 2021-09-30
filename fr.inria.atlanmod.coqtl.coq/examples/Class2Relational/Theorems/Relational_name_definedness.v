@@ -57,8 +57,8 @@ Ltac unfoldTransformation Tr :=
 Theorem Relational_name_definedness:
 forall (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel),
   (* transformation *) rm = @execute _ _ te Class2Relational cm ->
-  (* precondition *)   (forall (c1 : ClassMetamodel_Object), In c1 (allModelElements cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
-  (* postcondition *)  (forall (t1 : RelationalMetamodel_Object), In t1 (allModelElements rm) -> (RelationalMetamodel_getName t1 <> ""%string)). 
+  (* precondition *)   (forall (c1 : ClassMetamodel_Object), In c1 (allNodes cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
+  (* postcondition *)  (forall (t1 : RelationalMetamodel_Object), In t1 (allNodes rm) -> (RelationalMetamodel_getName t1 <> ""%string)). 
 Proof.
   intros.
   rewrite H in H1.
@@ -265,8 +265,8 @@ Ltac destruct_pattern Hinst sp :=
 Theorem Relational_name_definedness':
 forall (cm : ClassModel) (rm : RelationalModel),
   (* transformation *) rm = execute Class2Relational cm ->
-  (* precondition *)   (forall (c1 : ClassMetamodel_Object), In c1 (allModelElements cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
-  (* postcondition *)  (forall (t1 : RelationalMetamodel_Object), In t1 (allModelElements rm) -> (RelationalMetamodel_getName t1 <> ""%string)).
+  (* precondition *)   (forall (c1 : ClassMetamodel_Object), In c1 (allNodes cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
+  (* postcondition *)  (forall (t1 : RelationalMetamodel_Object), In t1 (allNodes rm) -> (RelationalMetamodel_getName t1 <> ""%string)).
 Proof.
   intros. subst rm.
   destruct_execute H1 sp Hin Hinst. (* t1 comes from a pattern sp *)

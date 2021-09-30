@@ -35,31 +35,31 @@ Definition evalExpr5 {A B C D E F:Type} (f: Expr5 A B C D E F) (a: A) (b: B) (c:
 Definition Expr (A: Type) (B: Type) : Type := A -> B.
 Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a.
 
-Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
+Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceNode) : option bool :=
 evalExpr (Rule_getGuardExpr r) sm sp.
 
-Definition evalLinkIteratorExpr (o : OutputPatternLink) (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat) (tls: list TraceLink) :
+Definition evalLinkIteratorExpr (o : OutputPatternLink) (sm: SourceModel) (sp: list SourceNode) (oe: TargetNode) (iter: nat) (tls: list TraceLink) :
   nat :=
   match (evalExpr (OutputPatternLink_getIteratorExpr o) tls iter sm sp oe) with
   | Some n => n
   | _ => 0
   end.
 
-Definition evalElementIteratorExpr (o : OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) :
+Definition evalElementIteratorExpr (o : OutputPatternElement) (sm: SourceModel) (sp: list SourceNode) :
   nat :=
   match (evalExpr (OutputPatternElement_getIteratorExpr o) sm sp) with
   | Some n => n
   | _ => 0
   end.
 
-Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (o: OutputPatternElement)
-  : option TargetModelElement := 
+Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceNode) (iter: nat) (o: OutputPatternElement)
+  : option TargetNode := 
 (evalExpr (OutputPatternElement_getElementExpr o) iter sm sp).
 
 Definition evalOutputPatternLinkExpr
-            (iterl: nat) (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat) (tr: list TraceLink)
+            (iterl: nat) (sm: SourceModel) (sp: list SourceNode) (oe: TargetNode) (iter: nat) (tr: list TraceLink)
             (o: OutputPatternLink)
-  : option TargetModelLink :=
+  : option TargetEdge :=
 (evalExpr (OutputPatternLink_getLinkExpr o) iterl tr iter sm sp oe).
 
 End Expressions.

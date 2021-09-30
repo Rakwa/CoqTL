@@ -44,30 +44,30 @@ Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: Model
   (t: TransformationEngine ts) :=
   {
     resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat),
+             (type: TargetModelClass) (sps: list(list SourceNode)) (iter: nat),
         option (list (denoteModelClass type));
     resolve: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sp: list SourceModelElement) (iter : nat), option (denoteModelClass type);
+             (type: TargetModelClass) (sp: list SourceNode) (iter : nat), option (denoteModelClass type);
 
     (** ** Theorems *)
 
     tr_resolveAll_in:
     forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-      (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
+      (type: TargetModelClass) (sps: list(list SourceNode)) (iter: nat)
       (te: denoteModelClass type),
       (exists tes: list (denoteModelClass type),
           resolveAll tls sm name type sps iter = Some tes /\ In te tes) <->
-      (exists (sp: list SourceModelElement),
+      (exists (sp: list SourceNode),
           In sp sps /\
           resolve tls sm name type sp iter = Some te);
 
     tr_resolve_leaf:
     forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
-      (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
+      (sp: list SourceNode) (iter: nat) (x: denoteModelClass type),
       resolve tls sm name type sp iter = return x ->
        (exists (tl : TraceLink),
          In tl tls /\
-         Is_true (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
+         Is_true (list_beq SourceNode SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
          ((TraceLink_getIterator tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
          (toModelClass type (TraceLink_getTargetElement tl) = Some x));

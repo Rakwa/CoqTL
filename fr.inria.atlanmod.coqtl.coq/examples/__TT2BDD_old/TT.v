@@ -453,7 +453,7 @@ match l with
 | nil => None
 end.
 Definition TruthTable_getPorts (tr_arg : TruthTable) (m : TTModel) : option (list Port) :=
-  TruthTable_getPortsOnLinks tr_arg (@allModelLinks _ _ m).
+  TruthTable_getPortsOnLinks tr_arg (@allEdges _ _ m).
 Fixpoint TruthTable_getRowsOnLinks (tr_arg : TruthTable) (l : list TTMetamodel_ELink) : option (list Row) :=
 match l with
 | (Build_TTMetamodel_ELink TruthTableRowsEReference (BuildTruthTableRows TruthTable_ctr rows_ctr)) :: l' => 
@@ -463,7 +463,7 @@ match l with
 end.
 
 Definition TruthTable_getRows (tr_arg : TruthTable) (m : TTModel) : option (list Row) :=
-  TruthTable_getRowsOnLinks tr_arg (@allModelLinks _ _ m).
+  TruthTable_getRowsOnLinks tr_arg (@allEdges _ _ m).
 
 Fixpoint Port_getOwnerOnLinks (po_arg : Port) (l : list TTMetamodel_ELink) : option (TruthTable) :=
 match l with
@@ -474,7 +474,7 @@ match l with
 end.
 
 Definition Port_getOwner (po_arg : Port) (m : TTModel) : option (TruthTable) :=
-  Port_getOwnerOnLinks po_arg (@allModelLinks _ _ m).
+  Port_getOwnerOnLinks po_arg (@allEdges _ _ m).
 Fixpoint Port_getCellsOnLinks (po_arg : Port) (l : list TTMetamodel_ELink) : option (list Cell) :=
 match l with
 | (Build_TTMetamodel_ELink PortCellsEReference (BuildPortCells Port_ctr cells_ctr)) :: l' => 
@@ -484,7 +484,7 @@ match l with
 end.
 
 Definition Port_getCells (po_arg : Port) (m : TTModel) : option (list Cell) :=
-  Port_getCellsOnLinks po_arg (@allModelLinks _ _ m).
+  Port_getCellsOnLinks po_arg (@allEdges _ _ m).
 
 
 
@@ -497,7 +497,7 @@ match l with
 end.
 
 Definition Row_getOwner (ro_arg : Row) (m : TTModel) : option (TruthTable) :=
-  Row_getOwnerOnLinks ro_arg (@allModelLinks _ _ m).
+  Row_getOwnerOnLinks ro_arg (@allEdges _ _ m).
 Fixpoint Row_getCellsOnLinks (ro_arg : Row) (l : list TTMetamodel_ELink) : option (list Cell) :=
 match l with
 | (Build_TTMetamodel_ELink RowCellsEReference (BuildRowCells Row_ctr cells_ctr)) :: l' => 
@@ -507,7 +507,7 @@ match l with
 end.
 
 Definition Row_getCells (ro_arg : Row) (m : TTModel) : option (list Cell) :=
-  Row_getCellsOnLinks ro_arg (@allModelLinks _ _ m).
+  Row_getCellsOnLinks ro_arg (@allEdges _ _ m).
 
 Fixpoint Cell_getOwnerOnLinks (ce_arg : Cell) (l : list TTMetamodel_ELink) : option (Row) :=
 match l with
@@ -518,7 +518,7 @@ match l with
 end.
 
 Definition Cell_getOwner (ce_arg : Cell) (m : TTModel) : option (Row) :=
-  Cell_getOwnerOnLinks ce_arg (@allModelLinks _ _ m).
+  Cell_getOwnerOnLinks ce_arg (@allEdges _ _ m).
 Fixpoint Cell_getPortOnLinks (ce_arg : Cell) (l : list TTMetamodel_ELink) : option (Port) :=
 match l with
 | (Build_TTMetamodel_ELink CellPortEReference (BuildCellPort Cell_ctr port_ctr)) :: l' => 
@@ -528,7 +528,7 @@ match l with
 end.
 
 Definition Cell_getPort (ce_arg : Cell) (m : TTModel) : option (Port) :=
-  Cell_getPortOnLinks ce_arg (@allModelLinks _ _ m).
+  Cell_getPortOnLinks ce_arg (@allEdges _ _ m).
 
 Definition beq_TTMetamodel_Object (c1 : TTMetamodel_EObject) (c2 : TTMetamodel_EObject) : bool :=
   match c1, c2 with
@@ -542,9 +542,9 @@ Instance TTMetamodel : Metamodel TTMetamodel_EObject TTMetamodel_ELink TTMetamod
     denoteModelReference := TTMetamodel_getTypeByEReference;
     toModelClass := TTMetamodel_toEClass;
     toModelReference := TTMetamodel_toEReference;
-    toModelElement := TTMetamodel_toEObjectOfEClass;
-    toModelLink := TTMetamodel_toELinkOfEReference;
-    beq_ModelElement := beq_TTMetamodel_Object;
+    toNode := TTMetamodel_toEObjectOfEClass;
+    toEdge := TTMetamodel_toELinkOfEReference;
+    beq_Node := beq_TTMetamodel_Object;
 
     (* Theorems *)
     eqModelClass_dec := TTMetamodel_eqEClass_dec;

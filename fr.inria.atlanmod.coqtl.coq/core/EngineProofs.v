@@ -44,15 +44,15 @@ Qed.
 Theorem incl_equiv_to_surj:
   forall (eng: TransformationEngine),
     (forall (tr: Transformation) (sm : SourceModel)
-       (sp : list SourceModelElement) (tp: list TargetModelElement) (tp1: list TargetModelElement)
+       (sp : list SourceNode) (tp: list TargetNode) (tp1: list TargetNode)
        (r : Rule),
         instantiateRuleOnPattern r tr sm sp = Some tp1 ->
         In r (matchPattern tr sm sp) ->
         instantiatePattern tr sm sp = Some tp ->
         incl tp1 tp) <->
-    (forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+    (forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tp: list TargetNode) (te : TargetNode),
         instantiatePattern tr sm sp = Some tp ->
-        (exists (r : Rule) (tp1 : list TargetModelElement),
+        (exists (r : Rule) (tp1 : list TargetNode),
             In r (matchPattern tr sm sp) /\
             instantiateRuleOnPattern r tr sm sp = Some tp1 /\
             In te tp1) ->
@@ -77,7 +77,7 @@ Qed.
 
 Theorem tr_match_functionality :
   forall (eng: TransformationEngine)
-    (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: list Rule) (r2: list Rule),
+    (tr: Transformation) (sm : SourceModel) (sp : list SourceNode) (r1: list Rule) (r2: list Rule),
           matchPattern tr sm sp  = r1 -> matchPattern tr sm sp = r2 -> r1 = r2.
 Proof.
     intros.
@@ -87,7 +87,7 @@ Proof.
 Qed.
 
 Theorem tr_matchPattern_None_tr : forall t: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode),
       getRules tr = nil ->
       matchPattern tr sm sp = nil.
 Proof.
@@ -107,7 +107,7 @@ Qed.
   Theorem tr_matchPattern_non_Nil :
     forall eng: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel),
-    forall (sp : list SourceModelElement),
+    forall (sp : list SourceNode),
       (matchPattern tr sm sp) <> nil <->
       (exists (r: Rule),
         In r (getRules tr) /\
@@ -136,7 +136,7 @@ Qed.
   Qed.
 
 Theorem tr_instantiatePattern_None_tr : forall t: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode),
       getRules tr = nil ->
       (instantiatePattern tr sm sp = None).
 Proof.
@@ -153,7 +153,7 @@ Qed.
 
 Theorem tr_applyPattern_None_tr :
   forall t: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode),
         getRules tr = nil ->
         (applyPattern tr sm sp = None).
 Proof.
@@ -171,10 +171,10 @@ Qed.
 Theorem tr_execute_None_tr_elements : forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel),
       getRules tr = nil ->
-      allModelElements (execute tr sm) = nil.
+      allNodes (execute tr sm) = nil.
 Proof.
   intros.
-  destruct (allModelElements (execute tr sm)) eqn:ame.
+  destruct (allNodes (execute tr sm)) eqn:ame.
   - reflexivity.
   - exfalso.
     pose (tr_execute_in_elements tr sm t0).
@@ -196,18 +196,18 @@ Qed.
   Theorem tr_execute_non_Nil_elements :
    forall eng: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel),
-      (allModelElements (execute tr sm)) <> nil <->
-      (exists (te : TargetModelElement) (sp : list SourceModelElement) (tp : list TargetModelElement),
-          incl sp (allModelElements sm) /\
+      (allNodes (execute tr sm)) <> nil <->
+      (exists (te : TargetNode) (sp : list SourceNode) (tp : list TargetNode),
+          incl sp (allNodes sm) /\
           instantiatePattern tr sm sp = Some tp /\
           In te tp).
   Proof.
     intros.
     split.
     + intro.
-      assert (exists (te: TargetModelElement), In te (allModelElements (execute tr sm))).
+      assert (exists (te: TargetNode), In te (allNodes (execute tr sm))).
       {
-        destruct (allModelElements (execute tr sm)).
+        destruct (allNodes (execute tr sm)).
         ++ crush.
         ++ exists t.
            crush.
@@ -219,7 +219,7 @@ Qed.
     + intro.
       destruct H.
       apply tr_execute_in_elements in H.
-      destruct (allModelElements (execute tr sm)).
+      destruct (allNodes (execute tr sm)).
       ++ inversion H.
       ++ crush.
   Qed.
@@ -228,18 +228,18 @@ Qed.
   Theorem tr_execute_non_Nil_links :
    forall eng: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel) ,
-      (allModelLinks (execute tr sm)) <> nil <->
-      (exists (tl : TargetModelLink) (sp : list SourceModelElement) (tpl : list TargetModelLink),
-          incl sp (allModelElements sm) /\
+      (allEdges (execute tr sm)) <> nil <->
+      (exists (tl : TargetEdge) (sp : list SourceNode) (tpl : list TargetEdge),
+          incl sp (allNodes sm) /\
           applyPattern tr sm sp = Some tpl /\
           In tl tpl).
   Proof.
     intros.
     split.
     + intro.
-      assert (exists (tl: TargetModelLink), In tl (allModelLinks (execute tr sm))).
+      assert (exists (tl: TargetEdge), In tl (allEdges (execute tr sm))).
       {
-        destruct (allModelLinks (execute tr sm)).
+        destruct (allEdges (execute tr sm)).
         ++ crush.
         ++ exists t.
            crush.
@@ -251,7 +251,7 @@ Qed.
     + intro.
       destruct H.
       apply tr_execute_in_links in H.
-      destruct (allModelLinks (execute tr sm)).
+      destruct (allEdges (execute tr sm)).
       ++ inversion H.
       ++ crush.
   Qed.
@@ -259,10 +259,10 @@ Qed.
 Theorem tr_execute_None_tr_links : forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel),
       getRules tr = nil ->
-      allModelLinks (execute tr sm) = nil.
+      allEdges (execute tr sm) = nil.
 Proof.
   intros.
-  destruct (allModelLinks (execute tr sm)) eqn:aml.
+  destruct (allEdges (execute tr sm)) eqn:aml.
   - reflexivity.
   - exfalso.
     pose (tr_execute_in_links tr sm t0).
@@ -283,12 +283,12 @@ Qed.
 
 Theorem tr_applyElementOnPattern_None :
    forall eng: TransformationEngine,
-      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
         length sp <> length (getInTypes r) ->
         applyElementOnPattern r ope tr sm sp i = None.
 Proof.
   intros. apply None_is_not_non_None. intro H0.
-  assert (exists (tl: list TargetModelLink), applyElementOnPattern r ope tr sm sp i = Some tl).
+  assert (exists (tl: list TargetEdge), applyElementOnPattern r ope tr sm sp i = Some tl).
   { specialize (option_res_dec (applyElementOnPattern r ope tr sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
@@ -302,12 +302,12 @@ Qed.
 
 Theorem tr_applyIterationOnPattern_None :
    forall eng: TransformationEngine,
-      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat),
         length sp <> length (getInTypes r) ->
         applyIterationOnPattern r tr sm sp i = None.
 Proof.
   intros. apply None_is_not_non_None. intro H0.
-  assert (exists (tl: list TargetModelLink), applyIterationOnPattern r tr sm sp i = Some tl).
+  assert (exists (tl: list TargetEdge), applyIterationOnPattern r tr sm sp i = Some tl).
   { specialize (option_res_dec (applyIterationOnPattern r tr sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
@@ -323,12 +323,12 @@ Qed.
 
 Theorem tr_applyRuleOnPattern_None :
    forall eng: TransformationEngine,
-      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode),
         length sp <> length (getInTypes r) ->
         applyRuleOnPattern r tr sm sp = None.
 Proof.
   intros. apply None_is_not_non_None. intro H0.
-  assert (exists (tl: list TargetModelLink), applyRuleOnPattern r tr sm sp = Some tl).
+  assert (exists (tl: list TargetEdge), applyRuleOnPattern r tr sm sp = Some tl).
   { specialize (option_res_dec (applyRuleOnPattern r tr sm)). intros.
     specialize (H1 sp H0). destruct H1. exists x. crush. }
   destruct H1.
@@ -343,12 +343,12 @@ Qed.
 
 Theorem tr_instantiateIterationOnPattern_None :
    forall eng: TransformationEngine,
-     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+     forall (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat),
         length sp <> length (getInTypes r) ->
         instantiateIterationOnPattern r sm sp i = None.
 Proof.
   intros. apply None_is_not_non_None. intro H0.
-  assert (exists (tp: list TargetModelElement), instantiateIterationOnPattern r sm sp i = Some tp).
+  assert (exists (tp: list TargetNode), instantiateIterationOnPattern r sm sp i = Some tp).
   { specialize (option_res_dec (instantiateIterationOnPattern r sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
@@ -364,12 +364,12 @@ Qed.
 
 Theorem tr_instantiateRuleOnPattern_None :
   forall eng: TransformationEngine,
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode),
       length sp <> length (getInTypes r) ->
       instantiateRuleOnPattern r tr sm sp = None.
 Proof.
   intros. apply None_is_not_non_None. intro H0.
-  assert (exists (tp: list TargetModelElement), instantiateRuleOnPattern r tr sm sp = Some tp).
+  assert (exists (tp: list TargetNode), instantiateRuleOnPattern r tr sm sp = Some tp).
   { specialize (option_res_dec (instantiateRuleOnPattern r tr sm)). intros.
     specialize (H1 sp H0). destruct H1. exists x. crush. }
   destruct H1.
@@ -384,7 +384,7 @@ Qed.
 
 Theorem tr_instantiateIterationOnPattern_None_iterator :
  forall eng: TransformationEngine,
-  forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+  forall (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat),
       i >= length (evalIterator r sm sp) ->
       instantiateIterationOnPattern r sm sp i = None.
 Proof.
@@ -400,7 +400,7 @@ Qed.
 
 Theorem tr_applyElementOnPattern_None_iterator :
   forall eng: TransformationEngine,
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
       i >= length (evalIterator r sm sp) ->
       applyElementOnPattern r ope tr sm sp i = None.
 Proof.
@@ -418,7 +418,7 @@ Qed.
 
 Theorem tr_applyIterationOnPattern_None_iterator :
    forall eng: TransformationEngine,
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat),
       i >= length (evalIterator r sm sp) ->
       applyIterationOnPattern r tr sm sp i = None.
 Proof.

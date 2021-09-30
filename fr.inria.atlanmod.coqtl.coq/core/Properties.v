@@ -23,11 +23,11 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
   ((buildRule "rule"%string 
      (fun sm sp => match sp with nil => Some true | _ => Some false end)
       (buildOutputPatternElement "out"%string 
-      (fun sm sp => Some (length (allModelElements (f sm))))
-      (fun i sm sp => nth_error (allModelElements (f sm)) i)
+      (fun sm sp => Some (length (allNodes (f sm))))
+      (fun i sm sp => nth_error (allNodes (f sm)) i)
       ((buildOutputPatternLink 
-        (fun tls i sm sp te => match i with | 0 => Some (length (allModelLinks (f sm))) | _ => None end)
-        (fun il tls i sm sp te => nth_error (allModelLinks (f sm)) il)
+        (fun tls i sm sp te => match i with | 0 => Some (length (allEdges (f sm))) | _ => None end)
+        (fun il tls i sm sp te => nth_error (allEdges (f sm)) il)
       )::nil) 
       :: nil))
      ::nil)).
@@ -35,7 +35,7 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
 Theorem universality :
 forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
   exists (t: Transformation), 
-  forall (sm: SourceModel), allModelElements (f sm) <> nil -> execute t sm = f sm.
+  forall (sm: SourceModel), allNodes (f sm) <> nil -> execute t sm = f sm.
 Proof.
   intros.
   exists (toTransformation tc f).

@@ -245,11 +245,11 @@ Definition ClassMetamodel_getName (c : ClassMetamodel_Object) : string :=
   match m with BuildClassModel l _ => optionList2List (map (ClassMetamodel_toClass ClassClass) l) end.*)
 
 (*Theorem allClassesInModel :
-  forall (c : Class) (cm: ClassModel), (In c (allClasses cm)) -> (In (ClassMetamodel_BuildObject ClassClass c) (allClassModelElements cm)).
+  forall (c : Class) (cm: ClassModel), (In c (allClasses cm)) -> (In (ClassMetamodel_BuildObject ClassClass c) (allClassNodes cm)).
 Proof.
   intros.
   destruct cm.
-  unfold allClassModelElements.
+  unfold allClassNodes.
   unfold allClasses in H.
   apply all_optionList2List_in_list in H.
   induction l.
@@ -279,7 +279,7 @@ Fixpoint ClassMetamodel_getClassAttributesOnLinks (c : Class) (l : list ClassMet
   end.
 
 Definition getClassAttributes (c : Class) (m : Model ClassMetamodel_Object ClassMetamodel_Link) : option (list Attribute) :=
-  ClassMetamodel_getClassAttributesOnLinks c (@allModelLinks _ _ m).
+  ClassMetamodel_getClassAttributesOnLinks c (@allEdges _ _ m).
 
 Definition getClassAttributesObjects (c : Class) (m : Model ClassMetamodel_Object ClassMetamodel_Link) : option (list ClassMetamodel_Object) :=
   match getClassAttributes c m with
@@ -336,8 +336,8 @@ Instance ClassMetamodel_EqDec : EqDec ClassMetamodel_Object := {
 
 Instance ClassM : Metamodel :=
 {
-  ModelElement := ClassMetamodel_Object;
-  ModelLink := ClassMetamodel_Link;
+  Node := ClassMetamodel_Object;
+  Edge := ClassMetamodel_Link;
 }.
 
 Instance ClassMetamodel : ModelingMetamodel ClassM :=
