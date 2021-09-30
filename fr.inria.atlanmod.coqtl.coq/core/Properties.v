@@ -93,7 +93,7 @@ Proof.
   * simpl. 
     repeat rewrite app_nil_r.
     assert (flat_map (fun n : nat => optionToList (nth_error modelLinks n))
-    (indexes (Datatypes.length modelLinks)) = modelLinks). {
+    (seq 0 (Datatypes.length modelLinks)) = modelLinks). {
       clear H.
       induction modelLinks.
       + reflexivity.

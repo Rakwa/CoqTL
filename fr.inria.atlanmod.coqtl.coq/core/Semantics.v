@@ -29,7 +29,7 @@ Definition instantiateElementOnPattern (o: OutputPatternElement) (sm: SourceMode
 
 Definition instantiateElementsOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement):  list TargetModelElement :=
   flat_map (fun n => optionToList (instantiateElementOnPattern o sm sp n))
-    (indexes (evalElementIteratorExpr o sm sp)).  
+    (seq 0 (evalElementIteratorExpr o sm sp)).  
 
 Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TargetModelElement :=
   flat_map (fun o => instantiateElementsOnPattern o sm sp)
@@ -55,7 +55,7 @@ Definition traceElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp
 
 Definition traceElementsOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement):  list TraceLink :=
   flat_map (fun n => optionToList (traceElementOnPattern o sm sp n))
-    (indexes (evalElementIteratorExpr o sm sp)).  
+    (seq 0 (evalElementIteratorExpr o sm sp)).  
 
 Definition traceRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TraceLink :=
   flat_map (fun o => traceElementsOnPattern o sm sp)
@@ -126,7 +126,7 @@ Definition applyLinksOnPattern
   (sm: SourceModel)
   (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement): list TargetModelLink :=
   flat_map (fun n => optionToList (applyLinkOnPattern oper tr sm sp iter te n))
-    (indexes (evalLinkIteratorExpr oper sm sp te iter (trace tr sm))).  
+    (seq 0 (evalLinkIteratorExpr oper sm sp te iter (trace tr sm))).  
 
 Definition applyElementOnPattern
             (ope: OutputPatternElement)
@@ -141,7 +141,7 @@ Definition applyElementOnPattern
 
 Definition applyElementsOnPattern (o: OutputPatternElement) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement):  list TargetModelLink :=
   flat_map (fun n => applyElementOnPattern o tr sm sp n)
-    (indexes (evalElementIteratorExpr o sm sp)).  
+    (seq 0 (evalElementIteratorExpr o sm sp)).  
 
 Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) :  list TargetModelLink :=
   flat_map (fun o => applyElementsOnPattern o tr sm sp)
