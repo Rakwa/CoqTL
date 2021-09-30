@@ -38,7 +38,7 @@ Instance tc : TransformationConfiguration := {
 }.
 
 Lemma tr_execute_in_elements :
-forall (tr: Transformation) (sm : SourceModel) (te : TargetNode),
+forall (tr: Transformation) (sm : SourceGraph) (te : TargetNode),
   In te (allNodes (execute tr sm)) <->
   (exists (sp : list SourceNode),
       In sp (allTuples tr sm) /\
@@ -49,7 +49,7 @@ Proof.
 Qed.
 
 Lemma tr_execute_in_links :
-forall (tr: Transformation) (sm : SourceModel) (tl : TargetEdge),
+forall (tr: Transformation) (sm : SourceGraph) (tl : TargetEdge),
   In tl (allEdges (execute tr sm)) <->
   (exists (sp : list SourceNode),
       In sp (allTuples tr sm) /\
@@ -60,7 +60,7 @@ Proof.
 Qed.
 
 Lemma tr_matchPattern_in :
-forall (tr: Transformation) (sm : SourceModel),
+forall (tr: Transformation) (sm : SourceGraph),
   forall (sp : list SourceNode)(r : Rule),
     In r (matchPattern tr sm sp) <->
       In r (Transformation_getRules tr) /\
@@ -71,7 +71,7 @@ Proof.
 Qed.
 
 Lemma tr_matchRuleOnPattern_leaf : 
-forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode),
+forall (tr: Transformation) (sm : SourceGraph) (r: Rule) (sp: list SourceNode),
     matchRuleOnPattern r sm sp =
       match evalGuardExpr r sm sp with Some true => true | _ => false end.
 Proof.
@@ -79,7 +79,7 @@ Proof.
 Qed.
 
 Lemma tr_instantiatePattern_in :
-forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
+forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode) (te : TargetNode),
   In te (instantiatePattern tr sm sp) <->
   (exists (r : Rule),
       In r (matchPattern tr sm sp) /\
@@ -90,7 +90,7 @@ Proof.
 Qed.
 
 Lemma tr_instantiateRuleOnPattern_in :
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
+forall (tr: Transformation) (r : Rule) (sm : SourceGraph) (sp: list SourceNode) (te : TargetNode),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -101,7 +101,7 @@ Proof.
 Qed.
 
 Lemma tr_instantiateIterationOnPattern_in : 
-forall (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode) (i:nat),
+forall (r : Rule) (sm : SourceGraph) (sp: list SourceNode) (te : TargetNode) (i:nat),
   In te (instantiateIterationOnPattern r sm sp i)
   <->
   (exists (ope: OutputPatternNode),
@@ -132,14 +132,14 @@ Proof.
 Qed.
 
 Lemma  tr_instantiateNodeOnPattern_leaf:
-      forall (o: OutputPatternNode) (sm: SourceModel) (sp: list SourceNode) (iter: nat),
+      forall (o: OutputPatternNode) (sm: SourceGraph) (sp: list SourceNode) (iter: nat),
         instantiateNodeOnPattern o sm sp iter = evalOutputPatternNodeExpr sm sp iter o.
 Proof.
   crush.
 Qed.
 
 Lemma tr_applyPattern_in :
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge),
+    forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge),
       In tl (applyPattern tr sm sp) <->
       (exists (r : Rule),
           In r (matchPattern tr sm sp) /\
@@ -150,7 +150,7 @@ Proof.
 Qed.
 
 Lemma tr_applyRuleOnPattern_in : 
-    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge),
+    forall (tr: Transformation) (r : Rule) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge),
       In tl (applyRuleOnPattern r tr sm sp) <->
       (exists (i: nat),
           In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -161,7 +161,7 @@ Proof.
 Qed.
 
 Lemma tr_applyIterationOnPattern_in : 
-    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (i:nat),
+    forall (tr: Transformation) (r : Rule) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) (i:nat),
       In tl (applyIterationOnPattern r tr sm sp i) <->
       (exists (ope: OutputPatternNode),
           In ope (Rule_getOutputPatternNodes r) /\ 
@@ -172,7 +172,7 @@ Proof.
 Qed.
 
 Lemma tr_applyNodeOnPattern_in : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
+    forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) 
             (i:nat) (ope: OutputPatternNode),
       In tl (applyNodeOnPattern ope tr sm sp i ) <->
       (exists (oper: OutputPatternEdge) (te: TargetNode),
@@ -209,7 +209,7 @@ Qed.
 Lemma tr_applyEdgeOnPattern_leaf : 
         forall (oper: OutputPatternEdge)
                 (tr: Transformation)
-                (sm: SourceModel)
+                (sm: SourceGraph)
                 (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink),
           applyEdgeOnPattern oper tr sm sp iter te  = evalOutputPatternEdgeExpr sm sp te iter (trace tr sm) oper.
 Proof.
@@ -219,13 +219,13 @@ Qed.
 
 (*TODO
 Lemma maxArity_length:
-  forall (sp : list SourceNode) (tr: Transformation) (sm: SourceModel), 
+  forall (sp : list SourceNode) (tr: Transformation) (sm: SourceGraph), 
   gt (length sp) (maxArity tr) -> In sp (allTuples tr sm) -> False.
 *)
 
 
 Lemma allTuples_incl:
-  forall (sp : list SourceNode) (tr: Transformation) (sm: SourceModel), 
+  forall (sp : list SourceNode) (tr: Transformation) (sm: SourceGraph), 
   In sp (allTuples tr sm) -> incl sp (allNodes sm).
 Proof.
   intros.
@@ -235,7 +235,7 @@ Proof.
 Qed.
 
 Lemma allTuples_incl_length:
-  forall (sp : list SourceNode) (tr: Transformation) (sm: SourceModel), 
+  forall (sp : list SourceNode) (tr: Transformation) (sm: SourceGraph), 
   incl sp (allNodes sm) -> length sp <= maxArity tr -> In sp (allTuples tr sm).
 Proof.
   intros.
@@ -248,7 +248,7 @@ Qed.
 (** * Resolve *)
 
 Theorem tr_resolveAll_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+  forall (tls: list TraceLink) (sm: SourceGraph) (name: string)
     (sps: list(list SourceNode)),
     resolveAll tls sm name sps = resolveAllIter tls sm name sps 0.
 Proof.
@@ -256,7 +256,7 @@ Proof.
 Qed.
 
 Theorem tr_resolveAllIter_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+  forall (tls: list TraceLink) (sm: SourceGraph) (name: string)
           (sps: list(list SourceNode)) (iter: nat)
     (te: TargetNode),
     (exists tes: list TargetNode,
@@ -298,7 +298,7 @@ Qed.
 
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
 Theorem tr_resolveIter_leaf: 
-  forall (tls:list TraceLink) (sm : SourceModel) (name: string)
+  forall (tls:list TraceLink) (sm : SourceGraph) (name: string)
     (sp: list SourceNode) (iter: nat) (x: TargetNode),
     resolveIter tls sm name sp iter = return x ->
       (exists (tl : TraceLink),
@@ -422,7 +422,7 @@ Instance CoqTLEngine :
 *)
 
 Lemma tr_match_injective :
-forall (sm : SourceModel)(sp : list SourceNode)(r : Rule)(iter: nat),
+forall (sm : SourceGraph)(sp : list SourceNode)(r : Rule)(iter: nat),
     In iter (seq 0 (evalIteratorExpr r sm sp)) /\ 
     (exists ope, In ope (Rule_getOutputPatternNodes r) /\  (evalOutputPatternNodeExpr sm sp iter ope) <> None ) ->
       (exists (te: TargetNode),  In te (instantiateRuleOnPattern r sm sp) ).
@@ -455,7 +455,7 @@ Qed.
     *)
 
 Theorem tr_instantiateRuleAndIterationOnPattern_in :
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
+forall (tr: Transformation) (r : Rule) (sm : SourceGraph) (sp: list SourceNode) (te : TargetNode),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat) (ope: OutputPatternNode),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -487,7 +487,7 @@ Proof.
 Qed.
 
 Theorem tr_instantiateRuleAndIterationOnPattern_in' :
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (te : TargetNode),
+forall (tr: Transformation) (r : Rule) (sm : SourceGraph) (sp: list SourceNode) (te : TargetNode),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat),
       In i (seq 0 (evalIteratorExpr r sm sp)) /\

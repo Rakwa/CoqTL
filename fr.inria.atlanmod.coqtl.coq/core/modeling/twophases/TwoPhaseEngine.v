@@ -43,30 +43,30 @@ Class TransformationEngineTrace (tc: TransformationConfiguration) (ts: Transform
 
     OutputPatternNode_getName: OutputPatternNode -> string;
 
-    (* getGuardExpr: Rule -> (SourceModel -> (list SourceNode) -> option bool); *)
+    (* getGuardExpr: Rule -> (SourceGraph -> (list SourceNode) -> option bool); *)
 
     Trace_buildTraceLink: (list SourceNode * nat * string) -> TargetNode -> TraceLink;
 
 
     (** ** Functions *)
 
-    tracePattern: Transformation -> SourceModel -> list SourceNode -> list TraceLink;
-    traceRuleOnPattern: Rule -> SourceModel -> list SourceNode -> list TraceLink;
-    traceIterationOnPattern: Rule -> SourceModel -> list SourceNode -> nat -> list TraceLink;
-    traceNodeOnPattern: OutputPatternNode -> SourceModel -> list SourceNode -> nat -> option TraceLink;
+    tracePattern: Transformation -> SourceGraph -> list SourceNode -> list TraceLink;
+    traceRuleOnPattern: Rule -> SourceGraph -> list SourceNode -> list TraceLink;
+    traceIterationOnPattern: Rule -> SourceGraph -> list SourceNode -> nat -> list TraceLink;
+    traceNodeOnPattern: OutputPatternNode -> SourceGraph -> list SourceNode -> nat -> option TraceLink;
 
-    applyPatternTraces: Transformation -> SourceModel -> list SourceNode -> list TraceLink -> list TargetEdge;
-    applyRuleOnPatternTraces: Rule -> Transformation -> SourceModel -> list SourceNode -> list TraceLink -> list TargetEdge;
-    applyIterationOnPatternTraces: Rule -> Transformation -> SourceModel -> list SourceNode -> nat -> list TraceLink -> list TargetEdge;
-    applyNodeOnPatternTraces: OutputPatternNode -> Transformation -> SourceModel -> list SourceNode -> nat -> list TraceLink -> list TargetEdge;
-    applyEdgeOnPatternTraces: OutputPatternEdge -> Transformation -> SourceModel -> list SourceNode -> nat -> TargetNode -> list TraceLink -> option TargetEdge;
+    applyPatternTraces: Transformation -> SourceGraph -> list SourceNode -> list TraceLink -> list TargetEdge;
+    applyRuleOnPatternTraces: Rule -> Transformation -> SourceGraph -> list SourceNode -> list TraceLink -> list TargetEdge;
+    applyIterationOnPatternTraces: Rule -> Transformation -> SourceGraph -> list SourceNode -> nat -> list TraceLink -> list TargetEdge;
+    applyNodeOnPatternTraces: OutputPatternNode -> Transformation -> SourceGraph -> list SourceNode -> nat -> list TraceLink -> list TargetEdge;
+    applyEdgeOnPatternTraces: OutputPatternEdge -> Transformation -> SourceGraph -> list SourceNode -> nat -> TargetNode -> list TraceLink -> option TargetEdge;
 
     (** ** Theorems *)
 
     (** ** execute *)
 
     tr_executeTraces_in_elements :
-      forall (tr: Transformation) (sm : SourceModel) (te : TargetNode),
+      forall (tr: Transformation) (sm : SourceGraph) (te : TargetNode),
         In te (allNodes (execute tr sm)) <->
         (exists (tl : TraceLink) (sp : list SourceNode),
             In sp (allTuples tr sm) /\
@@ -74,7 +74,7 @@ Class TransformationEngineTrace (tc: TransformationConfiguration) (ts: Transform
             te = TraceLink_getTargetNode tl);
 
     tr_executeTraces_in_links :
-      forall (tr: Transformation) (sm : SourceModel) (tl : TargetEdge),
+      forall (tr: Transformation) (sm : SourceGraph) (tl : TargetEdge),
         In tl (allEdges (execute tr sm)) <->
             (exists (sp : list SourceNode),
             In sp (allTuples tr sm) /\
@@ -83,28 +83,28 @@ Class TransformationEngineTrace (tc: TransformationConfiguration) (ts: Transform
     (** ** instantiate *)
 
     tr_tracePattern_in:
-      forall (tr: Transformation) (sm : SourceModel) (sp : list SourceNode) (tl : TraceLink),
+      forall (tr: Transformation) (sm : SourceGraph) (sp : list SourceNode) (tl : TraceLink),
         In tl (tracePattern tr sm sp) <->
         (exists (r:Rule),
             In r (matchPattern tr sm sp) /\
             In tl (traceRuleOnPattern r sm sp));
 
     tr_traceRuleOnPattern_in:
-      forall (r: Rule) (sm : SourceModel) (sp : list SourceNode) (tl : TraceLink),
+      forall (r: Rule) (sm : SourceGraph) (sp : list SourceNode) (tl : TraceLink),
         In tl (traceRuleOnPattern r sm sp) <->
         (exists (iter: nat),
             In iter (seq 0 (evalIteratorExpr r sm sp)) /\
             In tl (traceIterationOnPattern r sm sp iter));
 
     tr_traceIterationOnPattern_in:
-      forall (r: Rule) (sm : SourceModel) (sp : list SourceNode) (iter: nat) (tl : TraceLink),
+      forall (r: Rule) (sm : SourceGraph) (sp : list SourceNode) (iter: nat) (tl : TraceLink),
         In tl (traceIterationOnPattern r sm sp iter) <->
         (exists (o: OutputPatternNode),
             In o (Rule_getOutputPatternNodes r) /\
             In tl ((fun o => optionToList (traceNodeOnPattern o sm sp iter)) o));
 
     tr_traceNodeOnPattern_leaf:
-      forall (o: OutputPatternNode) (sm : SourceModel) (sp : list SourceNode) (iter: nat) (o: OutputPatternNode) (tl : TraceLink),
+      forall (o: OutputPatternNode) (sm : SourceGraph) (sp : list SourceNode) (iter: nat) (o: OutputPatternNode) (tl : TraceLink),
         Some tl = (traceNodeOnPattern o sm sp iter) <->
         (exists (e: TargetNode),
            Some e = (instantiateNodeOnPattern o sm sp iter) /\
@@ -114,28 +114,28 @@ Class TransformationEngineTrace (tc: TransformationConfiguration) (ts: Transform
     (** ** applyPattern *)
 
     tr_applyPatternTraces_in:
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (tls: list TraceLink),
+      forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) (tls: list TraceLink),
         In tl (applyPatternTraces tr sm sp tls) <->
         (exists (r : Rule),
                 In r (matchPattern tr sm sp) /\
                 In tl (applyRuleOnPatternTraces r tr sm sp tls));
 
     tr_applyRuleOnPatternTraces_in : 
-      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (tls: list TraceLink),
+      forall (tr: Transformation) (r : Rule) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) (tls: list TraceLink),
           In tl (applyRuleOnPatternTraces r tr sm sp tls) <->
           (exists (i: nat),
               In i (seq 0 (evalIteratorExpr r sm sp)) /\
               In tl (applyIterationOnPatternTraces r tr sm sp i tls));
 
     tr_applyIterationOnPatternTraces_in : 
-          forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (i:nat)  (tls: list TraceLink),
+          forall (tr: Transformation) (r : Rule) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) (i:nat)  (tls: list TraceLink),
             In tl (applyIterationOnPatternTraces r tr sm sp i tls) <->
             (exists (ope: OutputPatternNode),
                 In ope (Rule_getOutputPatternNodes r) /\ 
                 In tl (applyNodeOnPatternTraces ope tr sm sp i tls));
 
     tr_applyNodeOnPatternTraces_in : 
-          forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
+          forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) 
                  (i:nat) (ope: OutputPatternNode)  (tls: list TraceLink),
             In tl (applyNodeOnPatternTraces ope tr sm sp i tls) <->
             (exists (oper: OutputPatternEdge) (te: TargetNode),
@@ -146,7 +146,7 @@ Class TransformationEngineTrace (tc: TransformationConfiguration) (ts: Transform
     tr_applyEdgeOnPatternTraces_leaf : 
           forall (oper: OutputPatternEdge)
                  (tr: Transformation)
-                 (sm: SourceModel)
+                 (sm: SourceGraph)
                  (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink),
             applyEdgeOnPatternTraces oper tr sm sp iter te tls  = evalOutputPatternEdgeExpr sm sp te iter tls oper;
 

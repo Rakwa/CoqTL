@@ -22,18 +22,18 @@ Context {tc: TransformationConfiguration}.
 
 Inductive OutputPatternEdge : Type :=
   buildOutputPatternEdge :
-    (list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option nat) 
-    -> (nat -> list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option TargetEdge) 
+    (list TraceLink -> nat -> SourceGraph -> (list SourceNode) -> TargetNode -> option nat) 
+    -> (nat -> list TraceLink -> nat -> SourceGraph -> (list SourceNode) -> TargetNode -> option TargetEdge) 
     -> OutputPatternEdge.
 
 Definition OutputPatternEdge_getIteratorExpr (o: OutputPatternEdge) : 
-    list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option nat :=
+    list TraceLink -> nat -> SourceGraph -> (list SourceNode) -> TargetNode -> option nat :=
     match o with
       buildOutputPatternEdge y _ => y
     end.
 
 Definition OutputPatternEdge_getLinkExpr (o: OutputPatternEdge) : 
-    nat -> list TraceLink -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option TargetEdge :=
+    nat -> list TraceLink -> nat -> SourceGraph -> (list SourceNode) -> TargetNode -> option TargetEdge :=
     match o with
       buildOutputPatternEdge _ y => y
     end.
@@ -43,8 +43,8 @@ Definition OutputPatternEdge_getLinkExpr (o: OutputPatternEdge) :
 Inductive OutputPatternNode : Type :=
   buildOutputPatternNode :
     string 
-    -> (SourceModel -> (list SourceNode) -> option nat)
-    -> (nat -> SourceModel -> (list SourceNode) -> option TargetNode) 
+    -> (SourceGraph -> (list SourceNode) -> option nat)
+    -> (nat -> SourceGraph -> (list SourceNode) -> option TargetNode) 
     -> (list OutputPatternEdge) -> OutputPatternNode.
 
 Definition OutputPatternNode_getName (o: OutputPatternNode) : string :=
@@ -58,7 +58,7 @@ Definition OutputPatternNode_getIteratorExpr (o: OutputPatternNode) :=
   end.
 
 
-Definition OutputPatternNode_getNodeExpr (o: OutputPatternNode) : nat -> SourceModel -> (list SourceNode) -> option TargetNode :=
+Definition OutputPatternNode_getNodeExpr (o: OutputPatternNode) : nat -> SourceGraph -> (list SourceNode) -> option TargetNode :=
   match o with
     buildOutputPatternNode _ _ y _ => y
   end.
@@ -74,7 +74,7 @@ Definition OutputPatternNode_getOutputEdges (o: OutputPatternNode) :
 Inductive Rule : Type :=
   buildRule :
     (* name *) string
-    (* from *) -> (SourceModel -> (list SourceNode) -> option bool)
+    (* from *) -> (SourceGraph -> (list SourceNode) -> option bool)
     (* to *) -> (list OutputPatternNode)
     -> Rule.
 
@@ -83,7 +83,7 @@ Definition Rule_getName (x : Rule) : string :=
     buildRule y _ _ => y
   end.
   
-Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceNode) -> option bool :=
+Definition Rule_getGuardExpr (x : Rule) : SourceGraph -> (list SourceNode) -> option bool :=
   match x with
     buildRule _ y _ => y
   end.

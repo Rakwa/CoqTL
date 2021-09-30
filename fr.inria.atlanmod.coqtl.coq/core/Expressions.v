@@ -35,29 +35,29 @@ Definition evalExpr5 {A B C D E F:Type} (f: Expr5 A B C D E F) (a: A) (b: B) (c:
 Definition Expr (A: Type) (B: Type) : Type := A -> B.
 Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a.
 
-Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceNode) : option bool :=
+Definition evalGuardExpr (r : Rule) (sm: SourceGraph) (sp: list SourceNode) : option bool :=
 evalExpr (Rule_getGuardExpr r) sm sp.
 
-Definition evalLinkIteratorExpr (o : OutputPatternEdge) (sm: SourceModel) (sp: list SourceNode) (oe: TargetNode) (iter: nat) (tls: list TraceLink) :
+Definition evalLinkIteratorExpr (o : OutputPatternEdge) (sm: SourceGraph) (sp: list SourceNode) (oe: TargetNode) (iter: nat) (tls: list TraceLink) :
   nat :=
   match (evalExpr (OutputPatternEdge_getIteratorExpr o) tls iter sm sp oe) with
   | Some n => n
   | _ => 0
   end.
 
-Definition evalNodeIteratorExpr (o : OutputPatternNode) (sm: SourceModel) (sp: list SourceNode) :
+Definition evalNodeIteratorExpr (o : OutputPatternNode) (sm: SourceGraph) (sp: list SourceNode) :
   nat :=
   match (evalExpr (OutputPatternNode_getIteratorExpr o) sm sp) with
   | Some n => n
   | _ => 0
   end.
 
-Definition evalOutputPatternNodeExpr (sm: SourceModel) (sp: list SourceNode) (iter: nat) (o: OutputPatternNode)
+Definition evalOutputPatternNodeExpr (sm: SourceGraph) (sp: list SourceNode) (iter: nat) (o: OutputPatternNode)
   : option TargetNode := 
 (evalExpr (OutputPatternNode_getNodeExpr o) iter sm sp).
 
 Definition evalOutputPatternEdgeExpr
-            (iterl: nat) (sm: SourceModel) (sp: list SourceNode) (oe: TargetNode) (iter: nat) (tr: list TraceLink)
+            (iterl: nat) (sm: SourceGraph) (sp: list SourceNode) (oe: TargetNode) (iter: nat) (tr: list TraceLink)
             (o: OutputPatternEdge)
   : option TargetEdge :=
 (evalExpr (OutputPatternEdge_getLinkExpr o) iterl tr iter sm sp oe).

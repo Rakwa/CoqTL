@@ -11,12 +11,12 @@ Class TransformationConfiguration := {
   TargetNode:= @Node TargetSchema;
   TargetEdge:= @Edge TargetSchema;
 
-  SourceModel := @InstanceModel SourceSchema;
-  TargetModel := @InstanceModel TargetSchema;
+  SourceGraph := @InstanceGraph SourceSchema;
+  TargetGraph := @InstanceGraph TargetSchema;
 
-  SourceNode_eqdec := @elements_eqdec SourceSchema;
-  TargetNode_eqdec := @elements_eqdec TargetSchema;
+  SourceNode_eqdec := @nodes_eqdec SourceSchema;
+  TargetNode_eqdec := @nodes_eqdec TargetSchema;
 
-  SourceNode_eqb := @elements_eqb SourceSchema;
-  TargetNode_eqb := @elements_eqb TargetSchema;
+  SourceNode_eqb := @nodes_eqb SourceSchema;
+  TargetNode_eqb := @nodes_eqb TargetSchema;
 }.

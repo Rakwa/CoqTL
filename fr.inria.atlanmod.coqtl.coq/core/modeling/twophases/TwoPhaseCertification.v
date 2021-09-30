@@ -19,7 +19,7 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 (** EXECUTE TRACE *)
 
 Lemma tr_executeTraces_in_elements :
-forall (tr: Transformation) (sm : SourceModel) (te : TargetNode),
+forall (tr: Transformation) (sm : SourceGraph) (te : TargetNode),
       In te (allNodes (executeTraces tr sm)) <->
       (exists (tl : TraceLink) (sp : list SourceNode),
           In sp (allTuples tr sm) /\
@@ -69,7 +69,7 @@ Proof.
 Qed. 
 
 Lemma tr_executeTraces_in_links :
-forall (tr: Transformation) (sm : SourceModel) (tl : TargetEdge),
+forall (tr: Transformation) (sm : SourceGraph) (tl : TargetEdge),
       In tl (allEdges (executeTraces tr sm)) <->
           (exists (sp : list SourceNode),
           In sp (allTuples tr sm) /\
@@ -95,7 +95,7 @@ Qed.
 (* These lemmas of traces are useful when we get sth like (In e traces) *)
 
 Lemma tr_trace_in:
-forall (tr: Transformation) (sm : SourceModel) (tl : TraceLink),
+forall (tr: Transformation) (sm : SourceGraph) (tl : TraceLink),
   In tl (trace tr sm) <->
   (exists (sp : list SourceNode),
       In sp (allTuples tr sm) /\
@@ -106,7 +106,7 @@ Proof.
 Qed.
 
 Lemma tr_tracePattern_in:
-forall (tr: Transformation) (sm : SourceModel) (sp : list SourceNode) (tl : TraceLink),
+forall (tr: Transformation) (sm : SourceGraph) (sp : list SourceNode) (tl : TraceLink),
   In tl (tracePattern tr sm sp) <->
   (exists (r:Rule),
       In r (matchPattern tr sm sp) /\
@@ -117,7 +117,7 @@ Proof.
 Qed.
 
 Lemma tr_traceRuleOnPattern_in:
-forall (r: Rule) (sm : SourceModel) (sp : list SourceNode) (tl : TraceLink),
+forall (r: Rule) (sm : SourceGraph) (sp : list SourceNode) (tl : TraceLink),
   In tl (traceRuleOnPattern r sm sp) <->
   (exists (iter: nat),
       In iter (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -128,7 +128,7 @@ Proof.
 Qed.
 
 Lemma tr_traceIterationOnPattern_in:
-forall (r: Rule) (sm : SourceModel) (sp : list SourceNode) (iter: nat) (tl : TraceLink),
+forall (r: Rule) (sm : SourceGraph) (sp : list SourceNode) (iter: nat) (tl : TraceLink),
   In tl (traceIterationOnPattern r sm sp iter) <->
   (exists (o: OutputPatternNode),
       In o (Rule_getOutputPatternNodes r) /\
@@ -140,7 +140,7 @@ Qed.
 
 (* TODO works inside TwoPhaseSemantics.v *)
 Lemma tr_traceNodeOnPattern_leaf:
-forall (o: OutputPatternNode) (sm : SourceModel) (sp : list SourceNode) (iter: nat) (o: OutputPatternNode) (tl : TraceLink),
+forall (o: OutputPatternNode) (sm : SourceGraph) (sp : list SourceNode) (iter: nat) (o: OutputPatternNode) (tl : TraceLink),
   Some tl = (traceNodeOnPattern o sm sp iter) <->
   (exists (e: TargetNode),
       Some e = (instantiateNodeOnPattern o sm sp iter) /\
@@ -168,7 +168,7 @@ Qed.
 (** * Apply **)
 
 Lemma tr_applyTraces_in :
-forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (tls: list TraceLink),
+forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) (tls: list TraceLink),
   In tl (applyTraces tr sm tls) <->
   (exists (sp : list SourceNode),
       In sp (allTuples tr sm) /\
@@ -179,7 +179,7 @@ Proof.
 Qed.
 
 Lemma tr_applyPatternTraces_in:
-forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (tls: list TraceLink),
+forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) (tls: list TraceLink),
   In tl (applyPatternTraces tr sm sp tls) <->
   (exists (r : Rule),
           In r (matchPattern tr sm sp) /\
@@ -190,7 +190,7 @@ Proof.
 Qed.
 
 Lemma tr_applyRuleOnPatternTraces_in : 
-forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (tls: list TraceLink),
+forall (tr: Transformation) (r : Rule) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) (tls: list TraceLink),
     In tl (applyRuleOnPatternTraces r tr sm sp tls) <->
     (exists (i: nat),
         In i (seq 0 (evalIteratorExpr r sm sp)) /\
@@ -201,7 +201,7 @@ Proof.
 Qed.
 
 Lemma tr_applyIterationOnPatternTraces_in : 
-    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) (i:nat)  (tls: list TraceLink),
+    forall (tr: Transformation) (r : Rule) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) (i:nat)  (tls: list TraceLink),
       In tl (applyIterationOnPatternTraces r tr sm sp i tls) <->
       (exists (ope: OutputPatternNode),
           In ope (Rule_getOutputPatternNodes r) /\ 
@@ -212,7 +212,7 @@ Proof.
 Qed.
 
 Lemma tr_applyNodeOnPatternTraces_in : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tl : TargetEdge) 
+    forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode) (tl : TargetEdge) 
             (i:nat) (ope: OutputPatternNode)  (tls: list TraceLink),
       In tl (applyNodeOnPatternTraces ope tr sm sp i tls) <->
       (exists (oper: OutputPatternEdge) (te: TargetNode),
@@ -249,7 +249,7 @@ Qed.
 Lemma tr_applyEdgeOnPatternTraces_leaf : 
     forall (oper: OutputPatternEdge)
             (tr: Transformation)
-            (sm: SourceModel)
+            (sm: SourceGraph)
             (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink),
       applyEdgeOnPatternTraces oper tr sm sp iter te tls  = evalOutputPatternEdgeExpr sm sp te iter tls oper.
 Proof.
@@ -257,7 +257,7 @@ Proof.
 Qed.
 
 Theorem exe_preserv : 
-  forall (tr: Transformation) (sm : SourceModel),
+  forall (tr: Transformation) (sm : SourceGraph),
     core.modeling.twophases.TwoPhaseSemantics.executeTraces tr sm = core.Semantics.execute tr sm.
 Proof.
   intros.
@@ -297,7 +297,7 @@ Proof.
 Qed. 
 
 Lemma tr_execute_in_elements' :
-forall (tr: Transformation) (sm : SourceModel) (te : TargetNode),
+forall (tr: Transformation) (sm : SourceGraph) (te : TargetNode),
   In te (allNodes (executeTraces tr sm)) <->
   (exists (sp : list SourceNode),
       In sp (allTuples tr sm) /\
@@ -311,7 +311,7 @@ Proof.
 Qed.
 
 Lemma tr_execute_in_links' :
-forall (tr: Transformation) (sm : SourceModel) (tl : TargetEdge),
+forall (tr: Transformation) (sm : SourceGraph) (tl : TargetEdge),
   In tl (allEdges (executeTraces tr sm)) <->
   (exists (sp : list SourceNode),
       In sp (allTuples tr sm) /\
@@ -327,10 +327,10 @@ Qed.
 (*Instance TwoPhaseCoqTLEngine :
 TransformationEngineModeling (@ModelingCoqTLEngine SourceNode SourceEdge TargetNode TargetEdge):=
 {
-  SourceModelClass := SourceModelClass;
-  SourceModelReference := SourceModelReference;
-  TargetModelClass := TargetModelClass;
-  TargetModelReference := TargetModelReference;
+  SourceGraphClass := SourceGraphClass;
+  SourceGraphReference := SourceGraphReference;
+  TargetGraphClass := TargetGraphClass;
+  TargetGraphReference := TargetGraphReference;
 
   resolveAll := resolveAllIter;
   resolve := resolveIter;
@@ -345,13 +345,13 @@ Instance CoqTLEngine :
   TransformationEngine :=
   {
     SourceNode := SourceNode;
-    SourceModelClass := SourceModelClass;
+    SourceGraphClass := SourceGraphClass;
     SourceEdge := SourceEdge;
-    SourceModelReference := SourceModelReference;
+    SourceGraphReference := SourceGraphReference;
     TargetNode := TargetNode;
-    TargetModelClass := TargetModelClass;
+    TargetGraphClass := TargetGraphClass;
     TargetEdge := TargetEdge;
-    TargetModelReference := TargetModelReference;
+    TargetGraphReference := TargetGraphReference;
 
     (* syntax and accessors *)
 

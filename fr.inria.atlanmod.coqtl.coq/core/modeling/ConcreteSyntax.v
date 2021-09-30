@@ -14,46 +14,46 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (** ** Syntax **)
 
-Fixpoint denoteFunction (sclasses : list SourceModelClass) (otype: Type) :=
+Fixpoint denoteFunction (sclasses : list SourceGraphClass) (otype: Type) :=
   match sclasses with
   | nil => otype
   | cons class classes' => (denoteModelClass class) -> denoteFunction classes' otype
   end.
 
 Definition outputPatternEdge
-(sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
+(sclasses : list SourceGraphClass) (tclass: TargetGraphClass)  (tref: TargetGraphReference):=
 denoteFunction (sclasses) ((denoteModelClass tclass) -> option (denoteModelReference tref)).
 
 Definition outputPatternNodeTypes
-(sclasses : list SourceModelClass) (tclass: TargetModelClass) :=
+(sclasses : list SourceGraphClass) (tclass: TargetGraphClass) :=
   denoteFunction (sclasses) (denoteModelClass tclass).
 
 Definition iteratedListTypes
-(sclasses : list SourceModelClass) :=
+(sclasses : list SourceGraphClass) :=
   denoteFunction (sclasses) nat.
 
-Definition guardTypes (sclasses : list SourceModelClass) :=
+Definition guardTypes (sclasses : list SourceGraphClass) :=
   denoteFunction (sclasses) bool.
 
-Inductive ConcreteOutputPatternEdge (InTypes: list SourceModelClass) (OutType:TargetModelClass) : Type :=
+Inductive ConcreteOutputPatternEdge (InTypes: list SourceGraphClass) (OutType:TargetGraphClass) : Type :=
   link :
-  forall (OutRef: TargetModelReference),
-      (list TraceLink -> nat -> SourceModel -> (outputPatternEdge InTypes OutType OutRef)) ->
+  forall (OutRef: TargetGraphReference),
+      (list TraceLink -> nat -> SourceGraph -> (outputPatternEdge InTypes OutType OutRef)) ->
       ConcreteOutputPatternEdge InTypes OutType.
 
-Inductive ConcreteOutputPatternNode (InTypes: list SourceModelClass) : Type :=
+Inductive ConcreteOutputPatternNode (InTypes: list SourceGraphClass) : Type :=
   elem :
-    forall (OutType:TargetModelClass),
+    forall (OutType:TargetGraphClass),
       string ->
-        (nat -> SourceModel -> (outputPatternNodeTypes InTypes OutType)) 
+        (nat -> SourceGraph -> (outputPatternNodeTypes InTypes OutType)) 
     -> (list (ConcreteOutputPatternEdge InTypes OutType)) -> ConcreteOutputPatternNode InTypes.
 
 Inductive ConcreteRule : Type :=
   concreteRule :
     (* name *) string
-    (* from *) -> forall (InTypes: list SourceModelClass),
-      option (SourceModel -> (guardTypes InTypes))
-    (* for *) -> option (SourceModel -> (iteratedListTypes InTypes))
+    (* from *) -> forall (InTypes: list SourceGraphClass),
+      option (SourceGraph -> (guardTypes InTypes))
+    (* for *) -> option (SourceGraph -> (iteratedListTypes InTypes))
     (* to *) -> (list (ConcreteOutputPatternNode InTypes))
     -> ConcreteRule.
 
@@ -64,35 +64,35 @@ Inductive ConcreteTransformation : Type :=
 
 (** ** Accessors **)
 
-Definition ConcreteOutputPatternEdge_getRefType {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternEdge InElTypes OutType) : TargetModelReference :=
+Definition ConcreteOutputPatternEdge_getRefType {InElTypes: list SourceGraphClass} {OutType:TargetGraphClass} (o: ConcreteOutputPatternEdge InElTypes OutType) : TargetGraphReference :=
   match o with
     link _ _ y _ => y
   end.
 
-Definition ConcreteOutputPatternEdge_getOutputPatternEdge {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternEdge InElTypes OutType) :
-  list TraceLink -> nat -> SourceModel -> (outputPatternEdge InElTypes OutType (ConcreteOutputPatternEdge_getRefType o)).
+Definition ConcreteOutputPatternEdge_getOutputPatternEdge {InElTypes: list SourceGraphClass} {OutType:TargetGraphClass} (o: ConcreteOutputPatternEdge InElTypes OutType) :
+  list TraceLink -> nat -> SourceGraph -> (outputPatternEdge InElTypes OutType (ConcreteOutputPatternEdge_getRefType o)).
 Proof.
   destruct o eqn:ho.
   exact o0.
 Defined.
 
-Definition ConcreteOutputPatternNode_getName {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternNode InElTypes) : string :=
+Definition ConcreteOutputPatternNode_getName {InElTypes: list SourceGraphClass} (o: ConcreteOutputPatternNode InElTypes) : string :=
   match o with
     elem _ _ y _ _ => y
   end.
 
-Definition ConcreteOutputPatternNode_getOutType {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternNode InElTypes) : TargetModelClass :=
+Definition ConcreteOutputPatternNode_getOutType {InElTypes: list SourceGraphClass} (o: ConcreteOutputPatternNode InElTypes) : TargetGraphClass :=
   match o with
     elem _ y _ _ _ => y
   end.
 
-Definition ConcreteOutputPatternNode_getOutPatternNode {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternNode InElTypes) :
-  nat -> SourceModel -> (outputPatternNodeTypes InElTypes (ConcreteOutputPatternNode_getOutType o)) :=
+Definition ConcreteOutputPatternNode_getOutPatternNode {InElTypes: list SourceGraphClass} (o: ConcreteOutputPatternNode InElTypes) :
+  nat -> SourceGraph -> (outputPatternNodeTypes InElTypes (ConcreteOutputPatternNode_getOutType o)) :=
   match o with
     elem _ _ _ y _ => y
   end.
 
-Definition ConcreteOutputPatternNode_getOutputEdges {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternNode InElTypes) :
+Definition ConcreteOutputPatternNode_getOutputEdges {InElTypes: list SourceGraphClass} (o: ConcreteOutputPatternNode InElTypes) :
   list (ConcreteOutputPatternEdge InElTypes (ConcreteOutputPatternNode_getOutType o)) :=
   match o with
     elem _ _ _ _ y => y
@@ -103,20 +103,20 @@ Definition ConcreteRule_getName (x : ConcreteRule) : string :=
     concreteRule y _ _ _ _ => y
   end.
 
-Definition ConcreteRule_getInTypes (x : ConcreteRule) : list SourceModelClass :=
+Definition ConcreteRule_getInTypes (x : ConcreteRule) : list SourceGraphClass :=
   match x with
     concreteRule _ y _ _ _ => y
   end.
 
 Definition ConcreteRule_getGuard (x : ConcreteRule) :
-  option(SourceModel -> (guardTypes (ConcreteRule_getInTypes x))).
+  option(SourceGraph -> (guardTypes (ConcreteRule_getInTypes x))).
 Proof.
   destruct x eqn:hx.
   assumption.
 Defined.
 
 Definition ConcreteRule_getIteratedList (x: ConcreteRule) :
-  option (SourceModel -> (iteratedListTypes (ConcreteRule_getInTypes x))).
+  option (SourceGraph -> (iteratedListTypes (ConcreteRule_getInTypes x))).
 Proof.
   destruct x eqn:hx.
   assumption.

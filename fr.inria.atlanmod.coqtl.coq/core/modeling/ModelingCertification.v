@@ -20,16 +20,16 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 (** * Resolve *)
 
 Theorem tr_resolveAll_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sps: list(list SourceNode)),
+  forall (tls: list TraceLink) (sm: SourceGraph) (name: string)
+    (type: TargetGraphClass) (sps: list(list SourceNode)),
     resolveAll tls sm name type sps = resolveAllIter tls sm name type sps 0.
 Proof.
   crush.
 Qed.
 
 Theorem tr_resolveAllIter_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sps: list(list SourceNode)) (iter: nat)
+  forall (tls: list TraceLink) (sm: SourceGraph) (name: string)
+    (type: TargetGraphClass) (sps: list(list SourceNode)) (iter: nat)
     (te: denoteModelClass type),
     (exists tes: list (denoteModelClass type),
         resolveAllIter tls sm name type sps iter = Some tes /\ In te tes) <->
@@ -70,8 +70,8 @@ Admitted.
 Qed.*)
 
 Theorem tr_resolve_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sp: list SourceNode),
+  forall (tls: list TraceLink) (sm: SourceGraph) (name: string)
+    (type: TargetGraphClass) (sp: list SourceNode),
     resolve tls sm name type sp = resolveIter tls sm name type sp 0.
 Proof.
   crush.
@@ -79,7 +79,7 @@ Qed.
 
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
 Theorem tr_resolveIter_leaf:
-  forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
+  forall (tls:list TraceLink) (sm : SourceGraph) (name: string) (type: TargetGraphClass)
     (sp: list SourceNode) (iter: nat) (x: denoteModelClass type),
     resolveIter tls sm name type sp iter = return x ->
       (exists (tl : TraceLink),
@@ -111,10 +111,10 @@ destruct (find (fun tl: TraceLink =>
 Instance ModelingCoqTLEngine :
   ModelingTransformationEngine (@CoqTLEngine SourceNode SourceEdge eqdec_sme TargetNode TargetEdge):=
   {
-    SourceModelClass := SourceModelClass;
-    SourceModelReference := SourceModelReference;
-    TargetModelClass := TargetModelClass;
-    TargetModelReference := TargetModelReference;
+    SourceGraphClass := SourceGraphClass;
+    SourceGraphReference := SourceGraphReference;
+    TargetGraphClass := TargetGraphClass;
+    TargetGraphReference := TargetGraphReference;
 
     resolveAll := resolveAllIter;
     resolve := resolveIter;

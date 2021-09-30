@@ -6,10 +6,10 @@ Class ModelingTransformationConfiguration `(tc: TransformationConfiguration):= {
   smm: ModelingSchema SourceSchema;
   tmm: ModelingSchema TargetSchema;
 
-  SourceModelClass:= @ModelClass _ smm;
-  SourceModelReference:= @ModelReference _ smm;
-  TargetModelClass:= @ModelClass _ tmm;
-  TargetModelReference:= @ModelReference _ tmm;  
+  SourceGraphClass:= @ModelClass _ smm;
+  SourceGraphReference:= @ModelReference _ smm;
+  TargetGraphClass:= @ModelClass _ tmm;
+  TargetGraphReference:= @ModelReference _ tmm;  
 
-  denoteSourceModelClass:= @denoteModelClass _ smm;
+  denoteSourceGraphClass:= @denoteModelClass _ smm;
 }.

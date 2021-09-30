@@ -22,14 +22,14 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 Definition applyEdgeOnPatternTraces
             (oper: OutputPatternEdge)
             (tr: Transformation)
-            (sm: SourceModel)
+            (sm: SourceGraph)
             (sp: list SourceNode) (iter: nat) (te: TargetNode) (tls: list TraceLink): option TargetEdge :=
   evalOutputPatternEdgeExpr sm sp te iter tls oper.
 
 Definition applyNodeOnPatternTraces
             (ope: OutputPatternNode)
             (tr: Transformation)
-            (sm: SourceModel)
+            (sm: SourceGraph)
             (sp: list SourceNode) (iter: nat) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun oper => 
     match (evalOutputPatternNodeExpr sm sp iter ope) with 
@@ -37,15 +37,15 @@ Definition applyNodeOnPatternTraces
     | None => nil
     end) (OutputPatternNode_getOutputEdges ope).
 
-Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode) (iter: nat) (tls: list TraceLink): list TargetEdge :=
+Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceGraph) (sp: list SourceNode) (iter: nat) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun o => applyNodeOnPatternTraces o tr sm sp iter tls)
     (Rule_getOutputPatternNodes r).
 
-Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceNode) (tls: list TraceLink): list TargetEdge :=
+Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceGraph) (sp: list SourceNode) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun i => applyIterationOnPatternTraces r tr sm sp i tls)
     (seq 0 (evalIteratorExpr r sm sp)).
 
-Definition applyPatternTraces (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tls: list TraceLink): list TargetEdge :=
+Definition applyPatternTraces (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun r => applyRuleOnPatternTraces r tr sm sp tls) (matchPattern tr sm sp).
 
 (** * Execute **)
@@ -120,14 +120,14 @@ Proof.
                 Admitted.
                 (* here it shows the problem for an explicit eq_b*)
 
-Definition instantiateTraces (tr: Transformation) (sm : SourceModel) :=
+Definition instantiateTraces (tr: Transformation) (sm : SourceGraph) :=
   let tls := trace tr sm in
     ( map (TraceLink_getTargetNode) tls, tls ).
 
-Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list TraceLink): list TargetEdge :=
+Definition applyTraces (tr: Transformation) (sm : SourceGraph) (tls: list TraceLink): list TargetEdge :=
   flat_map (fun sp => applyPatternTraces tr sm sp tls) (noDup_sp (map (TraceLink_getSourcePattern) tls)).
 
-Definition executeTraces (tr: Transformation) (sm : SourceModel) : TargetModel :=
+Definition executeTraces (tr: Transformation) (sm : SourceGraph) : TargetGraph :=
   let (elements, tls) := instantiateTraces tr sm in
   let links := applyTraces tr sm tls in
   Build_Model elements links.

@@ -15,12 +15,12 @@ Section Parser.
 
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.
 
-Definition parseOutputPatternEdge (intypes: list SourceModelClass) (outtype: TargetModelClass)
+Definition parseOutputPatternEdge (intypes: list SourceGraphClass) (outtype: TargetGraphClass)
   (cr: ConcreteOutputPatternEdge intypes outtype): OutputPatternEdge :=
   buildOutputPatternEdge 
     (makeLink intypes outtype (ConcreteOutputPatternEdge_getRefType cr) (ConcreteOutputPatternEdge_getOutputPatternEdge cr)).
 
-Definition parseOutputPatternNode (intypes: list SourceModelClass) (co: ConcreteOutputPatternNode intypes) : OutputPatternNode :=
+Definition parseOutputPatternNode (intypes: list SourceGraphClass) (co: ConcreteOutputPatternNode intypes) : OutputPatternNode :=
   buildOutputPatternNode
     (ConcreteOutputPatternNode_getName co)
     (makeNode intypes (ConcreteOutputPatternNode_getOutType co) (ConcreteOutputPatternNode_getOutPatternNode co))
@@ -41,7 +41,7 @@ Definition parseRule(cr: ConcreteRule) : Rule :=
 
 Definition parse(ct: ConcreteTransformation) : Transformation :=
   buildTransformation 
-    (max (map (length (A:=SourceModelClass)) (map ConcreteRule_getInTypes (ConcreteTransformation_getConcreteRules ct))   ))
+    (max (map (length (A:=SourceGraphClass)) (map ConcreteRule_getInTypes (ConcreteTransformation_getConcreteRules ct))   ))
     (map parseRule (ConcreteTransformation_getConcreteRules ct)).
 
 End Parser.

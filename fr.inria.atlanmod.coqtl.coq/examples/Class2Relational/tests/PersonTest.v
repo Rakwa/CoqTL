@@ -28,7 +28,7 @@ Require Import examples.Class2Relational.tests.PersonModel.
                                 (BuildColumnReference
                                    (BuildColumn 1 "parent")
                                    (BuildTable 0 "Person")) :: nil |}
-     : TargetModel RelationalMetamodel_EObject RelationalMetamodel_ELink
+     : TargetGraph RelationalMetamodel_EObject RelationalMetamodel_ELink
 *)
 
 (* Expected output (short):

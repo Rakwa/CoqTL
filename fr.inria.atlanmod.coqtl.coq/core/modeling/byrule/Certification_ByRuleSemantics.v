@@ -20,7 +20,7 @@ Section ByRuleSemanticsCertification.
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}. 
 
 Lemma allNodesOfTypeInModel :
-  forall (c: SourceModelClass) (sm : SourceModel),
+  forall (c: SourceGraphClass) (sm : SourceGraph),
   incl (allNodesOfType c sm) (allNodes sm).
 Proof.
   unfold allNodesOfType, incl.
@@ -31,7 +31,7 @@ Proof.
 Qed.
 
 Lemma allNodesOfTypesInModel :
-  forall (sp : list SourceNode) (l: list SourceModelClass) (sm : SourceModel),
+  forall (sp : list SourceNode) (l: list SourceGraphClass) (sm : SourceGraph),
   In sp (allNodesOfTypes l sm) -> incl sp (allNodes sm).
 Proof.
   intros.
@@ -42,7 +42,7 @@ Proof.
 Qed.
 
 Lemma InAllTuplesOfTypes : 
-  forall (a : SourceNode) (sp: list SourceNode) (s: SourceModelClass) (l : list SourceModelClass) (sm: SourceModel),
+  forall (a : SourceNode) (sp: list SourceNode) (s: SourceGraphClass) (l : list SourceGraphClass) (sm: SourceGraph),
   In (a :: sp) (allTuplesOfTypes (s :: l) sm)
   -> In (sp) (allTuplesOfTypes l sm).
 Proof.
@@ -55,7 +55,7 @@ Proof.
 Qed.
 
 Lemma allTuplesOfTypesInModel :
-  forall (sp : list SourceNode) (l: list SourceModelClass) (sm : SourceModel),
+  forall (sp : list SourceNode) (l: list SourceGraphClass) (sm : SourceGraph),
   In sp (allTuplesOfTypes l sm) -> incl sp (allNodes sm).
 Proof.
   intros.
@@ -88,7 +88,7 @@ Proof.
 Qed.
 
 Lemma allTuplesByRuleInModel :
-  forall (sp : list SourceNode) (tr: Transformation) (sm : SourceModel),
+  forall (sp : list SourceNode) (tr: Transformation) (sm : SourceGraph),
   In sp (allTuplesByRule tr sm) -> incl sp (allNodes sm).
 Proof.
   intros.
@@ -99,7 +99,7 @@ Proof.
 Qed.
 
 Lemma allTuplesOfTypesLength :
-  forall (sp: list SourceNode) (l : list SourceModelClass) (sm : SourceModel),
+  forall (sp: list SourceNode) (l : list SourceGraphClass) (sm : SourceGraph),
   In sp (allTuplesOfTypes l sm) -> Datatypes.length sp = Datatypes.length l.
 Proof.
   intros.
@@ -138,7 +138,7 @@ Proof.
 Qed.
 
 Lemma In_by_rule : 
-  forall (sp: list SourceNode) (tr: Transformation) (sm: SourceModel),
+  forall (sp: list SourceNode) (tr: Transformation) (sm: SourceGraph),
   In sp (allTuplesByRule tr sm) -> In sp (allTuples tr sm).
 Proof.
   intros.
@@ -155,8 +155,8 @@ Qed.
 
 Lemma In_allTuplesOfTypes_inv :
   forall (a: SourceNode) (sp: list SourceNode) 
-  (s: SourceModelClass) (l: list SourceModelClass)
-  (sm: SourceModel),
+  (s: SourceGraphClass) (l: list SourceGraphClass)
+  (sm: SourceGraph),
   hasType s a = true
   -> In sp (allTuplesOfTypes l sm) 
   -> In a (allNodes sm)
@@ -176,7 +176,7 @@ Proof.
 Qed.
 
 Lemma In_by_rule_match :
-  forall (sp: list SourceNode) (tr: Transformation) (sm: SourceModel) (r: Rule),
+  forall (sp: list SourceNode) (tr: Transformation) (sm: SourceGraph) (r: Rule),
   In sp (allTuples tr sm) /\ hd_error (matchPattern tr sm sp) = return r    
   -> In sp (allTuplesOfTypes (Rule_getInTypes r) sm).
 Proof.
@@ -224,7 +224,7 @@ Proof.
 Qed.
 
 Lemma In_by_rule_instantiate : 
-  forall (sp: list SourceNode) (tr: Transformation) (sm: SourceModel),
+  forall (sp: list SourceNode) (tr: Transformation) (sm: SourceGraph),
   In sp (allTuples tr sm) /\ instantiatePattern tr sm sp <> nil -> In sp (allTuplesByRule tr sm).
 Proof.
   intros.
@@ -257,7 +257,7 @@ Proof.
 Qed.
 
 Lemma In_by_rule_apply : 
-forall (sp: list SourceNode) (tr: Transformation) (sm: SourceModel),
+forall (sp: list SourceNode) (tr: Transformation) (sm: SourceGraph),
 In sp (allTuples tr sm) /\ applyPattern tr sm sp <> nil -> In sp (allTuplesByRule tr sm).
 Proof.
   intros.
@@ -290,7 +290,7 @@ Proof.
 Qed.
 
 Theorem tr_execute_in_elements :
-  forall (tr: Transformation) (sm : SourceModel) (te : TargetNode),
+  forall (tr: Transformation) (sm : SourceGraph) (te : TargetNode),
   In te (allNodes (execute tr sm)) <->
   (exists (sp : list SourceNode),
       In sp (allTuples tr sm) /\
@@ -318,7 +318,7 @@ Proof.
 Qed.
 
 Theorem tr_execute_in_links :
-  forall (tr: Transformation) (sm : SourceModel) (tl : TargetEdge),
+  forall (tr: Transformation) (sm : SourceGraph) (tl : TargetEdge),
     In tl (allEdges (execute tr sm)) <->
     (exists (sp : list SourceNode),
         In sp (allTuples tr sm) /\
@@ -347,7 +347,7 @@ Proof.
 Qed.
 
 Theorem tr_execute_in :
-  forall (tr: Transformation) (sm : SourceModel) (te : TargetNode) (tl : TargetEdge),
+  forall (tr: Transformation) (sm : SourceGraph) (te : TargetNode) (tl : TargetEdge),
     (In te (allNodes (execute tr sm)) <-> In te (allNodes (Semantics.execute tr sm)))
     /\ (In tl (allEdges (execute tr sm)) <-> In tl (allEdges (Semantics.execute tr sm))).
 Proof.
@@ -365,13 +365,13 @@ Instance ByRuleEngine :
   TransformationEngine :=
 {
   SourceNode := SourceNode;
-  SourceModelClass := SourceModelClass;
+  SourceGraphClass := SourceGraphClass;
   SourceEdge := SourceEdge;
-  SourceModelReference := SourceModelReference;
+  SourceGraphReference := SourceGraphReference;
   TargetNode := TargetNode;
-  TargetModelClass := TargetModelClass;
+  TargetGraphClass := TargetGraphClass;
   TargetEdge := TargetEdge;
-  TargetModelReference := TargetModelReference;
+  TargetGraphReference := TargetGraphReference;
 
   Transformation := Transformation;
   Rule := Rule;

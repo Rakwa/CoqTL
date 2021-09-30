@@ -11,14 +11,14 @@ Require Import PeanoNat.
 Require Import Lia.
 
 Definition transf_incl {tc: TransformationConfiguration} (t1 t2: Transformation) := True.
-Definition sourcemodel_incl {tc: TransformationConfiguration} (t1 t2: SourceModel) := True.
-Definition targetmodel_incl {tc: TransformationConfiguration} (t1 t2: TargetModel) := True.
-Definition targetmodel_equiv {tc: TransformationConfiguration} (t1 t2: TargetModel) := True.
+Definition sourcemodel_incl {tc: TransformationConfiguration} (t1 t2: SourceGraph) := True.
+Definition targetmodel_incl {tc: TransformationConfiguration} (t1 t2: TargetGraph) := True.
+Definition targetmodel_equiv {tc: TransformationConfiguration} (t1 t2: TargetGraph) := True.
 
 Definition Rule_eqdec: forall {tc: TransformationConfiguration}  (x y:Rule), {x = y} + {x <> y}.
 Admitted.
 
-Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) := 
+Definition toTransformation (tc: TransformationConfiguration) (f: SourceGraph -> TargetGraph) := 
   (buildTransformation 0 
   ((buildRule "rule"%string 
      (fun sm sp => match sp with nil => Some true | _ => Some false end)
@@ -33,9 +33,9 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
      ::nil)).
 
 Theorem universality :
-forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
+forall (tc: TransformationConfiguration) (f: SourceGraph -> TargetGraph),
   exists (t: Transformation), 
-  forall (sm: SourceModel), allNodes (f sm) <> nil -> execute t sm = f sm.
+  forall (sm: SourceGraph), allNodes (f sm) <> nil -> execute t sm = f sm.
 Proof.
   intros.
   exists (toTransformation tc f).
@@ -106,16 +106,16 @@ Proof.
 Qed.
   
 Theorem confluence :
-forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
+forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceGraph),
   (forall (r: Rule), count_occ Rule_eqdec (Transformation_getRules t1) r = count_occ Rule_eqdec (Transformation_getRules t2) r)
   -> targetmodel_equiv (execute t1 sm) (execute t2 sm).
 Admitted.
 
 Theorem additivity :
-forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
+forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceGraph),
   transf_incl t1 t2 -> targetmodel_incl (execute t1 sm) (execute t2 sm).
 Admitted.
 
 Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
-  forall (sm1 sm2: SourceModel),
+  forall (sm1 sm2: SourceGraph),
   sourcemodel_incl sm1 sm2 -> targetmodel_incl (execute t sm1) (execute t sm2).

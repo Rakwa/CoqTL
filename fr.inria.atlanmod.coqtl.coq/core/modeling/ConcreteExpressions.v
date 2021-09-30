@@ -13,14 +13,14 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (** ** Generic functions generation *)
 
-Fixpoint denoteSignature (l : list SourceModelClass) (r : Type) : Type :=
+Fixpoint denoteSignature (l : list SourceGraphClass) (r : Type) : Type :=
   match l with
   | nil => r
   | l0 :: l' => denoteModelClass l0 -> denoteSignature l' r
   end.
 
 Definition wrapOption {T : Type}
-  (l : list SourceModelClass)
+  (l : list SourceGraphClass)
   (imp : denoteSignature l T) :
   (list SourceNode) -> option T.
 Proof.
@@ -33,7 +33,7 @@ Proof.
 Defined.
 
 Definition wrapOption' 
-(l : list SourceModelClass) :
+(l : list SourceGraphClass) :
 (list SourceNode) -> option bool.
 Proof.
   revert l. fix Hl 1. intros l sl.
@@ -44,7 +44,7 @@ Proof.
   - exact (x <- toModelClass l0 s0; Hl l' sl').
 Defined.
 
-Definition wrapList {T : Type} (l : list SourceModelClass)
+Definition wrapList {T : Type} (l : list SourceGraphClass)
   (imp : denoteSignature l (list T)) :
   (list SourceNode) -> list T.
 Proof.
@@ -59,7 +59,7 @@ Proof.
 Defined.
 
 Definition wrapOptionNode
-  (l : list SourceModelClass) (t : TargetModelClass)
+  (l : list SourceGraphClass) (t : TargetGraphClass)
   (imp : denoteSignature l (denoteModelClass t)) :
   (list SourceNode) -> option TargetNode.
 Proof.
@@ -72,7 +72,7 @@ Proof.
 Defined.
 
 Definition wrapOptionLink
-  (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
+  (l : list SourceGraphClass) (t : TargetGraphClass) (r : TargetGraphReference)
   (imp : denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
   (list SourceNode) -> TargetNode -> option TargetEdge.
 Proof.
@@ -85,33 +85,33 @@ Proof.
 Defined.
 
 Definition GuardFunction : Type :=
-  SourceModel -> (list SourceNode) -> option bool.
-Definition makeGuard (l : list SourceModelClass)
-  (imp : SourceModel -> denoteSignature l bool) :
+  SourceGraph -> (list SourceNode) -> option bool.
+Definition makeGuard (l : list SourceGraphClass)
+  (imp : SourceGraph -> denoteSignature l bool) :
   GuardFunction :=
   fun sm => wrapOption l (imp sm).
-Definition makeEmptyGuard (l : list SourceModelClass) : GuardFunction :=
+Definition makeEmptyGuard (l : list SourceGraphClass) : GuardFunction :=
   fun sm => wrapOption' l.
 
 Definition IteratorFunction : Type :=
-  SourceModel -> (list SourceNode) -> option nat.
-Definition makeIterator (l : list SourceModelClass)
-  (imp : SourceModel -> denoteSignature l nat) :
+  SourceGraph -> (list SourceNode) -> option nat.
+Definition makeIterator (l : list SourceGraphClass)
+  (imp : SourceGraph -> denoteSignature l nat) :
   IteratorFunction :=
   fun sm => wrapOption l (imp sm).
 
 Definition NodeFunction : Type :=
-  nat -> SourceModel -> (list SourceNode) -> option TargetNode.
-Definition makeNode (l : list SourceModelClass) (t : TargetModelClass)
-  (imp : nat -> SourceModel -> denoteSignature l (denoteModelClass t)) :
+  nat -> SourceGraph -> (list SourceNode) -> option TargetNode.
+Definition makeNode (l : list SourceGraphClass) (t : TargetGraphClass)
+  (imp : nat -> SourceGraph -> denoteSignature l (denoteModelClass t)) :
   NodeFunction :=
   fun it sm => wrapOptionNode l t (imp it sm).
 
 Definition LinkFunction : Type :=
   list TraceLink
-  -> nat -> SourceModel -> (list SourceNode) -> TargetNode -> option TargetEdge.
-Definition makeLink (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
-  (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
+  -> nat -> SourceGraph -> (list SourceNode) -> TargetNode -> option TargetEdge.
+Definition makeLink (l : list SourceGraphClass) (t : TargetGraphClass) (r : TargetGraphReference)
+  (imp : list TraceLink -> nat -> SourceGraph -> denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
   LinkFunction :=
   fun mt it sm => wrapOptionLink l t r (imp mt it sm).
 

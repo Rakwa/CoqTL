@@ -43,17 +43,17 @@ Set Implicit Arguments.
 Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) (ts: TransformationSyntax tc)
   (t: TransformationEngine ts) :=
   {
-    resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sps: list(list SourceNode)) (iter: nat),
+    resolveAll: forall (tr: list TraceLink) (sm: SourceGraph) (name: string)
+             (type: TargetGraphClass) (sps: list(list SourceNode)) (iter: nat),
         option (list (denoteModelClass type));
-    resolve: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sp: list SourceNode) (iter : nat), option (denoteModelClass type);
+    resolve: forall (tr: list TraceLink) (sm: SourceGraph) (name: string)
+             (type: TargetGraphClass) (sp: list SourceNode) (iter : nat), option (denoteModelClass type);
 
     (** ** Theorems *)
 
     tr_resolveAll_in:
-    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-      (type: TargetModelClass) (sps: list(list SourceNode)) (iter: nat)
+    forall (tls: list TraceLink) (sm: SourceGraph) (name: string)
+      (type: TargetGraphClass) (sps: list(list SourceNode)) (iter: nat)
       (te: denoteModelClass type),
       (exists tes: list (denoteModelClass type),
           resolveAll tls sm name type sps iter = Some tes /\ In te tes) <->
@@ -62,7 +62,7 @@ Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: Model
           resolve tls sm name type sp iter = Some te);
 
     tr_resolve_leaf:
-    forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
+    forall (tls:list TraceLink) (sm : SourceGraph) (name: string) (type: TargetGraphClass)
       (sp: list SourceNode) (iter: nat) (x: denoteModelClass type),
       resolve tls sm name type sp iter = return x ->
        (exists (tl : TraceLink),

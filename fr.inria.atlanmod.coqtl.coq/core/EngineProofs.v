@@ -43,14 +43,14 @@ Qed.
 
 Theorem incl_equiv_to_surj:
   forall (eng: TransformationEngine),
-    (forall (tr: Transformation) (sm : SourceModel)
+    (forall (tr: Transformation) (sm : SourceGraph)
        (sp : list SourceNode) (tp: list TargetNode) (tp1: list TargetNode)
        (r : Rule),
         instantiateRuleOnPattern r tr sm sp = Some tp1 ->
         In r (matchPattern tr sm sp) ->
         instantiatePattern tr sm sp = Some tp ->
         incl tp1 tp) <->
-    (forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode) (tp: list TargetNode) (te : TargetNode),
+    (forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode) (tp: list TargetNode) (te : TargetNode),
         instantiatePattern tr sm sp = Some tp ->
         (exists (r : Rule) (tp1 : list TargetNode),
             In r (matchPattern tr sm sp) /\
@@ -77,7 +77,7 @@ Qed.
 
 Theorem tr_match_functionality :
   forall (eng: TransformationEngine)
-    (tr: Transformation) (sm : SourceModel) (sp : list SourceNode) (r1: list Rule) (r2: list Rule),
+    (tr: Transformation) (sm : SourceGraph) (sp : list SourceNode) (r1: list Rule) (r2: list Rule),
           matchPattern tr sm sp  = r1 -> matchPattern tr sm sp = r2 -> r1 = r2.
 Proof.
     intros.
@@ -87,7 +87,7 @@ Proof.
 Qed.
 
 Theorem tr_matchPattern_None_tr : forall t: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode),
+    forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode),
       getRules tr = nil ->
       matchPattern tr sm sp = nil.
 Proof.
@@ -106,7 +106,7 @@ Qed.
 
   Theorem tr_matchPattern_non_Nil :
     forall eng: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel),
+    forall (tr: Transformation) (sm : SourceGraph),
     forall (sp : list SourceNode),
       (matchPattern tr sm sp) <> nil <->
       (exists (r: Rule),
@@ -136,7 +136,7 @@ Qed.
   Qed.
 
 Theorem tr_instantiatePattern_None_tr : forall t: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode),
+    forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode),
       getRules tr = nil ->
       (instantiatePattern tr sm sp = None).
 Proof.
@@ -153,7 +153,7 @@ Qed.
 
 Theorem tr_applyPattern_None_tr :
   forall t: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceNode),
+    forall (tr: Transformation) (sm : SourceGraph) (sp: list SourceNode),
         getRules tr = nil ->
         (applyPattern tr sm sp = None).
 Proof.
@@ -169,7 +169,7 @@ Proof.
 Qed.
 
 Theorem tr_execute_None_tr_elements : forall t: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel),
+    forall (tr: Transformation) (sm : SourceGraph),
       getRules tr = nil ->
       allNodes (execute tr sm) = nil.
 Proof.
@@ -195,7 +195,7 @@ Qed.
 
   Theorem tr_execute_non_Nil_elements :
    forall eng: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel),
+    forall (tr: Transformation) (sm : SourceGraph),
       (allNodes (execute tr sm)) <> nil <->
       (exists (te : TargetNode) (sp : list SourceNode) (tp : list TargetNode),
           incl sp (allNodes sm) /\
@@ -227,7 +227,7 @@ Qed.
 
   Theorem tr_execute_non_Nil_links :
    forall eng: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel) ,
+    forall (tr: Transformation) (sm : SourceGraph) ,
       (allEdges (execute tr sm)) <> nil <->
       (exists (tl : TargetEdge) (sp : list SourceNode) (tpl : list TargetEdge),
           incl sp (allNodes sm) /\
@@ -257,7 +257,7 @@ Qed.
   Qed.
 
 Theorem tr_execute_None_tr_links : forall t: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel),
+    forall (tr: Transformation) (sm : SourceGraph),
       getRules tr = nil ->
       allEdges (execute tr sm) = nil.
 Proof.
@@ -283,7 +283,7 @@ Qed.
 
 Theorem tr_applyNodeOnPattern_None :
    forall eng: TransformationEngine,
-      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat) (ope: OutputPatternNode (getInTypes r) (getIteratorType r)),
+      forall (tr:Transformation) (sm : SourceGraph) (r: Rule) (sp: list SourceNode) (i : nat) (ope: OutputPatternNode (getInTypes r) (getIteratorType r)),
         length sp <> length (getInTypes r) ->
         applyNodeOnPattern r ope tr sm sp i = None.
 Proof.
@@ -302,7 +302,7 @@ Qed.
 
 Theorem tr_applyIterationOnPattern_None :
    forall eng: TransformationEngine,
-      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat),
+      forall (tr:Transformation) (sm : SourceGraph) (r: Rule) (sp: list SourceNode) (i : nat),
         length sp <> length (getInTypes r) ->
         applyIterationOnPattern r tr sm sp i = None.
 Proof.
@@ -323,7 +323,7 @@ Qed.
 
 Theorem tr_applyRuleOnPattern_None :
    forall eng: TransformationEngine,
-      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode),
+      forall (tr: Transformation) (sm : SourceGraph) (r: Rule) (sp: list SourceNode),
         length sp <> length (getInTypes r) ->
         applyRuleOnPattern r tr sm sp = None.
 Proof.
@@ -343,7 +343,7 @@ Qed.
 
 Theorem tr_instantiateIterationOnPattern_None :
    forall eng: TransformationEngine,
-     forall (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat),
+     forall (sm : SourceGraph) (r: Rule) (sp: list SourceNode) (i : nat),
         length sp <> length (getInTypes r) ->
         instantiateIterationOnPattern r sm sp i = None.
 Proof.
@@ -364,7 +364,7 @@ Qed.
 
 Theorem tr_instantiateRuleOnPattern_None :
   forall eng: TransformationEngine,
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode),
+    forall (tr:Transformation) (sm : SourceGraph) (r: Rule) (sp: list SourceNode),
       length sp <> length (getInTypes r) ->
       instantiateRuleOnPattern r tr sm sp = None.
 Proof.
@@ -384,7 +384,7 @@ Qed.
 
 Theorem tr_instantiateIterationOnPattern_None_iterator :
  forall eng: TransformationEngine,
-  forall (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat),
+  forall (sm : SourceGraph) (r: Rule) (sp: list SourceNode) (i : nat),
       i >= length (evalIterator r sm sp) ->
       instantiateIterationOnPattern r sm sp i = None.
 Proof.
@@ -400,7 +400,7 @@ Qed.
 
 Theorem tr_applyNodeOnPattern_None_iterator :
   forall eng: TransformationEngine,
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat) (ope: OutputPatternNode (getInTypes r) (getIteratorType r)),
+    forall (tr:Transformation) (sm : SourceGraph) (r: Rule) (sp: list SourceNode) (i : nat) (ope: OutputPatternNode (getInTypes r) (getIteratorType r)),
       i >= length (evalIterator r sm sp) ->
       applyNodeOnPattern r ope tr sm sp i = None.
 Proof.
@@ -418,7 +418,7 @@ Qed.
 
 Theorem tr_applyIterationOnPattern_None_iterator :
    forall eng: TransformationEngine,
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceNode) (i : nat),
+    forall (tr:Transformation) (sm : SourceGraph) (r: Rule) (sp: list SourceNode) (i : nat),
       i >= length (evalIterator r sm sp) ->
       applyIterationOnPattern r tr sm sp i = None.
 Proof.
