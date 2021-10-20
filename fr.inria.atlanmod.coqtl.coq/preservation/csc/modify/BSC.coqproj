@@ -1,0 +1,28 @@
+-R core core
+-R transformations transformations
+
+core/utils/CpdtTactics.v
+core/utils/NotationUtils.v
+core/utils/ListUtils.v
+core/utils/ArithUtils.v
+core/utils/BoolUtils.v
+core/utils/ConcatUtils.v
+core/utils/DatatypeUtils.v
+core/utils/PrintUtils.v
+core/utils/PropUtils.v
+core/utils/StringUtils.v
+core/utils/TupleUtils.v
+core/utils/Utils.v
+
+core/Expressions.v
+core/Model.v
+core/EqDec.v
+core/Metamodel.v
+core/TransformationConfiguration.v
+core/TraceLink.v
+core/Syntax.v
+core/Semantics.v
+core/Engine.v
+core/EngineProofs.v
+core/SyntaxCertification.v
+core/Certification.v
