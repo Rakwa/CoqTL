@@ -1,6 +1,6 @@
 This folder contains an evaluation for the article entitled **Deep Specification and Proof Preservation for the CoqTL Transformation Language**.
 
-The goal of this evaluation is to show that CoqTL, under different evolution scenarios, can preserve or don't preserve 4 kinds of artifect:
+The goal of this evaluation is to show that CoqTL, under different evolution scenarios, can preserve or don't preserve 4 kinds of artifact:
   * User proofs on base specification (USoBS)
   * User proofs on child specification (USoCS)
   * Base specification certification (BSC)
@@ -20,6 +20,6 @@ To reproduce the result that is summarized in the table.3 of our article.
 
   1. first, navigate to the `clean` folder in the command line
 
-  2. `./compile.sh` to create a compiled snapshot of coqtl
+  2. `./compile.sh` to create a compiled snapshot of CoqTL
 
-  3. run each test driver that corresponds to each evolution scenario, the expected result is all tests passes (the oracle of each test specify whether it should break or not).
+  3. run each test driver that corresponds to each evolution scenario, the expected result is all tests pass (the oracle of each test specifies whether it should break or not).
