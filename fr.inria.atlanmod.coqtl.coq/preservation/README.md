@@ -12,9 +12,9 @@ The considered evolution scenarios are:
   * Child specification certification add/modify (CSC_add/CSC_modify)
 
 To perform this evaluation, we:
-  * create a snapshot of CoqTL ([./clean/](this folder))
-  * simulate a evolution scenario (each under its specific folder, e.g. [./bsc/add/](this folder))
-  * run a test driver (e.g. [./bsc_add.py](this file))) for each scenario to recompile the snapshot of coqtl, to see any artifects are break. 
+  * create a snapshot of CoqTL ([this folder](./clean/))
+  * simulate a evolution scenario (each under its specific folder, e.g. [this folder](./bsc/add/))
+  * run a test driver (e.g. [this file](./bsc_add.py))) for each scenario to recompile the snapshot of coqtl, to see any artifects are break. 
 
 To reproduce the result that is summarized in the table.3 of our article.
 
