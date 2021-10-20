@@ -44,3 +44,5 @@ fr.inria.atlanmod.coqtl.coq/preservation/BSC.coqproj
 fr.inria.atlanmod.coqtl.coq/preservation/CSC.coqproj
 fr.inria.atlanmod.coqtl.coq/preservation/Makefile
 fr.inria.atlanmod.coqtl.coq/preservation/Makefile.conf
+fr.inria.atlanmod.coqtl.coq/preservation/core/*
+fr.inria.atlanmod.coqtl.coq/preservation/transformations/*
