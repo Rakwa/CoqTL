@@ -40,3 +40,7 @@ nra.cache
 */.vscode/settings.json
 fr.inria.atlanmod.coqtl.coq/preservation/UPoCS.coqproj
 fr.inria.atlanmod.coqtl.coq/preservation/UPoBS.coqproj
+fr.inria.atlanmod.coqtl.coq/preservation/BSC.coqproj
+fr.inria.atlanmod.coqtl.coq/preservation/CSC.coqproj
+fr.inria.atlanmod.coqtl.coq/preservation/Makefile
+fr.inria.atlanmod.coqtl.coq/preservation/Makefile.conf
