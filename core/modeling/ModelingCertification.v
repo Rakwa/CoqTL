@@ -1,5 +1,6 @@
 Require Import String.
 Require Import Bool.
+Require Import Arith.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
