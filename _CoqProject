@@ -46,7 +46,7 @@ core/modeling/ConcreteSyntax.v
 core/modeling/ModelingEngine.v
 core/modeling/Parser.v
 core/modeling/ModelingSemantics.v
-#core/modeling/ModelingCertification.v
+core/modeling/ModelingCertification.v
 
 core/modeling/properties/ModelingAdditivityRule.v
 core/modeling/properties/ModelingAdditivityRuleExt.v
@@ -61,13 +61,13 @@ core/modeling/properties/ModelingAdditivityRuleExt.v
 #core/modeling/byrule/ByRuleSemantics.v
 #core/modeling/byrule/Certification_ByRuleSemantics.v
 
-core/basic/basicExpressions.v
 core/basic/basicSyntax.v
+core/basic/basicExpressions.v
 core/basic/basicSemantics.v
-core/basic/properties/Confluence.v
+core/basic/properties/Confluent.v
 
-core/test/iExpressions.v
 core/test/iSyntax.v
+core/test/iExpressions.v
 core/test/iSemantics.v
 
 transformations/Class2Relational/ClassMetamodel.v
