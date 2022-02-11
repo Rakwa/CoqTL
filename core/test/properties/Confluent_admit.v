@@ -1,16 +1,17 @@
-Require Import core.test.iSemantics.
-Require Import core.test.iSyntax.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
 Require Import String.
-Require Import EqNat.
 Require Import List.
-Require Import core.test.iExpressions.
-Require Import core.utils.Utils.
 Require Import PeanoNat.
+Require Import EqNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
 
+Require Import core.utils.Utils.
+Require Import core.Model.
+Require Import core.TransformationConfiguration.
+
+Require Import core.test.iSyntax.
+Require Import core.test.iExpressions.
+Require Import core.test.iSemantics.
 
 (*************************************************************)
 (** * Confluence                                             *)
@@ -30,20 +31,51 @@ Require Import FunctionalExtensionality.
 Section iConfluence.
 Context (tc: TransformationConfiguration).
 
-
-(* can't use nodup cause it requires deciability on Rule *)
-Lemma eq_dec : forall a b : Rule, {a = b} + {a <> b}.
+(* step.0 put source and target element deciability in a type class *)
+Lemma TargetModelElement_dec : 
+  forall a b : TargetModelElement, {a = b} + {a <> b}.
 Proof.
 Admitted.
 
-Scheme Equality for list.
-Check list_beq.
+Lemma SourceModelElement_dec : 
+  forall a b : SourceModelElement, {a = b} + {a <> b}.
+Proof.
+Admitted.
 
+(* step.1 trace deciability *)
+Lemma Trace_dec : forall a b : TraceLink, {a = b} + {a <> b}.
+Proof.
+repeat decide equality.
+apply TargetModelElement_dec.
+apply SourceModelElement_dec.
+Qed.
 
-
+(* step.2 Nodup (trace [r] sm) *)
+(* proposal: well formed rule *)
 (* a rule is well formed if all its outpatternname are different *)
+Lemma nodup_single_rule:
+forall r sm sp,
+   nodup Trace_dec (traceRuleOnPattern r sm sp) = (traceRuleOnPattern r sm sp).
+Proof.
+intros r sm sp.
+unfold nodup.
+induction (traceRuleOnPattern r sm sp).
+auto.
+simpl.
+destruct (in_dec Trace_dec a l).
+- simpl. admit.
+-
+Admitted.
 
-(* if a well formed rule r1 is not in tr, then all r0 in tr, r0's outpatternname are different from r1 *)
+  
+
+
+(* step.3 .
+ *)
+
+(* step.4 Nodup l /\ Nodup l' /\  forall e, In e l -> ~ In e l' ->
+  Nodup l ++ l'
+ *)
 
 
 (* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
@@ -76,6 +108,10 @@ induction (Transformation_getRules t1).
   ++ simpl. auto.
 + apply NoDup_cons_iff in H. destruct H.
   specialize (IHl H0).
+
+
+
+
 Admitted.
 
 Lemma tr_set_eq_imply_trace_eq :
@@ -160,12 +196,6 @@ split.
   ++ apply tr_set_eq_imply_trace_eq. crush.
 Qed.
 
-Lemma trace_eq :
-forall t1 t2 sm tr,
- Transformation_equiv t1 t2 ->
-   (In tr (trace t1 sm) <-> In tr (trace t2 sm)).
-Admitted.
-
 Lemma resolveIter_eq :
 forall  t1 t2 sm,
  Transformation_equiv t1 t2 ->
@@ -178,8 +208,6 @@ apply functional_extensionality. intro.
 apply functional_extensionality. intro.
 apply functional_extensionality. intro.
 
-Search filter.
-
 remember ((fun tl0 : TraceLink =>
         (iSemantics.list_beq SourceModelElement SourceElement_eqb
            (TraceLink_getSourcePattern tl0) x1 && (TraceLink_getIterator tl0 =? x2) &&
@@ -188,41 +216,15 @@ remember ((fun tl0 : TraceLink =>
 remember ((filter tr_filter (trace t1 sm))) as fl1.
 remember ((filter tr_filter (trace t2 sm))) as fl2.
 
+specialize (tr_set_eq_imply t1 t2 sm tr_eq). intro.
+
 assert (length fl1 = length fl2). { specialize (filter_mutual_length_eq (trace t1 sm) (trace t2 sm)). crush. }
 
 destruct (Datatypes.length fl1) eqn: l1_length.
-+ rewrite <- H. auto.
-+ rewrite <- H.
++ rewrite <- H0. auto.
++ rewrite <- H0.
   destruct n; auto.
-  
-
-destruct fl1,fl2.
-- inversion l1_length.
-- inversion l1_length.
-- inversion H.
-- destruct fl1, fl2.
-  * simpl.
-    f_equal.
-    f_equal.
-    Search filter.
-    assert (In t (filter tr_filter (trace t1 sm))). {
-      rewrite <- Heqfl1. crush.
-    }
-    assert (In t0 (filter tr_filter (trace t2 sm))). {
-      rewrite <- Heqfl2. crush.
-    }
-    apply filter_In in H0.
-    apply filter_In in H1.
-    specialize (trace_eq t1 t2 sm t tr_eq). intro.
-    destruct H0.
-    rewrite H2 in H0.
-
-    rewrite filter_In in Heqfl1.
-  * inversion H.
-  * inversion l1_length.
-  * inversion l1_length.
-
-
+  - 
 destruct H.
 destruct H1.
 apply (NoDup_filter tr_filter) in H. rewrite <- Heqfl1 in H.
@@ -233,6 +235,14 @@ intro.
 rewrite H4.
 auto.
 Qed.
+
+
+
+
+
+
+
+
 
 Theorem confluence :
 forall  (t1 t2: Transformation) (sm: SourceModel),
