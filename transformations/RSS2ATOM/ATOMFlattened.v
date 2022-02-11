@@ -1098,6 +1098,7 @@ Definition Author_getAtomObject (au_arg : Author) (m : ATOMModel) : option (ATOM
 
 
 (* Typeclass Instances *)	
+#[export]
 Instance ATOMMetamodel_ElementSum : Sum ATOMMetamodel_Object ATOMMetamodel_Class :=
 {
 	denoteSubType := ATOMMetamodel_getTypeByClass;
@@ -1105,6 +1106,7 @@ Instance ATOMMetamodel_ElementSum : Sum ATOMMetamodel_Object ATOMMetamodel_Class
 	toSumType := ATOMMetamodel_toObject;
 }.
 
+#[export]
 Instance ATOMMetamodel_LinkSum : Sum ATOMMetamodel_Link ATOMMetamodel_Reference :=
 {
 	denoteSubType := ATOMMetamodel_getTypeByReference;
@@ -1112,10 +1114,12 @@ Instance ATOMMetamodel_LinkSum : Sum ATOMMetamodel_Link ATOMMetamodel_Reference 
 	toSumType := ATOMMetamodel_toLink;
 }.
 
+#[export]
 Instance ATOMMetamodel_EqDec : EqDec ATOMMetamodel_Object := {
     eq_b := beq_ATOMMetamodel_Object;
 }.
 
+#[export]
 Instance ATOMMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
@@ -1123,6 +1127,7 @@ Instance ATOMMetamodel_Metamodel_Instance :
 	ModelLink := ATOMMetamodel_Link;
 }.
 
+#[export]
 Instance ATOMMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel ATOMMetamodel_Metamodel_Instance :=
 { 

@@ -10,6 +10,7 @@ Class ValueOption (A: Type) := {
    value : option A -> A
 }.
 
+#[export]
 Instance ValueString : ValueOption string := {
    value (a: option string) := valueOption a ""%string
 }.
