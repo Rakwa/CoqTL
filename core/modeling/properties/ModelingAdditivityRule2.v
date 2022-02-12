@@ -6,7 +6,7 @@ Require Import core.modeling.Parser.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
-Require Import core.properties.AdditivityRuleExt.
+Require Import core.properties.AdditivityRule2.
 Require Import String.
 Require Import EqNat.
 Require Import List.

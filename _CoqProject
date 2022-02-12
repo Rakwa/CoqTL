@@ -58,6 +58,8 @@ core/EngineProofs.v
 core/SyntaxCertification.v
 core/Certification.v
 
+core/modeling/ModelingCertification.v
+
 ## Engine Properties
 
 core/properties/AdditivityRule.v
@@ -70,6 +72,8 @@ core/properties/Monotonicity.v
 core/properties/Confluence.v
 core/properties/Lifting.v
 
+core/modeling/properties/ModelingAdditivityRule.v
+core/modeling/properties/ModelingAdditivityRule2.v
 
 # Not Used
 
