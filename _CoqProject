@@ -39,7 +39,9 @@ core/Engine.v
 
 ## Engine Proofs
 
-
+core/EngineProofs.v
+core/SyntaxCertification.v
+core/Certification.v
 
 ## Engine Properties
 
