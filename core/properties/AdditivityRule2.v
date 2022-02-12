@@ -1,20 +1,22 @@
-Require Import core.Semantics.
-Require Import core.Syntax.
-Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.ConcreteSyntax.
-Require Import core.modeling.Parser.
+Require Import String.
+Require Import List.
+Require Import PeanoNat.
+Require Import EqNat.
+Require Import Lia.
+Require Import FunctionalExtensionality.
+
+Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
-Require Import core.modeling.ModelingTransformationConfiguration.
-Require Import core.properties.AdditivityRule.
-Require Import String.
-Require Import EqNat.
-Require Import List.
-Require Import Expressions.
-Require Import core.utils.Utils.
-Require Import PeanoNat.
-Require Import Lia.
 
+Require Import core.Syntax.
+Require Import core.Expressions.
+Require Import core.Semantics.
+
+(*************************************************************)
+(** * Another way to prove Additivity in                     *)
+(** * Rule context                                           *)
+(*************************************************************)
 
 Definition Transformation_incl_rules'' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
   (Transformation_getArity t1 <= Transformation_getArity t2) /\ 

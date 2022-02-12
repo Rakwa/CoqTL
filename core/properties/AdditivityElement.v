@@ -1,16 +1,17 @@
-Require Import core.Semantics.
-Require Import core.Syntax.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
 Require Import String.
-Require Import EqNat.
 Require Import List.
-Require Import Expressions.
-Require Import core.utils.Utils.
 Require Import PeanoNat.
+Require Import EqNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
 
+Require Import core.utils.Utils.
+Require Import core.Model.
+Require Import core.TransformationConfiguration.
+
+Require Import core.Syntax.
+Require Import core.Expressions.
+Require Import core.Semantics.
 
 (*************************************************************)
 (** * Additivity in OutputPatternElement context             *)
@@ -55,7 +56,7 @@ split.
   + apply filter_In.
     split; auto.
     unfold matchRuleOnPattern, evalGuardExpr.
-    unfold matchRuleOnPattern,evalGuardExpr in H3.
+    unfold matchRuleOnPattern, evalGuardExpr in H3.
     rewrite <- H6. auto.
   + apply in_flat_map.
     apply in_flat_map in H2.

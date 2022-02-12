@@ -1,17 +1,17 @@
-Require Import core.Semantics.
-Require Import core.Syntax.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
 Require Import String.
-Require Import EqNat.
 Require Import List.
-Require Import Expressions.
-Require Import core.utils.Utils.
 Require Import PeanoNat.
+Require Import EqNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
 
- 
+Require Import core.utils.Utils.
+Require Import core.Model.
+Require Import core.TransformationConfiguration.
+
+Require Import core.Syntax.
+Require Import core.Expressions.
+Require Import core.Semantics.
 
 (*********************************************************)
 (** * Additivity in OutputPatternLink context            *)
@@ -495,7 +495,7 @@ split.
   destruct H4.
   unfold applyElementOnPattern in H5.
   destruct (evalOutputPatternElementExpr sm sp iter1 ope) eqn: outExpr.
-  + destruct (evalOutputPatternLinkExpr sm sp t iter1 (trace t1 sm) ope) eqn: linkExpr.
+  + destruct (evalOutputPatternLinkExpr sm sp t (resolveIter (trace t1 sm)) iter1 ope) eqn: linkExpr.
     ++ simpl in H5.
        apply in_flat_map.
        exists sp.
@@ -548,7 +548,8 @@ split.
                         unfold applyElementOnPattern.
                         assert (exists ope2, In ope2 (Rule_getOutputPatternElements r2) /\ 
                                   evalOutputPatternElementExpr sm sp iter1 ope2 = return t /\
-                                  evalOutputPatternLinkExpr sm sp t iter1 (trace t1 sm) ope2 = return l).
+                                  (evalOutputPatternLinkExpr sm sp t
+               (resolveIter (trace t1 sm)) iter1 ope2) = return l).
                         {
                         destruct H9.
                         destruct H9.
