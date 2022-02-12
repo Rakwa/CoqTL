@@ -36,7 +36,7 @@ Qed. *)
 Theorem tr_resolveAllIter_in:
   forall 
      {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}
-    (tls: list TraceLink) (sm: SourceModel) (name: string)
+    (tls: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
     (te: denoteModelClass type),
     (exists tes: list (denoteModelClass type),
@@ -97,7 +97,7 @@ Proof.
 Qed. *)
 
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
-Theorem tr_resolveIter_leaf:
+(* Theorem tr_resolveIter_leaf:
   forall 
      {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}
     (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
@@ -134,7 +134,7 @@ destruct (Semantics.resolveIter tls sm name sp iter) eqn: resolve_ca.
      --- apply String.eqb_eq. crush.
   -- inversion resolve_ca.
 - simpl in H. inversion H.
-Qed.
+Qed. *)
 
 
 (* Set Typeclasses Debug Verbosity 2. *)
@@ -229,7 +229,7 @@ Instance ModelingCoqTLEngine : @ModelingTransformationEngine _ _ _ CoqTLEngine.
 Proof.
 eexists.
 exact tr_resolveAllIter_in.
-exact tr_resolveIter_leaf.
+(* exact tr_resolveIter_leaf. *)
 Qed.
 
 End ModelingCertification.

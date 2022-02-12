@@ -88,10 +88,10 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     
     trace: Transformation -> SourceModel -> list TraceLink; 
 
-    resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
+    resolveAll: forall (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
              (sps: list(list SourceModelElement)) (iter: nat),
         option (list TargetModelElement);
-    resolve: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
+    resolve: forall (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
              (sp: list SourceModelElement) (iter : nat), option TargetModelElement;
 
     (** ** Theorems *)
@@ -206,7 +206,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     (** ** resolve *)
 
     tr_resolveAll_in:
-    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+    forall (tls: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
            (sps: list(list SourceModelElement)) (iter: nat)
       (te: TargetModelElement),
       (exists tes: list TargetModelElement,
@@ -215,8 +215,8 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
           In sp sps /\
           resolve tls sm name sp iter = Some te);
 
-    tr_resolve_leaf:
-    forall (tls:list TraceLink) (sm : SourceModel) (name: string)
+    (* tr_resolve_leaf:
+    forall (tls: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm : SourceModel) (name: string)
       (sp: list SourceModelElement) (iter: nat) (x: TargetModelElement),
       resolve tls sm name sp iter = return x ->
        (exists (tl : TraceLink),
@@ -224,7 +224,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
          Is_true (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
          ((TraceLink_getIterator tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
-         (TraceLink_getTargetElement tl) = x);
+         (TraceLink_getTargetElement tl) = x); *)
          
   }.
 

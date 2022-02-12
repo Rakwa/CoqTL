@@ -51,29 +51,29 @@ Definition denoteOutputList (type: TargetModelClass) (f: option (list TargetMode
     end.
 
 
-Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolveIter (tls: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
             (type: TargetModelClass) (sp: list SourceModelElement)
             (iter : nat) : option (denoteModelClass type) :=
   denoteOutput type (resolveIter tls sm name sp iter).
 
-Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolve (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
   (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
   denoteOutput type (resolve tr sm name sp).
 
-Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolveAllIter (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
   (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
   : option (list (denoteModelClass type)) :=
   denoteOutputList type (resolveAllIter tr sm name sps iter).
 
-Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolveAll (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
   (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
   denoteOutputList type (resolveAll tr sm name sps).
 
-Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition maybeResolve (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
   (type: TargetModelClass) (sp: option (list SourceModelElement)) : option (denoteModelClass type) :=
   denoteOutput type (maybeResolve tr sm name sp).
 
-Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
+Definition maybeResolveAll (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
   (type: TargetModelClass) (sp: option (list (list SourceModelElement))) : option (list (denoteModelClass type)) :=
   denoteOutputList type (maybeResolveAll tr sm name sp).
 
