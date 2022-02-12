@@ -22,10 +22,11 @@ Context {tc: TransformationConfiguration}.
 
 Inductive OutputPatternElement : Type :=
   buildOutputPatternElement :
-    string 
-    -> (nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
-    -> (list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink)) -> OutputPatternElement.
-
+    (* id *) string 
+    (* element expr *) -> (nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
+    (* link expr *) -> ((SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement) 
+                         -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink)) -> OutputPatternElement.
+ 
 Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
   match o with
     buildOutputPatternElement y _ _ => y

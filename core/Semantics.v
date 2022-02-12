@@ -2,12 +2,13 @@ Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
-Require Import core.Syntax.
 Require Import core.EqDec. 
 Require Import Bool.
 Require Import Arith.
 Require Import TransformationConfiguration.
-Require Import Expressions.
+Require Import core.Expressions.
+Require Import core.Syntax.
+
 Scheme Equality for list.
 
 
@@ -117,9 +118,10 @@ Definition applyElementOnPattern
             (ope: OutputPatternElement)
             (tr: Transformation)
             (sm: SourceModel)
-            (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
+            (sp: list SourceModelElement) (iter: nat) : list TargetModelLink := 
   match (evalOutputPatternElementExpr sm sp iter ope) with 
-  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l iter (trace tr sm) ope)
+  | Some te => optionListToList
+    (evalOutputPatternLinkExpr sm sp te (resolveIter (trace tr sm)) iter ope)
   | None => nil
   end.
 
