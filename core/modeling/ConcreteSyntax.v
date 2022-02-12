@@ -38,7 +38,7 @@ Definition guardTypes (sclasses : list SourceModelClass) :=
 Inductive ConcreteOutputPatternLink (InTypes: list SourceModelClass) (OutType:TargetModelClass) : Type :=
   link :
   forall (OutRef: TargetModelReference),
-      (list TraceLink -> nat -> SourceModel -> (outputPatternLink InTypes OutType OutRef)) ->
+      ((SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement) -> nat -> SourceModel -> (outputPatternLink InTypes OutType OutRef)) ->
       ConcreteOutputPatternLink InTypes OutType.
 
 Inductive ConcreteOutputPatternElement (InTypes: list SourceModelClass) : Type :=
@@ -70,7 +70,7 @@ Definition ConcreteOutputPatternLink_getRefType {InElTypes: list SourceModelClas
   end.
 
 Definition ConcreteOutputPatternLink_getOutputPatternLink {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternLink InElTypes OutType) :
-  list TraceLink -> nat -> SourceModel -> (outputPatternLink InElTypes OutType (ConcreteOutputPatternLink_getRefType o)).
+(SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement) -> nat -> SourceModel -> (outputPatternLink InElTypes OutType (ConcreteOutputPatternLink_getRefType o)).
 Proof.
   destruct o eqn:ho.
   exact o0.

@@ -33,6 +33,21 @@ core/Syntax.v
 core/Semantics.v
 core/Engine.v
 
+## Extended Engines
+
+core/modeling/ModelingMetamodel.v
+core/modeling/ModelingTransformationConfiguration.v
+core/modeling/ConcreteExpressions.v
+core/modeling/ConcreteSyntax.v
+core/modeling/ModelingEngine.v
+core/modeling/Parser.v
+core/modeling/ModelingSemantics.v
+
+core/basic/basicSyntax.v
+core/basic/basicExpressions.v
+core/basic/basicSemantics.v
+core/basic/properties/Confluence.v
+
 ####################
 #      Proofs
 ####################
@@ -54,3 +69,18 @@ core/properties/Universality.v
 core/properties/Monotonicity.v
 core/properties/Confluence.v
 core/properties/Lifting.v
+
+
+# Not Used
+
+## Other experimental engines
+
+#core/modeling/twophases/TwoPhaseEngine.v
+#core/modeling/twophases/TwoPhaseSemantics.v
+#core/modeling/twophases/TwoPhaseCertification.v
+
+#core/modeling/iteratetraces/IterateTracesSemantics.v
+#core/modeling/iteratetraces/IterateTracesCertification.v
+
+#core/modeling/byrule/ByRuleSemantics.v
+#core/modeling/byrule/Certification_ByRuleSemantics.v

@@ -108,10 +108,10 @@ Definition makeElement (l : list SourceModelClass) (t : TargetModelClass)
   fun it sm => wrapOptionElement l t (imp it sm).
 
 Definition LinkFunction : Type :=
-  list TraceLink
+  (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)
   -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink).
 Definition makeLink (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
-  (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
+  (imp : (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement) -> nat -> SourceModel -> denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
   LinkFunction :=
   fun mt it sm => wrapOptionLink l t r (imp mt it sm).
 

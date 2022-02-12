@@ -20,9 +20,11 @@ Definition parseOutputPatternLink (intypes: list SourceModelClass) (outtype: Tar
     (makeLink intypes outtype (ConcreteOutputPatternLink_getRefType cr) (ConcreteOutputPatternLink_getOutputPatternLink cr)).
 
 Definition parseOutputPatternLinks (intypes: list SourceModelClass) (outtype: TargetModelClass)
-  (cr: list (ConcreteOutputPatternLink intypes outtype)) := 
-    fun (tls:list TraceLink) (iter:nat) (sm:SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) =>
-    Some (flat_map (fun (x: ConcreteOutputPatternLink intypes outtype) => optionListToList (parseOutputPatternLink intypes outtype x tls iter sm sp te)) cr).
+  (cr_list: list (ConcreteOutputPatternLink intypes outtype)) := 
+    fun 
+      (tls_map:(SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (iter:nat) (sm:SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) =>
+    Some (flat_map (fun (cr: ConcreteOutputPatternLink intypes outtype) => optionListToList 
+      (parseOutputPatternLink intypes outtype cr tls_map iter sm sp te)) cr_list).
 
 Definition parseOutputPatternElement (intypes: list SourceModelClass) (co: ConcreteOutputPatternElement intypes) : OutputPatternElement :=
   buildOutputPatternElement
