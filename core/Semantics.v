@@ -71,9 +71,9 @@ Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceM
   tuples_up_to_n (allModelElements sm) (maxArity tr).
 
 Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
-  flat_map (tracePattern tr sm) (allTuples tr sm).  
+  flat_map (tracePattern tr sm) (allTuples tr sm).
 
-Definition resolveIter_internal (tls: list TraceLink) (sm: SourceModel) (name: string)
+Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (sp: list SourceModelElement)
             (iter : nat) : option TargetModelElement :=
 let tl := find (fun tl: TraceLink => 
@@ -85,19 +85,14 @@ match tl with
   | None => None
 end.
 
-Definition resolveIter (tls: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
-            (sp: list SourceModelElement)
-            (iter : nat) : option TargetModelElement :=
-tls sm name sp iter.
-
-Definition resolve (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
+(*Definition resolve (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
   (sp: list SourceModelElement) : option TargetModelElement :=
-  resolveIter tr sm name sp 0.
+  tr sm name sp 0.
 
 Definition resolveAllIter (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
   (sps: list(list SourceModelElement)) (iter: nat)
   : option (list TargetModelElement) :=
-  Some (flat_map (fun l:(list SourceModelElement) => optionToList (resolveIter tr sm name l iter)) sps).
+  Some (optionFlatten (map (tr sm name iter) sps)).
 
 Definition resolveAll (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
   (sps: list(list SourceModelElement)) : option (list TargetModelElement) :=
@@ -115,7 +110,7 @@ Definition maybeResolveAll (tr: (SourceModel -> string -> list SourceModelElemen
   match sp with 
   | Some sp' => resolveAll tr sm name sp'
   | None => None
-  end.
+  end.*)
 
 (** * Apply **)
 
@@ -126,7 +121,7 @@ Definition applyElementOnPattern
             (sp: list SourceModelElement) (iter: nat) : list TargetModelLink := 
   match (evalOutputPatternElementExpr sm sp iter ope) with 
   | Some te => optionListToList
-    (evalOutputPatternLinkExpr sm sp te (resolveIter_internal (trace tr sm)) iter ope)
+    (evalOutputPatternLinkExpr sm sp te (resolveIter (trace tr sm)) iter ope)
   | None => nil
   end.
 
