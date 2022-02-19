@@ -180,10 +180,10 @@ Lemma tr_applyElementOnPattern_leaf :
 forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) 
        (i:nat) (ope: OutputPatternElement),
   evalOutputPatternElementExpr sm sp i ope = Some te ->
-  applyElementOnPattern ope tr sm sp i = optionListToList (evalOutputPatternLinkExpr sm sp te (resolveIter_internal (trace tr sm)) i ope).
+  applyElementOnPattern ope tr sm sp i = optionListToList (evalOutputPatternLinkExpr ope (resolveIter (trace tr sm)) sm sp i te).
 Proof.
   intros.
-  destruct (evalOutputPatternLinkExpr sm sp te (resolveIter_internal (trace tr sm)) i ope) eqn:dst.
+  destruct (evalOutputPatternLinkExpr ope (resolveIter (trace tr sm)) sm sp i te) eqn:dst.
   * unfold applyElementOnPattern. crush.
   * unfold applyElementOnPattern. crush.
 Qed.  
@@ -218,7 +218,7 @@ Qed.
 
 (** * Resolve *)
 
-Theorem tr_resolveAll_in:
+(*Theorem tr_resolveAll_in:
   forall (tls: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
     (sps: list(list SourceModelElement)),
     resolveAll tls sm name sps = resolveAllIter tls sm name sps 0.
@@ -266,12 +266,13 @@ Proof.
     -- unfold resolveAllIter in Heqtes1.
         crush.
 Qed.
+*)
 
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
 (* Theorem tr_resolveIter_leaf: 
   forall (tls:list TraceLink) (sm : SourceModel) (name: string)
     (sp: list TransformationConfiguration.SourceModelElement) (iter: nat) (x: TargetModelElement),
-    resolveIter_internal tls sm name sp iter = return x ->
+    resolveIter tls sm name sp iter = return x ->
       (exists (tl : TraceLink),
         In tl tls /\
         Is_true (list_beq SourceModelElement (@elements_eqb smm) (TraceLink_getSourcePattern tl) sp) /\
@@ -280,7 +281,7 @@ Qed.
         (TraceLink_getTargetElement tl) = x).
 Proof.
 intros.
-unfold resolveIter_internal in H.
+unfold resolveIter in H.
 destruct (find
       (fun tl : TraceLink =>
        Semantics.list_beq
@@ -326,8 +327,8 @@ Instance CoqTLEngine :
 
     trace := trace;
 
-    resolveAll := resolveAllIter;
-    resolve := resolveIter;
+    (* resolveAll := resolveAllIter; *)
+    (* resolve := resolveIter; *)
 
     (* lemmas *)
 
@@ -347,7 +348,7 @@ Instance CoqTLEngine :
     tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
     tr_applyElementOnPattern_leaf := tr_applyElementOnPattern_leaf;
 
-    tr_resolveAll_in := tr_resolveAllIter_in;
+    (* tr_resolveAll_in := tr_resolveAllIter_in; *)
     (* tr_resolve_leaf := tr_resolveIter_leaf; *)
 
     allTuples_incl := allTuples_incl;

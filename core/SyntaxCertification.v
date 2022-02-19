@@ -8,10 +8,15 @@ Section SyntaxCertification.
 
 Context {tc: TransformationConfiguration}.
 
-Definition evalOutputPatternLinkExpr_wrapper (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat)
-            (l: list TraceLink) (o: OutputPatternElement)
+Definition evalOutputPatternLinkExpr_wrapper 
+  (sm: SourceModel) 
+  (sp: list SourceModelElement) 
+  (te: TargetModelElement) 
+  (iter: nat)
+  (l: list TraceLink) 
+  (ope: OutputPatternElement)
   : option (list TargetModelLink) :=
-(evalOutputPatternLinkExpr sm sp oe (resolveIter_internal l) iter o).
+(evalOutputPatternLinkExpr ope (resolveIter l) sm sp iter te).
 
 Instance CoqTLSyntax :
   TransformationSyntax tc :=

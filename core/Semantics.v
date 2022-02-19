@@ -73,9 +73,10 @@ Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceM
 Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
   flat_map (tracePattern tr sm) (allTuples tr sm).
 
-Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
-            (sp: list SourceModelElement)
-            (iter : nat) : option TargetModelElement :=
+Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (tuple: list SourceModelElement * nat * string) : option TargetModelElement :=
+ let sp := fst (fst tuple) in
+   let iter := snd (fst tuple) in
+     let name := (snd tuple) in
 let tl := find (fun tl: TraceLink => 
   (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) &&
   ((TraceLink_getIterator tl) =? iter) &&
@@ -121,7 +122,12 @@ Definition applyElementOnPattern
             (sp: list SourceModelElement) (iter: nat) : list TargetModelLink := 
   match (evalOutputPatternElementExpr sm sp iter ope) with 
   | Some te => optionListToList
-    (evalOutputPatternLinkExpr sm sp te (resolveIter (trace tr sm)) iter ope)
+    (evalOutputPatternLinkExpr 
+      ope 
+      (resolveIter (trace tr sm))
+      sm 
+      sp iter
+      te)
   | None => nil
   end.
 

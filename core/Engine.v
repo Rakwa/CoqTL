@@ -88,11 +88,11 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     
     trace: Transformation -> SourceModel -> list TraceLink; 
 
-    resolveAll: forall (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
+    (*resolveAll: forall (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
              (sps: list(list SourceModelElement)) (iter: nat),
         option (list TargetModelElement);
     resolve: forall (tr: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
-             (sp: list SourceModelElement) (iter : nat), option TargetModelElement;
+             (sp: list SourceModelElement) (iter : nat), option TargetModelElement;*)
 
     (** ** Theorems *)
 
@@ -205,7 +205,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
 
     (** ** resolve *)
 
-    tr_resolveAll_in:
+    (*tr_resolveAll_in:
     forall (tls: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm: SourceModel) (name: string)
            (sps: list(list SourceModelElement)) (iter: nat)
       (te: TargetModelElement),
@@ -215,7 +215,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
           In sp sps /\
           resolve tls sm name sp iter = Some te);
 
-    (* tr_resolve_leaf:
+    tr_resolve_leaf:
     forall (tls: (SourceModel -> string -> list SourceModelElement -> nat -> option TargetModelElement)) (sm : SourceModel) (name: string)
       (sp: list SourceModelElement) (iter: nat) (x: TargetModelElement),
       resolve tls sm name sp iter = return x ->

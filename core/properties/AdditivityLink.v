@@ -495,7 +495,7 @@ split.
   destruct H4.
   unfold applyElementOnPattern in H5.
   destruct (evalOutputPatternElementExpr sm sp iter1 ope) eqn: outExpr.
-  + destruct (evalOutputPatternLinkExpr sm sp t (resolveIter_internal (trace t1 sm)) iter1 ope) eqn: linkExpr.
+  + destruct (evalOutputPatternLinkExpr ope (resolveIter (trace t1 sm)) sm sp iter1 t) eqn: linkExpr.
     ++ simpl in H5.
        apply in_flat_map.
        exists sp.
@@ -548,8 +548,8 @@ split.
                         unfold applyElementOnPattern.
                         assert (exists ope2, In ope2 (Rule_getOutputPatternElements r2) /\ 
                                   evalOutputPatternElementExpr sm sp iter1 ope2 = return t /\
-                                  (evalOutputPatternLinkExpr sm sp t
-               (resolveIter_internal (trace t1 sm)) iter1 ope2) = return l).
+                                  (evalOutputPatternLinkExpr ope2
+               (resolveIter (trace t1 sm)) sm sp iter1 t) = return l).
                         {
                         destruct H9.
                         destruct H9.

@@ -24,7 +24,7 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
       (fun sm sp => Some (length (allModelElements (f sm))))
       [(buildOutputPatternElement "out"%string 
          (fun i sm sp => nth_error (allModelElements (f sm)) i)
-         (fun tls i sm sp te => match i with 0 => Some (allModelLinks (f sm)) | _ => None end))
+         (fun tls sm sp i te => match i with 0 => Some (allModelLinks (f sm)) | _ => None end))
       ])
   ]).
 

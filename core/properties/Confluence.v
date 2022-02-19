@@ -206,7 +206,7 @@ Qed.
 Lemma resolveIter_eq :
 forall  t1 t2 sm,
  Transformation_equiv t1 t2 ->
-   resolveIter_internal (trace t1 sm) = resolveIter_internal (trace t2 sm).
+   resolveIter (trace t1 sm) = resolveIter (trace t2 sm).
 Proof.
 intros t1 t2 sm tr_eq.
 unfold resolveIter.
@@ -332,7 +332,7 @@ Proof.
               split.
               ** assumption.
               ** unfold applyElementOnPattern in *. 
-assert ((resolveIter_internal (trace t1 sm) = (resolveIter_internal (trace t2 sm)))).
+assert ((resolveIter (trace t1 sm) = (resolveIter (trace t2 sm)))).
 { apply resolveIter_eq. unfold Transformation_equiv. crush. }
 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** rewrite H7 in H6.
@@ -369,7 +369,7 @@ destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
               split.
               ** assumption.
               ** unfold applyElementOnPattern in *. 
-assert ((resolveIter_internal (trace t1 sm) = (resolveIter_internal (trace t2 sm)))).
+assert ((resolveIter (trace t1 sm) = (resolveIter (trace t2 sm)))).
 { apply resolveIter_eq. unfold Transformation_equiv. crush. }
 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** rewrite <- H7 in H6.
