@@ -24,6 +24,8 @@ destruct (MooreSemantics.initialState m) eqn: q0.
      induction i.
      - intros. simpl. auto.
      - intros.
+       (* main induction step *)
+       admit.
   ++ (* contradiction *)
      (* need uniqueness on initial state *)
      admit.
