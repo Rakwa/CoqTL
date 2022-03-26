@@ -33,6 +33,7 @@ Definition MooreMetamodel_allTransitions (m: MooreModel) : list Transition :=
 Definition initialState (m: MooreModel) : option State :=
     find (fun s => eqb "S0" (State_getName s)) (MooreMetamodel_allStates m).
 
+
 Definition State_outTransitions (s: State) (m: MooreModel) : list Transition :=
     filter (fun t => 
         match (Transition_getSource t m) with
@@ -40,11 +41,14 @@ Definition State_outTransitions (s: State) (m: MooreModel) : list Transition :=
         | None => false
         end)
         (MooreMetamodel_allTransitions m).
- 
+
+Definition State_acceptTransition (s: State) (m: MooreModel) (i: string) : option Transition :=
+    find (fun t => eqb i (Transition_getInput t)) (State_outTransitions s m).
+        
 Fixpoint executeFromState (m: MooreModel) (current: State) (remainingInput: list string) : list string :=
     match remainingInput with 
     | i :: is => 
-        let outTransition := find (fun t => eqb i (Transition_getInput t)) (State_outTransitions current m) in
+        let outTransition :=  State_acceptTransition current m i in
         let trgState := 
             match outTransition with 
             | Some t =>  Transition_getTarget t m

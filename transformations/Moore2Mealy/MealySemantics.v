@@ -40,11 +40,14 @@ Definition State_outTransitions (s: State) (m: MealyModel) : list Transition :=
         | None => false
         end)
         (MealyMetamodel_allTransitions m).
- 
+
+Definition State_acceptTransition (s: State) (m: MealyModel) (i: string) : option Transition :=
+    find (fun t => eqb i (Transition_getInput t)) (State_outTransitions s m).        
+
 Fixpoint executeFromState (m: MealyModel) (current: State) (remainingInput: list string) : list string :=
     match remainingInput with 
     | i :: is => 
-        let outTransition := find (fun t => eqb i (Transition_getInput t)) (State_outTransitions current m) in            
+        let outTransition := State_acceptTransition current m i in            
         let trgState := 
             match outTransition with 
             | Some t =>  Transition_getTarget t m

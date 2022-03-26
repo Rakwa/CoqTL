@@ -4,6 +4,7 @@ Require Import MooreSemantics.
 Require Import Mealy.
 Require Import MealySemantics.
 Require Import Moore2Mealy.
+Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.utils.Utils.
 Require Import List.
@@ -13,19 +14,18 @@ Scheme Equality for list.
 
 
 Lemma Moore2Mealy_executeFromState_eq :
-forall (m : MooreModel) (sp: list MooreMetamodel_Object) 
-(tp: list MealyMetamodel_Object) (i: list string)
-(q0: Moore.State) (q0': State), 
-instantiatePattern Moore2Mealy m sp = tp ->
-[q0] = MooreMetamodel_toStates sp ->
-[q0'] = MealyMetamodel_toStates tp ->
+forall (m : MooreModel) (i: list string)
+(q0: Moore.State) (q0': State) tl, 
+In tl (trace Moore2Mealy m) ->
+MooreMetamodel_toStates (TraceLink_getSourcePattern tl) = [q0] ->
+MealyMetamodel_toStates [(TraceLink_getTargetElement tl)] = [q0'] -> 
 MooreSemantics.executeFromState m q0 i =
 executeFromState (execute Moore2Mealy m) q0' i.
 Proof.
-intros m sp tp inputs.
+intros m inputs.
 induction inputs.
 - intros. simpl. auto.
-- intros q0 q0' rel q0_id q0'_id.
+- intros q0 q0' trace rel q0_id q0'_id.
   (* main induction step *)
   (* fold mr_execute just once *)
   unfold MooreSemantics.executeFromState; fold MooreSemantics.executeFromState.
@@ -63,10 +63,7 @@ intros.
 unfold Moore_execute, Mealy_execute.
 destruct (MooreSemantics.initialState m) eqn: q0.
 + destruct (initialState (execute Moore2Mealy m)) eqn: q0_tr.
-  ++ (* assert instantiatePattern Moore2Mealy m sp = tp /\
-        [s0] = MooreMetamodel_toStates sp /\
-        [s0'] = MealyMetamodel_toStates tp *)
-     (* apply Moore2Mealy_executeFromState_eq *)
+  ++ (* apply Moore2Mealy_executeFromState_eq *)
      admit.
   ++ (* contradiction *) admit.
 + destruct (initialState (execute Moore2Mealy m)) eqn: q0_tr.
