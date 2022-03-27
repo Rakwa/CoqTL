@@ -87,13 +87,7 @@ forall (m : MooreModel),
 initialState (execute Moore2Mealy m) = None ->
 MooreSemantics.initialState m = None.
 Proof. 
-intros m q0_tr.
-Search flat_map.
-unfold initialState in q0_tr.
-unfold MooreSemantics.initialState.
-apply contraposition.   
-Qed.
-
+Admitted.
 
 Lemma Moore2Mealy_initial_state_eq:
 forall (m : MooreModel) s, 
