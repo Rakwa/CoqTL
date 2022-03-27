@@ -3,26 +3,13 @@ Require Import List.
 
 Require Import Mealy.
 Require Import core.Model.
+Require Import core.utils.Utils.
 
-Fixpoint MealyMetamodel_toStates (m: list MealyMetamodel_Object) : list State :=
-    match m with
-    | s :: ss => 
-        match (MealyMetamodel_toClass StateClass s) with 
-        | Some s => s :: (MealyMetamodel_toStates ss) 
-        | None => (MealyMetamodel_toStates ss) 
-        end
-    | _ => nil
-    end.
+Definition MealyMetamodel_toStates (m: list MealyMetamodel_Object) : list State :=
+    optionList2List (map (fun s => (MealyMetamodel_toClass StateClass s)) m).
 
-Fixpoint MealyMetamodel_toTransitions (m: list MealyMetamodel_Object) : list Transition :=
-    match m with
-    | s :: ss => 
-        match (MealyMetamodel_toClass TransitionClass s) with 
-        | Some s => s :: (MealyMetamodel_toTransitions ss) 
-        | None => (MealyMetamodel_toTransitions ss) 
-        end
-    | _ => nil
-    end.
+Definition MealyMetamodel_toTransitions (m: list MealyMetamodel_Object) : list Transition :=
+    optionList2List (map (fun s => (MealyMetamodel_toClass TransitionClass s)) m).
 
 Definition MealyMetamodel_allStates (m: MealyModel) : list State :=
     MealyMetamodel_toStates (allModelElements m).

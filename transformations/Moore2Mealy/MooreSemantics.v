@@ -3,26 +3,13 @@ Require Import List.
 
 Require Import Moore.
 Require Import core.Model.
+Require Import core.utils.Utils.
 
-Fixpoint MooreMetamodel_toStates (m: list MooreMetamodel_Object) : list State :=
-    match m with
-    | s :: ss => 
-        match (MooreMetamodel_toClass StateClass s) with 
-        | Some s => s :: (MooreMetamodel_toStates ss) 
-        | None => (MooreMetamodel_toStates ss) 
-        end
-    | _ => nil
-    end.
+Definition MooreMetamodel_toStates (m: list MooreMetamodel_Object) : list State :=
+    optionList2List (map (fun s => (MooreMetamodel_toClass StateClass s)) m).
 
-Fixpoint MooreMetamodel_toTransitions (m: list MooreMetamodel_Object) : list Transition :=
-    match m with
-    | s :: ss => 
-        match (MooreMetamodel_toClass TransitionClass s) with 
-        | Some s => s :: (MooreMetamodel_toTransitions ss) 
-        | None => (MooreMetamodel_toTransitions ss) 
-        end
-    | _ => nil
-    end.
+Definition MooreMetamodel_toTransitions (m: list MooreMetamodel_Object) : list Transition :=
+    optionList2List (map (fun s => (MooreMetamodel_toClass TransitionClass s)) m).
 
 Definition MooreMetamodel_allStates (m: MooreModel) : list State :=
     MooreMetamodel_toStates (allModelElements m).
