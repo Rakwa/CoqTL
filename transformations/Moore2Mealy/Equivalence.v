@@ -26,7 +26,7 @@ Require Import Coq.Logic.Eqdep_dec.
 
 Scheme Equality for list.
 
-Definition toOb s := toModelElement StateClass s.
+Definition toOb := MooreMetamodel_toObject Moore.StateClass.
 Definition toOb' := toModelElement Mealy.StateClass.
 
 (* put in metamodels, auto gen *)
@@ -40,6 +40,18 @@ unfold MealyMetamodel_toObject .
 destruct x.
 simpl in H.
 destruct (MealyMetamodel_eqEClass_dec mecl_arg StateClass); crush.
+Qed.
+
+Lemma moore_state_convert: 
+forall x s,
+MooreMetamodel_toClass Moore.StateClass x = return s ->
+MooreMetamodel_toObject Moore.StateClass s = x.
+Proof.
+intros.
+unfold MealyMetamodel_toObject .
+destruct x.
+simpl in H.
+destruct (MooreMetamodel_eqEClass_dec mocl_arg Moore.StateClass); crush.
 Qed.
 
 Lemma Moore2Mealy_executeFromState_eq :
@@ -82,12 +94,70 @@ induction inputs.
 Admitted.
 
 
-Lemma Moore2Mealy_initial_state_eq:
-forall (m : MooreModel), 
-initialState (execute Moore2Mealy m) = None ->
-MooreSemantics.initialState m = None.
+Lemma Moore2Mealy_initial_state_eq':
+forall (m : MooreModel) s,
+MooreSemantics.initialState m = Some s ->
+initialState (execute Moore2Mealy m) = None -> False.
 Proof. 
-Admitted.
+intros m s q0'_tr q0_tr.
+unfold initialState in q0_tr.
+unfold MooreSemantics.initialState in q0'_tr.
+apply find_some in q0'_tr.
+assert (In (toOb s) (allModelElements m)). {
+destruct q0'_tr.
+unfold MooreMetamodel_allStates in H.
+unfold MooreMetamodel_toStates in H.
+apply optionList2List_In in H.
+apply in_map_iff in H.
+do 2 destruct H.
+assert (toOb s = x). specialize (moore_state_convert x s H). 
+intro. rewrite <- H2. unfold toOb. auto.
+rewrite H2. auto.
+}
+
+remember ([(toOb s)]) as sp.
+assert (In sp (allTuples Moore2Mealy m)). {
+rewrite Heqsp.
+apply tuples_up_to_n_incl_length.
+- unfold incl.
+  intros. destruct H0. rewrite <- H0. auto. inversion H0.
+- simpl. crush.
+}
+
+remember (instantiatePattern Moore2Mealy m sp) as te.
+rewrite Heqsp in Heqte.
+
+unfold instantiatePattern  in Heqte.
+unfold Moore2Mealy in Heqte.
+simpl in Heqte.
+destruct te; inversion Heqte.
+
+assert (In t (allModelElements (execute Moore2Mealy m))). {
+apply in_flat_map.
+exists sp. split. auto.
+rewrite Heqsp.
+unfold instantiatePattern.
+unfold Moore2Mealy.
+simpl. left. rewrite H2. auto.
+}
+
+destruct (toSubType StateClass t) eqn: cast_ca; 
+rewrite H2 in cast_ca; simpl in cast_ca; inversion cast_ca.
+
+assert (In d (MealyMetamodel_allStates (execute Moore2Mealy m))). {
+unfold MealyMetamodel_allStates.
+unfold MealyMetamodel_toStates.
+apply optionList2List_In_inv.
+apply in_map_iff.
+exists t. 
+split; crush.
+}
+apply find_none with (x:=d) in q0_tr.
+- apply eqb_neq in q0_tr. rewrite <- H5 in q0_tr. simpl in q0_tr.
+  destruct q0'_tr. apply eqb_eq in H7. contradiction.
+- exact H4.
+
+Qed.
 
 Lemma Moore2Mealy_initial_state_eq:
 forall (m : MooreModel) s, 
@@ -176,7 +246,7 @@ destruct (MooreSemantics.initialState m) eqn: q0.
 + destruct (initialState (execute Moore2Mealy m)) eqn: q0_tr.
   ++ (* apply Moore2Mealy_executeFromState_eq *)
      admit.
-  ++ (* contradiction, apply Moore2Mealy_initial_state_eq *) admit.
+  ++ specialize (Moore2Mealy_initial_state_eq' m s q0 q0_tr). intro. inversion H. 
 + destruct (initialState (execute Moore2Mealy m)) eqn: q0_tr.
   ++ specialize (Moore2Mealy_initial_state_eq m s q0_tr q0). intro. inversion H.  
   ++ auto.
