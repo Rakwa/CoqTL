@@ -29,6 +29,11 @@ Scheme Equality for list.
 Definition toOb := MooreMetamodel_toObject Moore.StateClass.
 Definition toOb' := toModelElement Mealy.StateClass.
 
+Definition ttoOb := MooreMetamodel_toObject Moore.TransitionClass.
+Definition ttoOb' := toModelElement Mealy.TransitionClass.
+
+
+
 (* put in metamodels, auto gen *)
 Lemma mealy_state_convert: 
 forall x s,
@@ -56,17 +61,15 @@ Qed.
 
 Lemma Moore2Mealy_executeFromState_eq :
 forall (m : MooreModel) (i: list string)
-(q0: Moore.State) (q0': State) tl, 
-In tl (trace Moore2Mealy m) ->
-MooreMetamodel_toStates (TraceLink_getSourcePattern tl) = [q0] ->
-MealyMetamodel_toStates [(TraceLink_getTargetElement tl)] = [q0'] -> 
+(q0: Moore.State) (q0': State), 
+instantiatePattern Moore2Mealy m [toOb q0] = [toOb' q0'] ->
 MooreSemantics.executeFromState m q0 i =
 executeFromState (execute Moore2Mealy m) q0' i.
 Proof.
 intros m inputs.
 induction inputs.
 - intros. simpl. auto.
-- intros q0 q0' trace rel q0_id q0'_id.
+- intros q0 q0' rel.
   (* main induction step *)
   (* fold mr_execute just once *)
   unfold MooreSemantics.executeFromState; fold MooreSemantics.executeFromState.
@@ -76,7 +79,12 @@ induction inputs.
        destruct (State_acceptTransition q0' (execute Moore2Mealy m) a) eqn: ml_q0'_atr.
        *** destruct (Transition_getTarget t0 (execute Moore2Mealy m)) eqn: ml_atr_trg.
            **** (* assert State_getOutput s = Transition_getOutput t0 *)
+assert (instantiatePattern Moore2Mealy m [ttoOb t] = [ttoOb' t0]). { admit. }
+
+
+
                 (* apply induction step IHinputs *)
+                specialize (IHinputs s s0).
                 admit.
            **** (* contradiction *) admit.
         *** (* contradiction *) admit.
@@ -157,7 +165,7 @@ apply find_none with (x:=d) in q0_tr.
   destruct q0'_tr. apply eqb_eq in H7. contradiction.
 - exact H4.
 
-Qed.
+Qed. 
 
 Lemma Moore2Mealy_initial_state_eq:
 forall (m : MooreModel) s, 
