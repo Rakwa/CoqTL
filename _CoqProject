@@ -78,7 +78,9 @@ transformations/Families2Persons/Families2Persons.v
 transformations/Moore2Mealy/Moore.v
 transformations/Moore2Mealy/Mealy.v
 transformations/Moore2Mealy/Moore2Mealy.v
+transformations/Moore2Mealy/Moore2Mealy_monotonicity_witness.v
 transformations/Moore2Mealy/tests/sampleMoore.v
+transformations/Moore2Mealy/tests/sampleMoore_mono.v
 transformations/Moore2Mealy/MooreSemantics.v
 transformations/Moore2Mealy/MealySemantics.v
 
@@ -88,13 +90,13 @@ core/EngineProofs.v
 core/SyntaxCertification.v
 core/Certification.v
 
-core/properties/AdditivityRule.v
-core/properties/AdditivityRuleExt.v
-core/properties/AdditivityElement.v
-core/properties/AdditivityLink.v
-core/properties/Universality.v
-core/properties/Confluence.v
-core/properties/Monotonicity.v
+#core/properties/AdditivityRule.v
+#core/properties/AdditivityRuleExt.v
+#core/properties/AdditivityElement.v
+#core/properties/AdditivityLink.v
+#core/properties/Universality.v
+#core/properties/Confluence.v
+#core/properties/Monotonicity.v
 #core/properties/Lifting.v
 
 #core/modeling/ModelingCertification.v
