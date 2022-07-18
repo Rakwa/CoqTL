@@ -10,10 +10,10 @@
  Require Import transformations.Moore2Mealy.Moore.
  Open Scope string_scope.
  
- (* S0("1") --"1"-> S1("0")  
-             <-"0"--
-     *)
- 
+
+(* Moore models as counterexample to prove monotonicity of CoqTL *)
+
+
  Definition Moore_m1 : Model MooreMetamodel_Object MooreMetamodel_Link :=
      (Build_Model
         (
