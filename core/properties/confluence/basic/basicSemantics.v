@@ -2,12 +2,12 @@ Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
-Require Import core.basic.basicSyntax.
+Require Import core.properties.confluence.basic.basicSyntax.
 Require Import core.EqDec. 
 Require Import Bool.
 Require Import Arith.
 Require Import TransformationConfiguration.
-Require Import core.basic.basicExpressions.
+Require Import core.properties.confluence.basic.basicExpressions.
 Scheme Equality for list.
 
 

@@ -87,6 +87,11 @@ transformations/Moore2Mealy/MealySemantics.v
 
 # Proofs
 
+core/properties/confluence/basic/basicSyntax.v
+core/properties/confluence/basic/basicExpressions.v
+core/properties/confluence/basic/basicSemantics.v
+
+
 core/EngineProofs.v
 core/SyntaxCertification.v
 core/Certification.v

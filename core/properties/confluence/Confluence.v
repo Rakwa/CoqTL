@@ -1,17 +1,20 @@
-Require Import core.basic.basicSemantics.
-Require Import core.basic.basicSyntax.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
+
+
 Require Import String.
 Require Import EqNat.
 Require Import List.
-Require Import core.basic.basicExpressions.
-Require Import core.utils.Utils.
 Require Import PeanoNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
 
-Section iConfluence.
+Require Import core.Model.
+Require Import core.TransformationConfiguration.
+Require Import core.properties.confluence.basic.basicExpressions.
+Require Import core.properties.confluence.basic.basicSemantics.
+Require Import core.properties.confluence.basic.basicSyntax.
+Require Import core.utils.Utils.
+
+Section Confluence.
 Context (tc: TransformationConfiguration).
 
 
@@ -227,4 +230,4 @@ destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** auto.
 Qed.
 
-End iConfluence.
+End Confluence.
