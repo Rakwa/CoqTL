@@ -1,46 +1,42 @@
-Require Import core.Semantics.
-Require Import core.Syntax.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
+
 Require Import String.
 Require Import EqNat.
 Require Import List.
-Require Import Expressions.
-Require Import core.utils.Utils.
 Require Import PeanoNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
 
+Require Import core.Semantics.
+Require Import core.Syntax.
+Require Import core.Model.
+Require Import core.TransformationConfiguration.
+Require Import core.utils.Utils.
 
-Theorem Distributivity_instantiate:
-forall (tc: TransformationConfiguration) (tr: Transformation) (sm: SourceModel) (l1 l2: list (list SourceModelElement)),
-  (flat_map (instantiatePattern tr sm) (l1 ++ l2)) = 
-    flat_map (instantiatePattern tr sm) l1 ++ flat_map (instantiatePattern tr sm) l2.
-Proof.
- intros.
- apply flat_map_app.
-Qed.
+Require Import core.modeling.ConcreteSyntax.
+Require Import core.modeling.ModelingSemantics.
+Require Import core.modeling.ModelingMetamodel.
+Require Import core.modeling.ConcreteExpressions.
+Require Import core.modeling.Parser.
 
-Theorem Distributivity_apply:
-forall (tc: TransformationConfiguration) (tr: Transformation) (sm: SourceModel) (l1 l2: list (list SourceModelElement)),
-  flat_map (applyPattern tr sm) (l1 ++ l2) = 
-    flat_map (applyPattern tr sm) l1 ++ flat_map (applyPattern tr sm) l2.
-Proof.
- intros.
- apply flat_map_app.
-Qed.
+Require Import transformations.Moore2Mealy.Moore2Mealy_monotonicity_witness.
+Require Import transformations.Moore2Mealy.tests.sampleMoore_distri.
 
-Theorem Distributivity:
-(forall (tc: TransformationConfiguration) (tr: Transformation) (m1 m2: SourceModel),
-  execute tr (Model_app m1 m2) = 
-    Model_app (execute tr m1) (execute tr m2)).
-Abort.
+(*************************************************************)
+(** * Distributivity of CoqTL                                *)
+(*************************************************************)
 
 Theorem Not_Distributivity:
-(forall (tc: TransformationConfiguration) (tr: Transformation) (m1 m2: SourceModel),
+exists (tr: Transformation) (m1 m2: SourceModel),
   execute tr (Model_app m1 m2) = 
-    Model_app (execute tr m1) (execute tr m2)) -> False.
+    Model_app (execute tr m1) (execute tr m2) -> False.
 Proof.
-  intros.
-Admitted.
-
+  eexists Moore2Mealy.
+  eexists Moore_m1.
+  eexists Moore_m2.
+  unfold execute.
+  simpl.
+  intro.
+  unfold Model_app in H.
+  simpl in H.
+  inversion H.
+Qed.
