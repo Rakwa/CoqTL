@@ -1,21 +1,19 @@
+Require Import core.basic.basicSemantics.
+Require Import core.basic.basicSyntax.
+Require Import core.Model.
+Require Import core.TransformationConfiguration.
 Require Import String.
-Require Import List.
-Require Import PeanoNat.
 Require Import EqNat.
+Require Import List.
+Require Import core.basic.basicExpressions.
+Require Import core.utils.Utils.
+Require Import PeanoNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
 
-Require Import core.utils.Utils.
-Require Import core.Model.
-Require Import core.TransformationConfiguration.
+Section iConfluence.
+Context (tc: TransformationConfiguration).
 
-Require Import core.Syntax.
-Require Import core.Expressions.
-Require Import core.Semantics.
-
-(*************************************************************)
-(** * Confluence                                             *)
-(*************************************************************)
 
 Definition well_form  {tc: TransformationConfiguration} tr :=
   forall r1 r2 sm sp, 
@@ -24,73 +22,14 @@ Definition well_form  {tc: TransformationConfiguration} tr :=
     matchRuleOnPattern r2 sm sp = true ->
       r1 = r2.
 
-(* Multiset semantics: we think that the list of rules represents a multiset/bag*)
-(* Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
-  forall (r:Rule),
-  count_occ' Rule_eqdec (Transformation_getRules t1) r = count_occ' Rule_eqdec (Transformation_getRules t2) r. *)
-
-(* another way to represent multiset semantics*)
-(* Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
-  sub_set (Transformation_getRules t1) (Transformation_getRules t2) /\ 
-  sub_set (Transformation_getRules t1) (Transformation_getRules t2).*)
-
-
-Section Confluence.
-Context (tc: TransformationConfiguration).
-
-(* step.0 put source and target element deciability in a type class *)
-Lemma TargetModelElement_dec : 
-  forall a b : TargetModelElement, {a = b} + {a <> b}.
-Proof.
-Admitted.
-
-Lemma SourceModelElement_dec : 
-  forall a b : SourceModelElement, {a = b} + {a <> b}.
-Proof.
-Admitted.
-
-(* step.1 trace deciability *)
-Lemma Trace_dec : forall a b : TraceLink, {a = b} + {a <> b}.
-Proof.
-repeat decide equality.
-apply TargetModelElement_dec.
-apply SourceModelElement_dec.
-Qed.
-
-(* step.2 Nodup (trace [r] sm) *)
-(* proposal: well formed rule *)
-(* a rule is well formed if all its outpatternname are different *)
-Lemma nodup_single_rule:
-forall r sm sp,
-   nodup Trace_dec (traceRuleOnPattern r sm sp) = (traceRuleOnPattern r sm sp).
-Proof.
-intros r sm sp.
-unfold nodup.
-induction (traceRuleOnPattern r sm sp).
-auto.
-simpl.
-destruct (in_dec Trace_dec a l).
-- simpl. admit.
--
-Admitted.
-
-  
-
-
-(* step.3 .
- *)
-
-(* step.4 Nodup l /\ Nodup l' /\  forall e, In e l -> ~ In e l' ->
-  Nodup l ++ l'
- *)
-
 
 (* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
+
 Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
   set_eq (Transformation_getRules t1) (Transformation_getRules t2) /\
-  NoDup (Transformation_getRules t1) /\ 
-  NoDup (Transformation_getRules t2)
+  well_form (Transformation_getRules t1) /\ 
+  well_form (Transformation_getRules t2)
 .
 
 Definition TargetModel_equiv {tc: TransformationConfiguration} (m1 m2: TargetModel) :=
@@ -99,158 +38,69 @@ Definition TargetModel_equiv {tc: TransformationConfiguration} (m1 m2: TargetMod
     (In l (allModelLinks m1) <-> In l (allModelLinks m2)).
 
 
-Lemma rule_nodup_imply_trace_nodup:
-forall  t1 sm,
- NoDup (Transformation_getRules t1) ->
-   NoDup (trace t1 sm).
-Proof.
-intros.
-unfold trace.
-unfold tracePattern.
-unfold matchPattern.
-induction (Transformation_getRules t1).
-+ simpl. 
-  induction ((allTuples t1 sm)).
-  ++  simpl. apply NoDup_nil.
-  ++ simpl. auto.
-+ apply NoDup_cons_iff in H. destruct H.
-  specialize (IHl H0).
-
-
-
-
-Admitted.
-
-Lemma tr_set_eq_imply_trace_eq :
-forall  t1 t2 sm,
- Transformation_equiv t1 t2 -> 
-   set_eq (trace t1 sm) (trace t2 sm).
-Proof.
-intros t1 t2 sm treq.
-repeat split.
-+ unfold Transformation_equiv in treq.
-  destruct treq. destruct H0. 
-  clear H1. (* they probably not useful *)
-  unfold set_eq in H0.
-  destruct H0.
-  unfold incl in *.
-  intros.
-  apply (in_flat_map) in H2.
-  destruct H2 as [sp sp_cond].
-  destruct sp_cond.
-  apply (in_flat_map).
-  exists sp.
-  split. 
-  ++  unfold allTuples in *.
-      unfold maxArity in *.
-      rewrite <- H. exact H2.
-  ++  apply (in_flat_map) in H3.
-      apply (in_flat_map).
-      destruct H3.
-      exists x.
-      split.
-      * destruct H3.
-        unfold matchPattern in *.
-        apply filter_In.
-        apply filter_In in H3.
-        destruct H3.
-        specialize (H0 x).
-        split; crush.
-      * crush.
-+ unfold Transformation_equiv in treq.
-  destruct treq. destruct H0. 
-  clear H1. (* they probably not useful *)
-  unfold set_eq in H0.
-  destruct H0.
-  unfold incl in *.
-  intros.
-  apply (in_flat_map) in H2.
-  destruct H2 as [sp sp_cond].
-  destruct sp_cond.
-  apply (in_flat_map).
-  exists sp.
-  split. 
-  ++  unfold allTuples in *.
-      unfold maxArity in *.
-      rewrite H. exact H2.
-  ++  apply (in_flat_map) in H3.
-      apply (in_flat_map).
-      destruct H3.
-      exists x.
-      split.
-      * destruct H3.
-        unfold matchPattern in *.
-        apply filter_In.
-        apply filter_In in H3.
-        destruct H3.
-        specialize (H0 x).
-        split; crush.
-      * crush.
-Qed.
-
-Lemma tr_set_eq_imply :
-forall  t1 t2 sm,
- Transformation_equiv t1 t2 ->
-   NoDup (trace t1 sm) /\
-   NoDup (trace t2 sm) /\ 
-   set_eq (trace t1 sm) (trace t2 sm).
-Proof.
-intros t1 t2 sm treq.
-split.
-+ apply rule_nodup_imply_trace_nodup. unfold Transformation_equiv in treq. crush.
-+ split.
-  ++ apply rule_nodup_imply_trace_nodup. unfold Transformation_equiv in treq. crush.
-  ++ apply tr_set_eq_imply_trace_eq. crush.
-Qed.
 
 Lemma resolveIter_eq :
-forall  t1 t2 sm,
+forall  t1 t2,
  Transformation_equiv t1 t2 ->
-   resolveIter (trace t1 sm) = resolveIter (trace t2 sm).
+   resolveIter t1 = resolveIter t2.
 Proof.
-intros t1 t2 sm tr_eq.
+intros t1 t2 tr_eq.
 unfold resolveIter.
 apply functional_extensionality. intro.
 apply functional_extensionality. intro.
 apply functional_extensionality. intro.
 apply functional_extensionality. intro.
+rename x into sm.
+rename x1 into sp.
+rename x2 into iter.
+rename x0 into opname.
 
-remember ((fun tl0 : TraceLink =>
-        (Semantics.list_beq SourceModelElement SourceElement_eqb
-           (TraceLink_getSourcePattern tl0) x1 && (TraceLink_getIterator tl0 =? x2) &&
-         (TraceLink_getName tl0 =? x0)%string)%bool)) as tr_filter.
+remember (fun r : Rule =>
+matchRuleOnPattern r sm sp) as find_cond.
+remember (Transformation_getRules t1) as rs1.
+remember (Transformation_getRules t2) as rs2.
 
-remember ((filter tr_filter (trace t1 sm))) as fl1.
-remember ((filter tr_filter (trace t2 sm))) as fl2.
-
-specialize (tr_set_eq_imply t1 t2 sm tr_eq). intro.
-
-assert (length fl1 = length fl2). { specialize (filter_mutual_length_eq (trace t1 sm) (trace t2 sm)). crush. }
-
-destruct (Datatypes.length fl1) eqn: l1_length.
-Admitted.
-(* + rewrite <- H0. auto.
-+ rewrite <- H0.
-  destruct n; auto.
-  - 
-destruct H.
-destruct H1.
-apply (NoDup_filter tr_filter) in H. rewrite <- Heqfl1 in H.
-apply (NoDup_filter tr_filter) in H1. rewrite <- Heqfl2 in H1.
-specialize (incl_filter_mutual (trace t1 sm) (trace t2 sm) H2 tr_filter). intro. rewrite <- Heqfl1 in H3. rewrite <- Heqfl2 in H3.
-specialize (set_eq_imply_nth_error_eq fl1 fl2 H H1 H3 l1_length).
-intro.
-rewrite H4.
-auto.
-Qed. *)
-
-
-
-
-
-
-
-
+assert (find find_cond rs1 = find find_cond rs2).
+{
+  destruct (find find_cond rs1) eqn: find_ca1.
+  destruct (find find_cond rs2) eqn: find_ca2.
+  + apply find_some in find_ca1.
+  apply find_some in find_ca2.
+  f_equal.
+  unfold Transformation_equiv in tr_eq.
+  destruct tr_eq.
+  destruct H0.
+  assert (In r rs2). { unfold set_eq in H0. destruct H0. unfold incl in H0. crush. }
+  destruct find_ca2.
+  destruct find_ca1.
+  rewrite Heqfind_cond in H6.
+  rewrite Heqfind_cond in H4.
+  destruct H1.
+  unfold well_form in H7.
+  specialize (H7 r r0 sm sp).
+  crush.
+  + apply find_some in find_ca1.
+    specialize (find_none find_cond rs2 find_ca2).
+    intro.
+    unfold Transformation_equiv in tr_eq.
+    destruct tr_eq.
+    destruct H0.
+    assert (In r rs2). { unfold set_eq in H1. destruct H1. unfold incl in H0. crush. }
+    specialize (H r H0). crush.
+  + destruct (find find_cond rs2) eqn: find_ca2.
+  ++ apply find_some in find_ca2.
+     specialize (find_none find_cond rs1 find_ca1).
+     intro.
+     unfold Transformation_equiv in tr_eq.
+     destruct tr_eq.
+     destruct H0.
+     assert (In r rs1). { unfold set_eq in H1. destruct H1. unfold incl in H0. crush. }
+     specialize (H r H0). crush.
+  ++ auto.
+}
+rewrite H.
+reflexivity.
+Qed.
 
 Theorem confluence :
 forall  (t1 t2: Transformation) (sm: SourceModel),
@@ -332,7 +182,7 @@ Proof.
               split.
               ** assumption.
               ** unfold applyElementOnPattern in *. 
-assert ((resolveIter (trace t1 sm) = (resolveIter (trace t2 sm)))).
+assert (resolveIter t1 = resolveIter t2).
 { apply resolveIter_eq. unfold Transformation_equiv. crush. }
 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** rewrite H7 in H6.
@@ -369,7 +219,7 @@ destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
               split.
               ** assumption.
               ** unfold applyElementOnPattern in *. 
-assert ((resolveIter (trace t1 sm) = (resolveIter (trace t2 sm)))).
+assert ((resolveIter t1 = (resolveIter t2))).
 { apply resolveIter_eq. unfold Transformation_equiv. crush. }
 destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** rewrite <- H7 in H6.
@@ -377,4 +227,4 @@ destruct (evalOutputPatternElementExpr sm x x1 x2) eqn: eval_ope_ca.
 *** auto.
 Qed.
 
-End Confluence.
+End iConfluence.
