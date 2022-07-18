@@ -27,7 +27,9 @@ Require Import transformations.Moore2Mealy.tests.sampleMoore_injective.
 (** * Surjectivity of CoqTL                                  *)
 (*************************************************************)
 
-Theorem Surjectivity :
+(** Surjectivity on model elements                           *)
+
+Theorem Surjectivity_elem :
 forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       In te (allModelElements (execute tr sm)) ->
       (exists (sp : list SourceModelElement),
@@ -35,4 +37,17 @@ forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
           In te (instantiatePattern tr sm sp)).
 Proof.
     apply tr_execute_in_elements.
+Qed.
+
+
+(** Surjectivity on model links                              *)
+
+Theorem Surjectivity_links :
+forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+      In tl (allModelLinks (execute tr sm)) ->
+      (exists (sp : list SourceModelElement),
+          In sp (allTuples tr sm) /\
+          In tl (applyPattern tr sm sp)).
+Proof.
+    apply tr_execute_in_links.
 Qed.
