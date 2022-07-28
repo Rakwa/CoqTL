@@ -18,8 +18,8 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
-Require Import transformations.Moore2Mealy.Moore2Mealy_monotonicity_witness.
-Require Import transformations.Moore2Mealy.tests.sampleMoore_mono.
+Require Import core.properties.monotonicity.Moore2Mealy_monotonicity_witness.
+Require Import core.properties.monotonicity.sampleMoore_monotonicity.
 
 (*************************************************************)
 (** * Monotonicity of CoqTL                                  *)
