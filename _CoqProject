@@ -78,39 +78,63 @@ transformations/Families2Persons/Families2Persons.v
 transformations/Moore2Mealy/Moore.v
 transformations/Moore2Mealy/Mealy.v
 transformations/Moore2Mealy/Moore2Mealy.v
-transformations/Moore2Mealy/Moore2Mealy_monotonicity_witness.v
 transformations/Moore2Mealy/tests/sampleMoore.v
-transformations/Moore2Mealy/tests/sampleMoore_mono.v
-transformations/Moore2Mealy/tests/sampleMoore_injective.v
-transformations/Moore2Mealy/tests/sampleMoore_distri.v
 transformations/Moore2Mealy/MooreSemantics.v
 transformations/Moore2Mealy/MealySemantics.v
 
 # Proofs
 
+### prop - mono
+core/properties/monotonicity/Moore2Mealy_monotonicity_witness.v
+core/properties/monotonicity/sampleMoore_monotonicity.v
+core/properties/monotonicity/monotonicity.v
+
+### prop - injective
+core/properties/injectivity/sampleMoore_injectivity.v
+core/properties/injectivity/injectivity.v
+
+### prop - confluence
 core/properties/confluence/basic/basicSyntax.v
 core/properties/confluence/basic/basicExpressions.v
 core/properties/confluence/basic/basicSemantics.v
+core/properties/confluence/confluence.v
+
+### prop - universality
+core/properties/universality/universality.v
+
+### prop - totality
+core/properties/totality/totality.v
+
+### prop - surjectivity
+core/properties/surjectivity/surjectivity.v
+
+### prop - additivity
+core/properties/additivity/AdditivityElement.v
 
 
+### prop - distributiveity
+core/properties/distributivity/sampleMoore_distributivity.v
+core/properties/distributivity/distributivity.v
+
+
+
+
+### prop - lifting 
+#core/properties/Lifting.v
+
+### base engine certification
 core/EngineProofs.v
 core/SyntaxCertification.v
 core/Certification.v
 
-#core/properties/AdditivityRule.v
-#core/properties/AdditivityRuleExt.v
-#core/properties/AdditivityElement.v
-#core/properties/AdditivityLink.v
-#core/properties/Universality.v
-#core/properties/Confluence.v
-#core/properties/Monotonicity.v
-#core/properties/Lifting.v
-
+### extend engine certification
 #core/modeling/ModelingCertification.v
 
+### extend engine prop
 #core/modeling/properties/ModelingAdditivityRule.v
 #core/modeling/properties/ModelingAdditivityRuleExt.v
 
+### user proofs
 #transformations/Class2Relational/theorems/All_classes_instantiate_impl.v
 #transformations/Class2Relational/theorems/All_classes_match_impl.v
 #transformations/Class2Relational/theorems/Relational_name_definedness_spec.v
