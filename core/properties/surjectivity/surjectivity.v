@@ -20,7 +20,6 @@ Require Import core.modeling.Parser.
 
 Require Import transformations.Moore2Mealy.Moore.
 Require Import transformations.Moore2Mealy.Moore2Mealy.
-Require Import transformations.Moore2Mealy.tests.sampleMoore_injective.
 
 
 (*************************************************************)
