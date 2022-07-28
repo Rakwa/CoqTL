@@ -19,7 +19,7 @@ Require Import core.modeling.Parser.
 
 Require Import transformations.Moore2Mealy.Moore.
 Require Import transformations.Moore2Mealy.Moore2Mealy.
-Require Import transformations.Moore2Mealy.tests.sampleMoore_injective.
+Require Import core.properties.injectivity.sampleMoore_injectivity.
 
 
 (*************************************************************)
@@ -53,7 +53,6 @@ Proof.
     remember (Moore.BuildState "S0" "1") as e1.
     remember (Moore.BuildState "S0" "0") as e2.
     unfold incl in H0.
-    Search incl.
     apply incl_cons_inv in H0.
     destruct H0.
     destruct H.
