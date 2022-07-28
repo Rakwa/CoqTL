@@ -109,7 +109,7 @@ core/properties/totality/totality.v
 core/properties/surjectivity/surjectivity.v
 
 ### prop - additivity
-core/properties/additivity/AdditivityElement.v
+core/properties/additivity/AdditivityRule.v
 
 
 ### prop - distributiveity
