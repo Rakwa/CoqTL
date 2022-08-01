@@ -98,6 +98,7 @@ core/properties/confluence/basic/basicSyntax.v
 core/properties/confluence/basic/basicExpressions.v
 core/properties/confluence/basic/basicSemantics.v
 core/properties/confluence/confluence.v
+core/properties/confluence/examples/moore2mealy_confluence.v
 
 ### prop - universality
 core/properties/universality/universality.v
