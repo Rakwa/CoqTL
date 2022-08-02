@@ -25,6 +25,11 @@ Require Import core.properties.distributivity.sampleMoore_distributivity.
 (** * Distributivity of CoqTL                                *)
 (*************************************************************)
 
+Definition Distributivity (tr: Transformation) :=
+forall (sm1 sm2 : SourceModel),
+  execute tr (Model_app sm1 sm2) =
+  Model_app (execute tr sm1) (execute tr sm2).
+
 Theorem Not_Distributivity:
 exists (tr: Transformation) (m1 m2: SourceModel),
   execute tr (Model_app m1 m2) = 
@@ -40,3 +45,23 @@ Proof.
   simpl in H.
   inversion H.
 Qed.
+Require Import core.properties.monotonicity.monotonicity.
+
+(*Theorem ifDistrThenMon (tr: Transformation) :
+  Distributivity tr -> Monotonicity tr.
+Proof.
+    - ... ->
+
+    H1: SourceModel_elem_incl sm1 sm3 -> exists sm2, sm3 = (Model_app sm1 sm2)
+
+    - apply H1 ->
+
+    G: TargetModel_elem_incl (execute tr sm1) (execute tr (Model_app sm1 sm2)) 
+
+    - apply Distributivity ->
+
+    G: TargetModel_elem_incl (execute tr sm1) (Model_app (execute tr sm1) (execute tr sm2))) 
+
+    - apply incl a (a ++ b) ->
+
+    G: True*)
