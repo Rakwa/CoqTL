@@ -26,7 +26,7 @@ Require Import core.modeling.Parser.
 Require Import transformations.Moore2Mealy.Moore.
 Require Import transformations.Moore2Mealy.Mealy.
 
-Require Import core.properties.confluence.confluence.
+Require Import core.properties.confluence.Confluence.
 Require Import core.properties.confluence.examples.moore2mealy_confluence.
 
 (*************************************************************)

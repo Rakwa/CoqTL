@@ -16,7 +16,7 @@ Definition t1: Table1:=
     (0::0::1::
      0::1::0::nil).
 
-(* Option 2 *)
+(* Option 2 - Notre choix*)
 
 Inductive Table2:= 
   BuildTable2 :

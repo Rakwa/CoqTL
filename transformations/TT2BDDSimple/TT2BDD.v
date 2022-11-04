@@ -5,18 +5,37 @@ Require Import ListSet.
 
 Require Import core.utils.Utils.
 
-Require Import core.ConcreteSyntax.
+Require Import core.modeling.ConcreteSyntax.
 Require Import core.Semantics.
 Require Import core.Metamodel.
 Require Import core.Expressions.
 
-Require Import TT2BDD.TT.
-Require Import TT2BDD.BDDv2.
+Require Import TT2BDDSimple.TT.
+Require Import TT2BDDSimple.BDD.
 
 Open Scope coqtl.
 
-Definition TT2BDD (t: Table) :=
-    transformation TTMetamodel bddMetamodel [
+Check bddleaf.
+Check bddnode.
+
+Fixpoint removeFirstColumn(matrice: list (prod (list nat) nat)): list (prod (list nat) nat) := 
+    match matrice with
+    | nil => nil
+    | (nil, _) :: rows => removeFirstColumn(rows)
+    | (firstInput::inputsValue, outputValue)::rows => (inputsValue, outputValue) :: removeFirstColumn(rows)
+    end.
+
+Definition TT2BDD (t: Table2) := 
+    match t with
+    | BuildTable2 _ outputName ((_,outputValue)::nil) => bddleaf outputName outputValue
+    | BuildTable2 (firstInput::inputs) outputName rows => bddnode firstInput (BuildTable2 inputs outputName removeFirstColumn(rows)) (BuildTable2 inputs outputName removeFirstColumn(rows))
+    | BuildTable2 _ _ _ => bddleaf "a" 1
+    end.
+
+
+
+    (*transformation TTMetamodel bddMetamodel [
+        
         (* The TruthTable transforms to a BDD, with the same name and Ports. *)
 
         (* Each InputPort transforms to an InputPort, with the same name. *)
@@ -29,7 +48,7 @@ Definition TT2BDD (t: Table) :=
      
         (* The TruthTable transforms into a subtree for each combination of input values, each subtree is owned by the subtree with iterator = i/2  *)
      
-    ].
+    ].*)
 
     (* 
 
