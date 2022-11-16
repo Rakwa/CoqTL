@@ -17,6 +17,7 @@ Open Scope coqtl.
 
 Check bddleaf.
 Check bddnode.
+Check BuildTable2.
 
 Fixpoint removeFirstColumn(matrice: list (prod (list nat) nat)): list (prod (list nat) nat) := 
     match matrice with
@@ -46,8 +47,8 @@ Fixpoint TT2BDD (t: Table2) :=
             bddleaf outputName outputValue
     | BuildTable2 (firstInput::inputs) outputName rows => 
             bddnode firstInput 
-                    (TT2BDD (BuildTable2 inputs outputName (getFalseTableWithoutFirstColumn(rows))))  
-                    (TT2BDD (BuildTable2 inputs outputName (getTrueTableWithoutFirstColumn(rows))))
+                    (TT2BDD (BuildTable2 inputs outputName (getFalseTableWithoutFirstColumn rows)))  
+                    (TT2BDD (BuildTable2 inputs outputName (getTrueTableWithoutFirstColumn rows)))
     | BuildTable2 _ outputName _ =>
             bddleaf outputName 0
     end.
