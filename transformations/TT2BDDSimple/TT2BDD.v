@@ -25,11 +25,31 @@ Fixpoint removeFirstColumn(matrice: list (prod (list nat) nat)): list (prod (lis
     | (firstInput::inputsValue, outputValue)::rows => (inputsValue, outputValue) :: removeFirstColumn(rows)
     end.
 
-Definition TT2BDD (t: Table2) := 
+Fixpoint getFalseTableWithoutFirstColumn(matrice: list (prod (list nat) nat)): list (prod (list nat) nat) :=
+    match matrice with
+    | (0::inputsValue, outputValue)::rows => (inputsValue, outputValue) :: getFalseTableWithoutFirstColumn(rows)
+    | (_, _)::rows => getFalseTableWithoutFirstColumn(rows)
+    | nil => nil
+    end.
+
+Fixpoint getTrueTableWithoutFirstColumn(matrice: list (prod (list nat) nat)): list (prod (list nat) nat) :=
+    match matrice with
+    | (1::inputsValue, outputValue)::rows => (inputsValue, outputValue) :: getTrueTableWithoutFirstColumn(rows)
+    | (_, _)::rows => getTrueTableWithoutFirstColumn(rows)
+    | nil => nil
+    end.
+
+    
+Fixpoint TT2BDD (t: Table2) := 
     match t with
-    | BuildTable2 _ outputName ((_,outputValue)::nil) => bddleaf outputName outputValue
-    | BuildTable2 (firstInput::inputs) outputName rows => bddnode firstInput (BuildTable2 inputs outputName removeFirstColumn(rows)) (BuildTable2 inputs outputName removeFirstColumn(rows))
-    | BuildTable2 _ _ _ => bddleaf "a" 1
+    | BuildTable2 _ outputName ((_,outputValue)::nil) => 
+            bddleaf outputName outputValue
+    | BuildTable2 (firstInput::inputs) outputName rows => 
+            bddnode firstInput 
+                    (TT2BDD (BuildTable2 inputs outputName (getFalseTableWithoutFirstColumn(rows))))  
+                    (TT2BDD (BuildTable2 inputs outputName (getTrueTableWithoutFirstColumn(rows))))
+    | BuildTable2 _ outputName _ =>
+            bddleaf outputName 0
     end.
 
 
