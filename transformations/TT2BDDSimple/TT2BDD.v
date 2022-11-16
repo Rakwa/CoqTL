@@ -53,46 +53,6 @@ Fixpoint TT2BDD (t: Table2) :=
     end.
 
 
-
-    (*transformation TTMetamodel bddMetamodel [
-        
-        (* The TruthTable transforms to a BDD, with the same name and Ports. *)
-
-        (* Each InputPort transforms to an InputPort, with the same name. *)
-
-        (* Each OutputPort transforms to an OutputPort, with the same name. *)
-     
-        (* Each Cell for the OutputPorts transform into Assignments. *)
-     
-        (* Each Row transforms to a Leaf. *)
-     
-        (* The TruthTable transforms into a subtree for each combination of input values, each subtree is owned by the subtree with iterator = i/2  *)
-     
-    ].*)
-
-    (* 
-
-    example:
-    a b c
-    f - t
-    t t f
-
-              1
-   a    2           3 
-   b  4   5       6   7
-    
-    leaf 1: c=t parent:4,5
-    leaf 2: c=f parent:7
-
-    (owner_i = i/2 rounded down)
-             1
-       2           3
-     4   5       6   7
-    8 9 10 11   12 13 14 15
-   f=0 ...
-    *)
-
-
 (* We want to prove the following equivalence: 
    given an assignment for *all* input ports 'ins', and given *an* output port 'out', 
    (valueOf (evalTT TT ins) out) = (valueOf (evalBDD BDD ins) out) 
