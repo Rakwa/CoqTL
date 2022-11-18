@@ -23,6 +23,7 @@ Check BuildTable2.
 Fixpoint getFalseTableWithoutFirstColumn(matrice: list (prod (list nat) nat)): list (prod (list nat) nat) :=
     match matrice with
     | (0::inputsValue, outputValue)::rows => (inputsValue, outputValue) :: getFalseTableWithoutFirstColumn(rows)
+    | (2::inputsValue, outputValue)::rows => (inputsValue, outputValue) :: getFalseTableWithoutFirstColumn(rows)
     | (_, _)::rows => getFalseTableWithoutFirstColumn(rows)
     | nil => nil
     end.
@@ -30,6 +31,7 @@ Fixpoint getFalseTableWithoutFirstColumn(matrice: list (prod (list nat) nat)): l
 Fixpoint getTrueTableWithoutFirstColumn(matrice: list (prod (list nat) nat)): list (prod (list nat) nat) :=
     match matrice with
     | (1::inputsValue, outputValue)::rows => (inputsValue, outputValue) :: getTrueTableWithoutFirstColumn(rows)
+    | (2::inputsValue, outputValue)::rows => (inputsValue, outputValue) :: getTrueTableWithoutFirstColumn(rows)
     | (_, _)::rows => getTrueTableWithoutFirstColumn(rows)
     | nil => nil
     end.
@@ -55,4 +57,21 @@ Definition TT2BDD (t: Table2) :=
     end.
 
 
+Definition test1: BDDTree :=
+    TT2BDD (BuildTable2 
+        ("a"::"b"::"c"::"d"::nil) 
+        "s"
+        (((0::0::2::2::nil),0)::
+        ((0::1::0::0::nil),1)::
+        ((0::1::0::1::nil),0)::
+        ((0::1::1::2::nil),0)::
+        ((1::0::0::0::nil),0)::
+        ((1::0::1::0::nil),1)::
+        ((1::2::2::1::nil),0)::
+        ((1::1::0::0::nil),1)::
+        ((1::1::1::0::nil),0)::
+        nil)
+    ).
+
+Compute test1.     
 Close Scope coqtl.
