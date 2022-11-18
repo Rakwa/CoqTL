@@ -10,5 +10,7 @@ BDDTree
 (* falseNode *) BDDTree ->
 (* trueNode *) BDDTree-> 
 BDDTree
+| bddnil: 
+BDDTree
 .
 
